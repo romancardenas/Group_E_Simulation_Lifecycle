@@ -1,11 +1,13 @@
-# Group_E_Simulation_Life_Cycle
-Françoise Blanc
-Roman Cardenas Rodriguez
-Ghida Dandan
-Aidan Fahlman
+# Group E: A solution for simulation lifecycle management
+
+Françoise Blanc, 
+Roman Cardenas Rodriguez, 
+Ghida Dandan, 
+Aidan Fahlman, 
 Bruno St-Aubin
 
-## Description
+## Problem Statement and Software Purpose
+
 In many domains of application, Modeling and Simulation (M&S) has shown to be useful to study real world systems and to support decision-making through models that abstract the systems under study. M&S requires fewer resources and involves less risk than studying the system itself. It is a way to evaluate new or upgraded systems without compromising limited resources, interrupting operations, compromising safety, etc. However, building accurate models that adequately represent real-world systems is a difficult and time-consuming task that requires extensive domain knowledge and a deep understanding of the simulation method used. Because of the significant effort involve in understanding a specific domain and building the required models, the tendency in the field is to build single-use simulators.
 
 Generic simulation methods, such as the Discrete Event System Specification (DEVS), are well-positioned to break down the disciplinary silos. DEVS supports hierarchical and modular model development, it favors reusability for models. It is based on a rigorous formalism to manage inputs and outputs of atomic models, the basic block of the specification. Atomic models can be integrated into larger, more complex coupled models. Regardless, because of its lack of approachability, the DEVS specification sees only limited usage in the industry and outside the research community. Compounding the issue is the fact that DEVS approachability rarely is the subject of research by the community. Thus, the available development environment, particularly for non-expert users, does not adequately support modeling, experiment management, or building DEVS based applications. 
@@ -25,6 +27,7 @@ The purpose of this software is to address the two challenges previously identif
 <b>[2]</b> <i>S. J. Taylor, A. Khan, L. K. Morse, A. Tolk, L. Yilmaz, J. Zander, and P. J. Mosterman, "Grand challenges for modeling and simulation: simulation everywhere — from cyberinfrastructure to clouds to citizens," Simulation: Transactions of the Society for Modeling and Simulation International, vol. 91, no. 7, pp. 648-665, 2015.</i>
 
 ## Software Requirements
+
 1. Users must be able to provide geospatial data as a source for the model generation workflow:
 	1. All geometric primitives (point, line and polygon)
 	2. Spatial network data  
