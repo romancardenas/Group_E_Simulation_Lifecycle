@@ -49,5 +49,14 @@ The purpose of this software is to address the two challenges previously identif
 10. The system must store the converted results into a remote database through existing web services
 11. The users must be able to configure a visualization through existing web service and retrieve a URL to access the remotely hosted, existing web visualization platform.
 
+## Software Releases
+The software will be released in 3 versions.
+
+The purpose of the first release is… This first release will include the following requirements:
+
+The purpose of the second release is… This second release will include the following requirements:
+
+The purpose of the third release is… This second release will include the following requirements:
+
 
 
