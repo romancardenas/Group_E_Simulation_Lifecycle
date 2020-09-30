@@ -20,9 +20,9 @@ In this project, we propose to implement a workflow-based approach meant to supp
 
 The purpose of this software is to address the two challenges previously identified. Automated generation of large-scale spatial simulation models from GIS data seeks to lessen the burden of modelling for its users. The integration of several already existing applications (Model generator, Cadmium & DEVS WebViewer) through this software aims at democratizing the simulation lifecycle for non-expert users. 
 
-[1] R. M. Fujimoto, "Research challenges in parallel and distributed simulation," ACM Transactions on Modeling and Computer Simulation (TOMACS), vol. 26, no. 4, p. 29, 2016. 
+<b>[1]</b> <i>R. M. Fujimoto, "Research challenges in parallel and distributed simulation," ACM Transactions on Modeling and Computer Simulation (TOMACS), vol. 26, no. 4, p. 29, 2016.</i>
 
-[2] S. J. Taylor, A. Khan, L. K. Morse, A. Tolk, L. Yilmaz, J. Zander, and P. J. Mosterman, "Grand challenges for modeling and simulation: simulation everywhere — from cyberinfrastructure to clouds to citizens," Simulation: Transactions of the Society for Modeling and Simulation International, vol. 91, no. 7, pp. 648-665, 2015.
+<b>[2]</b> <i>S. J. Taylor, A. Khan, L. K. Morse, A. Tolk, L. Yilmaz, J. Zander, and P. J. Mosterman, "Grand challenges for modeling and simulation: simulation everywhere — from cyberinfrastructure to clouds to citizens," Simulation: Transactions of the Society for Modeling and Simulation International, vol. 91, no. 7, pp. 648-665, 2015.</i>
 
 ## Software Requirements
 1. Users must be able to provide geospatial data as a source for the model generation workflow:
