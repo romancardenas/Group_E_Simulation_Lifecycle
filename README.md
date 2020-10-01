@@ -1,10 +1,10 @@
 # Group E: A solution for simulation lifecycle management
 
-Françoise Blanc,
-Román Cárdenas Rodríguez,
-Ghida Dandan,
-Aidan Fahlman,
-Bruno St-Aubin
+ - Françoise Blanc
+ - Román Cárdenas Rodríguez
+ - Ghida Dandan
+ - Aidan Fahlman
+ - Bruno St-Aubin
 
 ## Problem Statement and Software Purpose
 
