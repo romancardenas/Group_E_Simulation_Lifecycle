@@ -30,40 +30,34 @@ The purpose of this software is to address the two challenges previously identif
 
 ## Software Requirements
 
-# First release
-
-1. Users must be able to provide geospatial data as a source for the model generation workflow, in the following geospatial data formats: shapefile, csv, geojson. The data files provided should also contain non-spatial attributes.
+1. Users must be able to provide geospatial data as a source for the model generation workflow, in the following geospatial data formats: shapefile, CSV, GeoJSON. The data files provided should also contain non-spatial attributes.
 
 2. Users must be able to select the simulation model to be mapped onto data from a library of models.
 
-3. The system should be portable to any mainstream operating systems : Linux, MacOS, Windows
-
-# Second release
+3. The system should be portable to any mainstream operating systems : Linux, MacOS, and Windows.
 
 4. The system will perform spatial analysis of the geospatial data provided to establish model parameters. The system must support common spatial analysis functions to establish neighborhood and parameters:
-	1. Topological relationships (intersection, contains, within, touches, etc.)
-	2. Geospatial statistics
-	3. Network distance analysis
-	4. Spatial buffers
-	
+	1. Topological relationships (intersection, contains, within, touches, etc.).
+	2. Geospatial statistics.
+	3. Network distance analysis.
+	4. Spatial buffers.
+
 5. Users must be able to provide a workflow file that contains the steps for automated model generation. The system will automatically execute the workflow to convert geospatial data into a Cadmium model configuration file. Through the workflow, the system will:
-	1. Map geospatial features onto selected parametric simulation models
-	2. Establish neighborhoods or couplings through spatial analysis of the geospatial data
-	3. Output a configuration file (json) properly formatted for Cadmium
-	
+	1. Map geospatial features onto selected parametric simulation models.
+	2. Establish neighborhoods or couplings through spatial analysis of the geospatial data.
+	3. Output a configuration file (json) properly formatted for Cadmium.
+
 6. The system will execute the simulation and return the results.
 
-# Third release
-
-7. The system must convert the Cadmium results into a common specification for web based visualization through an existing conversion web service
+7. The system must convert the Cadmium results into a common specification for web based visualization through an existing conversion web service.
 
 8. The system must allow users to configure a simulation visualization (color, classification of data, number of classes, map symbology, etc.) for the DEVS WebViewer application.
 
 ## Software Releases
 The software will be released in 3 versions.
 
-The purpose of the first release is… This first release will include the following requirements:
+The purpose of the first release is providing the necessary tools enabling users to upload all the required data related to the simulation lifecycle. This first release will include the requirements 1, 2, and 3.
 
-The purpose of the second release is… This second release will include the following requirements:
+The purpose of the second release is twofold: first, the software will be able to perform common spatial analysis functions; on the other hand, the software will be able to interact with the Cadmium M&S tool to perform the simulations selected by the users. This second release will include the requirements 4, 5, and 6.
 
-The purpose of the third release is… This second release will include the following requirements:
+The purpose of the third release is the integration of visualization to the simulation lifecycle. This third release will include the following requirements 7 and 8.
