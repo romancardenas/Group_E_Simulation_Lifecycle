@@ -8,7 +8,7 @@
 
 ## Problem Statement
 
-In many domains of application, Modeling and Simulation (M&S) has shown to be useful to study real world systems and to support decision-making through models that abstract the systems under study. M&S requires fewer resources and involves less risk than studying the system itself. It is a way to evaluate new or upgraded systems without compromising limited resources, interrupting operations, compromising safety, etc. However, building accurate models that adequately represent real-world systems is a difficult and time-consuming task that requires extensive domain knowledge and a deep understanding of the simulation method used. Because of the significant effort involve in understanding a specific domain and building the required models, the tendency in the field is to build single-use simulators.
+In many application domains, Modeling and Simulation (M&S) has shown to be useful to study real world systems and to support decision-making through models that abstract the systems under study. M&S requires fewer resources and involves less risk than studying the system itself. It is a way to evaluate new or upgraded systems without compromising limited resources, interrupting operations, compromising safety, etc. However, building accurate models that adequately represent real-world systems is a difficult and time-consuming task that requires extensive domain knowledge and a deep understanding of the simulation method used. Because of the significant effort involve in understanding a specific domain and building the required models, the tendency in the field is to build single-use simulators.
 
 Generic simulation methods, such as the Discrete Event System Specification (DEVS), are well-positioned to break down the disciplinary silos. DEVS supports hierarchical and modular model development, it favors reusability for models. It is based on a rigorous formalism to manage inputs and outputs of atomic models, the basic block of the specification. Atomic models can be integrated into larger, more complex coupled models. Regardless, because of its lack of approachability, the DEVS specification sees only limited usage in the industry and outside the research community. Compounding the issue is the fact that DEVS approachability rarely is the subject of research by the community. Thus, the available development environment, particularly for non-expert users, does not adequately support modeling, experiment management, or building DEVS based applications.
 
@@ -32,30 +32,30 @@ The purpose of this software is to address the two challenges previously identif
 
 # First release
 
-1. Users must be able to provide geospatial data as a source for the model generation workflow, in the following geospatial data formats: shapefile, csv, geojson. The data file should also contain attributes.
+1. Users must be able to provide geospatial data as a source for the model generation workflow, in the following geospatial data formats: shapefile, csv, geojson. The data files provided should also contain non-spatial attributes.
 
-2. Users must be able to select the simulation model from a library of models.
+2. Users must be able to select the simulation model to be mapped onto data from a library of models.
 
 3. The system should be portable to any mainstream operating systems : Linux, MacOS, Windows
 
 # Second release
 
-4. The system should be able perform spatial analysis of the geospatial data provided to establish model parameters. The system must support common spatial analysis functions to establish neighborhood and parameters:
+4. The system will perform spatial analysis of the geospatial data provided to establish model parameters. The system must support common spatial analysis functions to establish neighborhood and parameters:
 	1. Topological relationships (intersection, contains, within, touches, etc.)
 	2. Geospatial statistics
 	3. Network distance analysis
 	4. Spatial buffers
 	
-5. Users must be able to provide a workflow file that contains the steps for automated model generation. The system will automatically execute the workflow to convert geospatial data into a Cadmium model configuration file.
-	1. Map geospatial features onto simulation models from an existing library of parametric models
+5. Users must be able to provide a workflow file that contains the steps for automated model generation. The system will automatically execute the workflow to convert geospatial data into a Cadmium model configuration file. Through the workflow, the system will:
+	1. Map geospatial features onto selected parametric simulation models
 	2. Establish neighborhoods or couplings through spatial analysis of the geospatial data
-	3. The file output must be a json file properly formatted according to Roman’s model generation process
+	3. Output a configuration file (json) properly formatted for Cadmium
 	
 6. The system will execute the simulation and return the results.
 
 # Third release
 
-7. The system must convert the Cadmium results into a common specification for web based visualization through existing conversion web service
+7. The system must convert the Cadmium results into a common specification for web based visualization through an existing conversion web service
 
 8. The system must allow users to configure a simulation visualization (color, classification of data, number of classes, map symbology, etc.) for the DEVS WebViewer application.
 
