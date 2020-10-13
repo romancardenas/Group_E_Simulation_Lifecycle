@@ -68,3 +68,10 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# MacOS stuff
+.DS_Store
+
+# CLion stuff
+.idea/
+cmake-build-debug/
