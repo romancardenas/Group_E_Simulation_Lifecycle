@@ -8,6 +8,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 project(${PROJECT_NAME})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
 
+# Include libraries
+find_package(GDAL REQUIRED)  # For Geospatial analysis
+include_directories(${GDAL_INCLUDE_DIRS})
+
 # Include paths
 set(INCLUDE_DIRS ${INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include/simulation_lifecycle)
 
@@ -30,3 +34,4 @@ install(FILES ${LIB_INC_FILES} DESTINATION include)
 set(SOURCE_FILES src/main.c)
 add_executable(simulation_lifecycle ${SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_LIB)
+target_link_libraries(${PROJECT_NAME} ${GDAL_LIBRARY})
