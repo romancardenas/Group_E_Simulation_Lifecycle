@@ -9,7 +9,7 @@ project(${PROJECT_NAME})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
 
 # Include libraries
-find_package(GDAL REQUIRED)  # For Geospatial analysis
+find_package(GDAL REQUIRED)                 # For Geospatial analysis and parsing JSON files
 include_directories(${GDAL_INCLUDE_DIRS})
 
 # Include paths

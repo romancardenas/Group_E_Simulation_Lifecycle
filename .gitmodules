@@ -1,0 +1,6 @@
+[submodule "third_party/cadmium"]
+	path = third_party/cadmium
+	url = https://github.com/SimulationEverywhere/cadmium.git
+[submodule "third_party/CellDEVS_models/tutorial"]
+	path = third_party/CellDEVS_models/tutorial
+	url = https://github.com/SimulationEverywhere-Models/Cadmium-CellDEVS-Tutorial.git
