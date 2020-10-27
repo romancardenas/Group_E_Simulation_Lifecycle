@@ -8,30 +8,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 project(${PROJECT_NAME})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
 
-# Include libraries
-find_package(GDAL REQUIRED)                 # For Geospatial analysis and parsing JSON files
-include_directories(${GDAL_INCLUDE_DIRS})
-
 # Include paths
-set(INCLUDE_DIRS ${INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include/simulation_lifecycle)
+set(INCLUDE_DIRS ${INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include)
 
 # Assign the include directories
 include_directories(${INCLUDE_DIRS})
 
-# Find library sources
-file(GLOB_RECURSE LIB_SRC_FILES include/*/*.c)
+# Collect source files
+AUX_SOURCE_DIRECTORY(src/simulation_lifecycle SOURCE_FILES)
 
-# Build static/shared library
-add_library(${PROJECT_NAME}_LIB STATIC ${LIB_SRC_FILES})
-
-# Install library
-install(TARGETS ${PROJECT_NAME}_LIB DESTINATION lib)
-
-# Install library headers
-file(GLOB_RECURSE LIB_INC_FILES include/*/*.h)
-install(FILES ${LIB_INC_FILES} DESTINATION include)
-
-set(SOURCE_FILES src/main.c)
-add_executable(simulation_lifecycle ${SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_LIB)
-target_link_libraries(${PROJECT_NAME} ${GDAL_LIBRARY})
+# Add executable from src/main.c file
+add_executable(simulation_lifecycle src/main.c ${SOURCE_FILES})
