@@ -8,7 +8,8 @@ int model_exists(const char *model) {
     return 0;  // TODO
 }
 
-int check_sim_preconditions(const char *model, feature_set_t *p_features, relation_set_t *p_relations, const char *output_path) {
+int check_sim_preconditions(const char *model, const feature_set_t *p_features,
+                            const relation_set_t *p_relations, const char *output_path) {
     if (model == NULL || *model == '\0') {
         return MODEL_EMPTY;
     } else if (!model_exists(model)) {
