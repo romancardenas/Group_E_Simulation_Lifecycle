@@ -1,0 +1,26 @@
+#ifndef SIMULATION_LIFECYCLE_ERROR_H
+#define SIMULATION_LIFECYCLE_ERROR_H
+
+/* Common errors 0-99 */
+#define SUCCESS 0
+#define GENERIC_ERROR 1
+/** WORKFLOW ERRORS 100-199 **/
+// TODO
+/** SPATIAL ANALYSIS ERRORS 200-299 **/
+// TODO
+/** SIMULATION ERRORS 300-399 **/
+/* model selection issues 300-309 */
+#define MODEL_EMPTY 300
+#define MODEL_NOT_FOUND 301
+/* feature set issues 310-319 */
+#define FEATURE_SET_EMPTY 310
+/* relation set issues 320-329 */
+#define RELATION_SET_EMPTY 320
+#define INCONSISTENT_DATA 325
+/* output path issues 330-339 */
+#define OUTPUT_PATH_EMPTY 330
+#define OUTPUT_FILE_EXISTS 331
+/** VISUALIZATION ERRORS 400-499 */
+// TODO
+
+#endif //SIMULATION_LIFECYCLE_ERROR_H
