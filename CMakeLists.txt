@@ -8,8 +8,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 project(${PROJECT_NAME})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
 
+link_directories(${PROJECT_SOURCE_DIR}/third_party/cJSON/lib)
+
 # Include paths
-set(INCLUDE_DIRS ${INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include)
+set(INCLUDE_DIRS ${INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/third_party/cJSON/include)
 
 # Assign the include directories
 include_directories(${INCLUDE_DIRS})
@@ -19,3 +21,4 @@ AUX_SOURCE_DIRECTORY(src/simulation_lifecycle SOURCE_FILES)
 
 # Add executable from src/main.c file
 add_executable(simulation_lifecycle src/main.c ${SOURCE_FILES})
+target_link_libraries(simulation_lifecycle libcjson.a)

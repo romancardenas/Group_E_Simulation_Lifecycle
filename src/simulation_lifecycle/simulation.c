@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include "simulation_lifecycle/error.h"
+#include "simulation_lifecycle/utils.h"
 #include "simulation_lifecycle/structures.h"
 #include "simulation_lifecycle/simulation.h"
-#include "simulation_lifecycle/utils.h"
 
 int model_exists(const char *model) {
     return 0;  // TODO
@@ -26,7 +26,8 @@ int check_sim_preconditions(const char *model, const feature_set_t *p_features,
     }
     if (output_path == NULL || *output_path == '\0') {
         return OUTPUT_PATH_EMPTY;
-    } else if (file_exists(output_path)) {
+    }
+    else if (file_exists(output_path)) {
         return OUTPUT_FILE_EXISTS;
     }
     return SUCCESS;
