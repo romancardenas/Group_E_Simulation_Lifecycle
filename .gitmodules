@@ -4,3 +4,6 @@
 [submodule "third_party/CellDEVS_models/tutorial"]
 	path = third_party/CellDEVS_models/tutorial
 	url = https://github.com/SimulationEverywhere-Models/Cadmium-CellDEVS-Tutorial.git
+[submodule "third_party/cJSON"]
+	path = third_party/cJSON
+	url = https://github.com/DaveGamble/cJSON.git
