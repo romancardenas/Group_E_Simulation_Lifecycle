@@ -13,4 +13,8 @@ make
 make install
 
 # compile Cadmium Cell-DEVS models TODO
-cd ../../CellDEVS_models
+cd ../../CellDEVS_models/tutorial
+mkdir build
+cd build
+cmake ..
+make
