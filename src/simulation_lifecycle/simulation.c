@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "simulation_lifecycle/error.h"
-#include "simulation_lifecycle/utils.h"
+#include "simulation_lifecycle/utils/file.h"
 #include "simulation_lifecycle/structures.h"
 #include "simulation_lifecycle/simulation.h"
 

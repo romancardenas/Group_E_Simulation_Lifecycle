@@ -18,9 +18,10 @@ include_directories(${INCLUDE_DIRS})
 
 # Collect source files
 AUX_SOURCE_DIRECTORY(src/simulation_lifecycle SOURCE_FILES)
+AUX_SOURCE_DIRECTORY(src/simulation_lifecycle/utils UTILS_SOURCES)
 
 
 # Add executable from src/main.c file
 # add_executable(simulation_lifecycle src/main.c ${SOURCE_FILES} ${PROJECT_SOURCE_DIR}/third_party/cJSON/cJSON.c)
-add_executable(simulation_lifecycle src/main.c ${SOURCE_FILES} ${PROJECT_SOURCE_DIR}/third_party/cJSON/cJSON.c)
+add_executable(simulation_lifecycle src/main.c ${SOURCE_FILES} ${UTILS_SOURCES} ${PROJECT_SOURCE_DIR}/third_party/cJSON/cJSON.c)
 # target_link_libraries(simulation_lifecycle libcjson.dll.a)
