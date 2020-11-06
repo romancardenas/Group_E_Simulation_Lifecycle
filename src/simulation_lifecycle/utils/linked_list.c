@@ -31,8 +31,10 @@ void remove_node(Node_t *p_node) {
 
 int list_length(Node_t **pp_head) {
     int i = 0;
-    while (*pp_head != NULL && (*pp_head)->next != NULL) {
+    Node_t *current = *pp_head;
+    while (current != NULL) {
         i++;
+        current = current->next;
     }
     return i;
 }
@@ -51,24 +53,6 @@ Node_t * get_tail(Node_t **pp_head) {
     for (current = *pp_head; current != NULL && current->next != NULL; current = current->next)
         ;
     return current;
-}
-
-void * get_data(Node_t *p_node) {
-    return (p_node == NULL) ? NULL : p_node->data;
-}
-
-void * get_head_data(Node_t **pp_head) {
-    return (*pp_head == NULL) ? NULL : get_data(*pp_head);
-}
-
-void * get_tail_data(Node_t **pp_head) {
-    Node_t * tail = get_tail(pp_head);
-    return (tail == NULL) ? NULL : get_data(tail);
-}
-
-void * get_node_data(Node_t **pp_head, int n) {
-    Node_t * current = get_node(pp_head, n);
-    return (current == NULL) ? NULL : get_data(current);
 }
 
 void push(Node_t **pp_head, void *p_data, size_t data_size) {

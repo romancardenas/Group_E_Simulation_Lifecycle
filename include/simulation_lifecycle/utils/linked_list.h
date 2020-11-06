@@ -48,35 +48,6 @@ Node_t * get_tail(Node_t **pp_head);
 Node_t * get_node(Node_t **pp_head, int n);
 
 /**
- * @brief returns data of a list node.
- * @param p_node pointer to list node.
- * @return pointer to value of the list node.
- */
-void * get_data(Node_t *p_node);
-
-/**
- * @brief Returns data of the first element of list.
- * @param pp_head pointer to the list.
- * @return pointer to the value of the list node.
- */
-void * get_head_data(Node_t **pp_head);
-
-/**
- * Returns data of the last element of the list.
- * @param pp_head pointer to the list.
- * @return pointer to the value of the last node of the list.
- */
-void * get_tail_data(Node_t **pp_head);
-
-/**
- * @brief returns pointer to data of the nth element of the list. If list has less than n elements, it returns NULL.
- * @param pp_head pointer to list.
- * @param n list node index.
- * @return pointer to data of the nth element of the list.
- */
-void * get_node_data(Node_t **pp_head, int n);
-
-/**
  * @brief Adds new element to the end of a list.
  * @param pp_head pointer to the list.
  * @param p_data pointer to value to be added to the list.
