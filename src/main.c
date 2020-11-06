@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cjson/cJSON.h>
+#include "simulation_lifecycle/simulation.h"
 
 /**
  * Simulation Lifecycle: main function. So far, it i just a simple hello world.
@@ -25,5 +26,9 @@ int main(int argc, char *argv[]) {
     string[fsize] = '\0';
 
     cJSON *json = cJSON_Parse(string);
+    if (json == NULL) {
+        exit(1);
+    }
+    build_simulation_scenario("sir", NULL, NULL, "output.json");
     return json == NULL;
 }

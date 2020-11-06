@@ -1,13 +1,5 @@
 #include "simulation_lifecycle/utils/linked_list.h"
 
-/**
- * @brief creates a new list node.
- * @param p_data pointer to data to be stored in node.
- * @param data_size size (in bits) of the data of the node. It is required to allocating the correct amount of memory.
- * @param p_prev pointer to previous node of the list.
- * @param p_next pointer to next node of the list.
- * @return pointer to new node.
- */
 Node_t * create_node(void *p_data, size_t data_size, Node_t *p_prev, Node_t *p_next) {
     /* Allocate memory for new node */
     Node_t *node = (Node_t *) malloc(sizeof(Node_t));
@@ -22,18 +14,16 @@ Node_t * create_node(void *p_data, size_t data_size, Node_t *p_prev, Node_t *p_n
     return node;
 }
 
-/**
- * @brief removes a list node.
- * @param p_node pointer to node.
- */
 void remove_node(Node_t *p_node) {
     if (p_node != NULL) {
+        /* Resolve next and prv pointers of list elements */
         if (p_node->prev != NULL) {
             p_node->prev->next = p_node->next;
         }
         if (p_node->next != NULL) {
             p_node->next->prev = p_node->prev;
         }
+        /* Free memory of the node */
         free(p_node->data);
         free((void *)p_node);
     }
@@ -47,15 +37,42 @@ int list_length(Node_t **pp_head) {
     return i;
 }
 
-Node_t * list_tail(Node_t **pp_head) {
+Node_t * get_node(Node_t **pp_head, int n) {
+    Node_t * current = *pp_head;
+    int i;
+    for (i = 0; i < n && current != NULL; i++) {
+        current = current->next;
+    }
+    return current;
+}
+
+Node_t * get_tail(Node_t **pp_head) {
     Node_t * current;
     for (current = *pp_head; current != NULL && current->next != NULL; current = current->next)
         ;
     return current;
 }
 
+void * get_data(Node_t *p_node) {
+    return (p_node == NULL) ? NULL : p_node->data;
+}
+
+void * get_head_data(Node_t **pp_head) {
+    return (*pp_head == NULL) ? NULL : get_data(*pp_head);
+}
+
+void * get_tail_data(Node_t **pp_head) {
+    Node_t * tail = get_tail(pp_head);
+    return (tail == NULL) ? NULL : get_data(tail);
+}
+
+void * get_node_data(Node_t **pp_head, int n) {
+    Node_t * current = get_node(pp_head, n);
+    return (current == NULL) ? NULL : get_data(current);
+}
+
 void push(Node_t **pp_head, void *p_data, size_t data_size) {
-    Node_t *tail = list_tail(pp_head);
+    Node_t *tail = get_tail(pp_head);
     Node_t *new = create_node(p_data, data_size, tail, NULL);
     if (tail == NULL) {  /* If tail is null (i.e., list is empty), then list's head is the new node */
         *pp_head = new;
@@ -69,7 +86,7 @@ void push_left(Node_t **pp_head, void *p_data, size_t data_size) {
 }
 
 void pop(Node_t **pp_head) {
-    remove_node(list_tail(pp_head));
+    remove_node(get_tail(pp_head));
 }
 
 void pop_left(Node_t **pp_head) {
