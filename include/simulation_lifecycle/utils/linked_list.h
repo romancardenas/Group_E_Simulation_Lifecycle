@@ -53,7 +53,7 @@ Node_t * get_node(Node_t **pp_head, int n);
  * @param p_data pointer to value to be added to the list.
  * @param data_size size (in bytes) of the data structure to be added to the list.
  */
-void push(Node_t **pp_head, void *p_data, size_t data_size);
+void push_node(Node_t **pp_head, void *p_data, size_t data_size);
 
 /**
  * @brief Adds new element to the beginning of a list.
@@ -61,18 +61,18 @@ void push(Node_t **pp_head, void *p_data, size_t data_size);
  * @param p_data pointer to value to be added to the list.
  * @param data_size size (in bytes) of the data structure to be added to the list.
  */
-void push_left(Node_t **pp_head, void *p_data, size_t data_size);
+void push_node_left(Node_t **pp_head, void *p_data, size_t data_size);
 
 /**
  * @brief Removes last element of the list.
  * @param pp_head pointer to the list.
  */
-void pop(Node_t **pp_head);
+void pop_node(Node_t **pp_head);
 
 /**
  * @brief Removes first element of the list.
  * @param pp_head pointer to the list.
  */
-void pop_left(Node_t **pp_head);
+void pop_node_left(Node_t **pp_head);
 
 #endif //SIMULATION_LIFECYCLE_LINKED_LIST_HPP

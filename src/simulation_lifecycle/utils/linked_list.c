@@ -10,13 +10,20 @@ Node_t * create_node(void *p_data, size_t data_size, Node_t *p_prev, Node_t *p_n
     int i;
     for (i = 0; i < data_size; i++)
         *(char *)(node->data + i) = *(char *)(p_data + i); /* Assumption: char takes 1 byte. */
+    /* Resolve next and prev pointers of list elements */
+    if (p_prev != NULL) {
+        p_prev->next = node;
+    }
+    if (p_next != NULL) {
+        p_next->prev = node;
+    }
     /* return newly created node */
     return node;
 }
 
 void remove_node(Node_t *p_node) {
     if (p_node != NULL) {
-        /* Resolve next and prv pointers of list elements */
+        /* Resolve next and prev pointers of list elements */
         if (p_node->prev != NULL) {
             p_node->prev->next = p_node->next;
         }
@@ -55,24 +62,26 @@ Node_t * get_tail(Node_t **pp_head) {
     return current;
 }
 
-void push(Node_t **pp_head, void *p_data, size_t data_size) {
+void push_node(Node_t **pp_head, void *p_data, size_t data_size) {
     Node_t *tail = get_tail(pp_head);
     Node_t *new = create_node(p_data, data_size, tail, NULL);
     if (tail == NULL) {  /* If tail is null (i.e., list is empty), then list's head is the new node */
         *pp_head = new;
-    } else {             /* Otherwise, former tail's next node is the new node */
-        tail->next = new;
     }
 }
 
-void push_left(Node_t **pp_head, void *p_data, size_t data_size) {
+void push_node_left(Node_t **pp_head, void *p_data, size_t data_size) {
     *pp_head = create_node(p_data, data_size, NULL, *pp_head);
 }
 
-void pop(Node_t **pp_head) {
+void pop_node(Node_t **pp_head) {
     remove_node(get_tail(pp_head));
 }
 
-void pop_left(Node_t **pp_head) {
-    remove_node(*pp_head);
+void pop_node_left(Node_t **pp_head) {
+    if (*pp_head != NULL) {
+        Node_t * prev = *pp_head;
+        *pp_head = prev->next;
+        remove_node(prev);
+    }
 }
