@@ -32,7 +32,6 @@ int check_sim_preconditions(const char *model, const feature_set_t *p_features,
     } else if (!model_exists(model)) {
         return MODEL_NOT_FOUND;
     }
-    return 0;
     if (p_features == NULL || feature_set_empty(p_features)) {
         return FEATURE_SET_EMPTY;
     }

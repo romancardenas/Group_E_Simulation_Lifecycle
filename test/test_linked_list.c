@@ -11,7 +11,7 @@ void tearDown(void) {
 
 void test_int_list(void) {
     /* First we create an empty list and check that the initial preconditions are met. */
-    Node_t *list = NULL;
+    node_t *list = NULL;
     TEST_ASSERT_FALSE(list_length(&list));
     pop_node(&list);
     pop_node_left(&list);
@@ -39,7 +39,7 @@ void test_int_list(void) {
         TEST_ASSERT_EQUAL(i, *(int *)get_node(&list, i)->data);
     }
     /* Add element at the middle of the list */
-    Node_t *current = get_node(&list, 5);
+    node_t *current = get_node(&list, 5);
     aux = 20;
     create_node(&aux, sizeof(int), current, current->next);
     TEST_ASSERT_EQUAL(11, list_length(&list));

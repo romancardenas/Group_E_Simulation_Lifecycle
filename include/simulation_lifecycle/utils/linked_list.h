@@ -1,13 +1,13 @@
-#ifndef SIMULATION_LIFECYCLE_LINKED_LIST_HPP
-#define SIMULATION_LIFECYCLE_LINKED_LIST_HPP
+#ifndef SIMULATION_LIFECYCLE_LINKED_LIST_H
+#define SIMULATION_LIFECYCLE_LINKED_LIST_H
 
 #include<stdlib.h>
 
-typedef struct Node {
+typedef struct node {
     void  *data;        /**< Pointer to linked list value. It can store any data type. */
-    struct Node *prev;  /**< Pointer to previous element of the linked list. */
-    struct Node *next;  /**< Pointer to next element of the linked list. */
-} Node_t;
+    struct node *prev;  /**< Pointer to previous element of the linked list. */
+    struct node *next;  /**< Pointer to next element of the linked list. */
+} node_t;
 
 /**
  * @brief creates a new list node. NOTE: it allocates memory on the heap.
@@ -17,27 +17,27 @@ typedef struct Node {
  * @param p_next pointer to next list node.
  * @return pointer to new list node.
  */
-Node_t * create_node(void *p_data, size_t data_size, Node_t *p_prev, Node_t *p_next);
+node_t * create_node(void *p_data, size_t data_size, node_t *p_prev, node_t *p_next);
 
 /**
  * @brief Removes list node. NOTE: it frees memory of the heap.
  * @param p_node pointer to list node.
  */
-void remove_node(Node_t *p_node);
+void remove_node(node_t *p_node);
 
 /**
  * @brief Returns the number of elements in the list.
  * @param pp_head pointer to the first element of the list.
  * @return number of elements in the list.
  */
-int list_length(Node_t **pp_head);
+int list_length(node_t **pp_head);
 
 /**
  * @brief Returns pointer to last element of a list.
  * @param pp_head pointer to the list.
  * @return pointer to last element of the list.
  */
-Node_t * get_tail(Node_t **pp_head);
+node_t * get_tail(node_t **pp_head);
 
 /**
  * @brief Returns pointer to nth node of list. If length of list is less than n, then it returns NULL.
@@ -45,7 +45,7 @@ Node_t * get_tail(Node_t **pp_head);
  * @param n item number to be returned.
  * @return pointer to nth node of list.
  */
-Node_t * get_node(Node_t **pp_head, int n);
+node_t * get_node(node_t **pp_head, int n);
 
 /**
  * @brief Adds new element to the end of a list.
@@ -53,7 +53,7 @@ Node_t * get_node(Node_t **pp_head, int n);
  * @param p_data pointer to value to be added to the list.
  * @param data_size size (in bytes) of the data structure to be added to the list.
  */
-void push_node(Node_t **pp_head, void *p_data, size_t data_size);
+void push_node(node_t **pp_head, void *p_data, size_t data_size);
 
 /**
  * @brief Adds new element to the beginning of a list.
@@ -61,18 +61,18 @@ void push_node(Node_t **pp_head, void *p_data, size_t data_size);
  * @param p_data pointer to value to be added to the list.
  * @param data_size size (in bytes) of the data structure to be added to the list.
  */
-void push_node_left(Node_t **pp_head, void *p_data, size_t data_size);
+void push_node_left(node_t **pp_head, void *p_data, size_t data_size);
 
 /**
  * @brief Removes last element of the list.
  * @param pp_head pointer to the list.
  */
-void pop_node(Node_t **pp_head);
+void pop_node(node_t **pp_head);
 
 /**
  * @brief Removes first element of the list.
  * @param pp_head pointer to the list.
  */
-void pop_node_left(Node_t **pp_head);
+void pop_node_left(node_t **pp_head);
 
-#endif //SIMULATION_LIFECYCLE_LINKED_LIST_HPP
+#endif //SIMULATION_LIFECYCLE_LINKED_LIST_H

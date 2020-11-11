@@ -1,6 +1,9 @@
 #ifndef SIMULATION_LIFECYCLE_STRUCTURES_H
 #define SIMULATION_LIFECYCLE_STRUCTURES_H
 
+#include "simulation_lifecycle/utils/linked_list.h"
+#include "cjson/cJSON.h"
+
 typedef struct workflow {
     // TODO
 } workflow_t;
@@ -12,6 +15,11 @@ typedef struct feature_set {
 typedef struct relation_set {
     // TODO
 } relation_set_t;
+
+typedef struct cell_config_set {
+    char *config_name;
+    cJSON *config_params;
+} cell_config_t;
 
 typedef struct viz_options {
     // TODO

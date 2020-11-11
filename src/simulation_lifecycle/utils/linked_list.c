@@ -1,8 +1,8 @@
 #include "simulation_lifecycle/utils/linked_list.h"
 
-Node_t * create_node(void *p_data, size_t data_size, Node_t *p_prev, Node_t *p_next) {
+node_t * create_node(void *p_data, size_t data_size, node_t *p_prev, node_t *p_next) {
     /* Allocate memory for new node */
-    Node_t *node = (Node_t *) malloc(sizeof(Node_t));
+    node_t *node = (node_t *) malloc(sizeof(node_t));
     node->data = malloc(data_size);
     node->prev = p_prev;
     node->next = p_next;
@@ -21,7 +21,7 @@ Node_t * create_node(void *p_data, size_t data_size, Node_t *p_prev, Node_t *p_n
     return node;
 }
 
-void remove_node(Node_t *p_node) {
+void remove_node(node_t *p_node) {
     if (p_node != NULL) {
         /* Resolve next and prev pointers of list elements */
         if (p_node->prev != NULL) {
@@ -36,9 +36,9 @@ void remove_node(Node_t *p_node) {
     }
 }
 
-int list_length(Node_t **pp_head) {
+int list_length(node_t **pp_head) {
     int i = 0;
-    Node_t *current = *pp_head;
+    node_t *current = *pp_head;
     while (current != NULL) {
         i++;
         current = current->next;
@@ -46,8 +46,8 @@ int list_length(Node_t **pp_head) {
     return i;
 }
 
-Node_t * get_node(Node_t **pp_head, int n) {
-    Node_t * current = *pp_head;
+node_t * get_node(node_t **pp_head, int n) {
+    node_t * current = *pp_head;
     int i;
     for (i = 0; i < n && current != NULL; i++) {
         current = current->next;
@@ -55,32 +55,32 @@ Node_t * get_node(Node_t **pp_head, int n) {
     return current;
 }
 
-Node_t * get_tail(Node_t **pp_head) {
-    Node_t * current;
-    for (current = *pp_head; current != NULL && current->next != NULL; current = current->next)
-        ;
+node_t * get_tail(node_t **pp_head) {
+    node_t * current;
+    for (current = *pp_head; current != NULL && current->next != NULL; current = current->next) {
+    };
     return current;
 }
 
-void push_node(Node_t **pp_head, void *p_data, size_t data_size) {
-    Node_t *tail = get_tail(pp_head);
-    Node_t *new = create_node(p_data, data_size, tail, NULL);
+void push_node(node_t **pp_head, void *p_data, size_t data_size) {
+    node_t *tail = get_tail(pp_head);
+    node_t *new = create_node(p_data, data_size, tail, NULL);
     if (tail == NULL) {  /* If tail is null (i.e., list is empty), then list's head is the new node */
         *pp_head = new;
     }
 }
 
-void push_node_left(Node_t **pp_head, void *p_data, size_t data_size) {
+void push_node_left(node_t **pp_head, void *p_data, size_t data_size) {
     *pp_head = create_node(p_data, data_size, NULL, *pp_head);
 }
 
-void pop_node(Node_t **pp_head) {
+void pop_node(node_t **pp_head) {
     remove_node(get_tail(pp_head));
 }
 
-void pop_node_left(Node_t **pp_head) {
+void pop_node_left(node_t **pp_head) {
     if (*pp_head != NULL) {
-        Node_t * prev = *pp_head;
+        node_t * prev = *pp_head;
         *pp_head = prev->next;
         remove_node(prev);
     }
