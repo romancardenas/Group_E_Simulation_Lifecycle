@@ -1,5 +1,5 @@
-#ifndef SIMULATION_LIFECYCLE_SIMULATION_H
-#define SIMULATION_LIFECYCLE_SIMULATION_H
+#ifndef __SIMULATION_LIFECYCLE_SIMULATION_H__
+#define __SIMULATION_LIFECYCLE_SIMULATION_H__
 
 #include "simulation_lifecycle/structures.h"
 
@@ -13,4 +13,4 @@
  */
 int build_simulation_scenario(char *model, feature_set_t *p_features, relation_set_t *p_relations, char *output_path);
 
-#endif //SIMULATION_LIFECYCLE_SIMULATION_H
+#endif //__SIMULATION_LIFECYCLE_SIMULATION_H__
