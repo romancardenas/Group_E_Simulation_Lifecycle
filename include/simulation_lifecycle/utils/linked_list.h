@@ -1,5 +1,5 @@
-#ifndef SIMULATION_LIFECYCLE_LINKED_LIST_H
-#define SIMULATION_LIFECYCLE_LINKED_LIST_H
+#ifndef __SIMULATION_LIFECYCLE_LINKED_LIST_H__
+#define __SIMULATION_LIFECYCLE_LINKED_LIST_H__
 
 #include<stdlib.h>
 
@@ -75,4 +75,4 @@ void pop_node(node_t **pp_head);
  */
 void pop_node_left(node_t **pp_head);
 
-#endif //SIMULATION_LIFECYCLE_LINKED_LIST_H
+#endif //__SIMULATION_LIFECYCLE_LINKED_LIST_H__

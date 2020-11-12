@@ -1,20 +1,27 @@
 #!/bin/bash
-# shellcheck disable=SC2164
+
+# Check that the number of arguments is correct
+if [ "$#" -gt 1 ]
+then
+  echo "Illegal number of parameters"
+  echo "Usage: ./setup.sh [build | b | -b]"
+  exit
+fi
 
 # Download and update all Git submodules
 git submodule update --init --recursive
 
-# install cJSON library
-cd third_party/cJSON
+# compile Cadmium Cell-DEVS models
+cd third_party/CellDEVS_models/tutorial || { echo "Failed to change directory to Cell-DEVS tutorial folder"; exit; }
 mkdir build
-cd build
-cmake .. -Wno-dev -DCMAKE_INSTALL_PREFIX="${PWD}"/..
-make
-make install
-
-# compile Cadmium Cell-DEVS models TODO
-cd ../../CellDEVS_models/tutorial
-mkdir build
-cd build
+cd build || { echo "Failed to change directory to build folder"; exit; }
 cmake ..
 make
+
+# Depending on the first argument, setup.sh may build the project.
+case "$1" in
+  build|b|-b)
+    cd ../../../..
+    bash build.sh
+    ;;
+esac

@@ -1,5 +1,5 @@
-#ifndef SIMULATION_LIFECYCLE_FILE_H
-#define SIMULATION_LIFECYCLE_FILE_H
+#ifndef __SIMULATION_LIFECYCLE_FILE_H__
+#define __SIMULATION_LIFECYCLE_FILE_H__
 
 #include <unistd.h>
 
@@ -20,4 +20,4 @@ static inline int file_exists(const char *file_name) {
  */
 int write_data_to_file(char *filepath, char *data);
 
-#endif //SIMULATION_LIFECYCLE_FILE_H
+#endif //__SIMULATION_LIFECYCLE_FILE_H__
