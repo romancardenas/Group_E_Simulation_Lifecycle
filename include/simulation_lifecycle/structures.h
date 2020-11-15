@@ -2,7 +2,7 @@
 #define __SIMULATION_LIFECYCLE_STRUCTURES_H__
 
 #include "simulation_lifecycle/utils/linked_list.h"
-#include "cjson/cJSON.h"
+#include "cJSON.h"
 
 typedef struct workflow {
     // TODO

@@ -10,7 +10,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
 
 # Include paths
 set(INCLUDE_DIRS ${INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include)
-set(CJSON_INCLUDE ${CJSON_INCLUDE} ${PROJECT_SOURCE_DIR}/third_party/cJSON/include)
+set(CJSON_INCLUDE ${CJSON_INCLUDE} ${PROJECT_SOURCE_DIR}/third_party/cJSON)
 set (UNITY_INCLUDE ${UNITY_INCLUDE} ${PROJECT_SOURCE_DIR}/third_party/Unity/src)
 
 # Assign the include directories

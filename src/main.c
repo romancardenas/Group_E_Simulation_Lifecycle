@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <cjson/cJSON.h>
+#include "cJSON.h"
 #include "simulation_lifecycle/simulation.h"
 
 /**
