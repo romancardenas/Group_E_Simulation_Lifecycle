@@ -25,13 +25,15 @@ int model_exists(const char *model) {
     }
 }
 
-int check_sim_preconditions(const char *model, const feature_set_t *p_features,
-                            const relation_set_t *p_relations, const char *output_path) {
-    if (model == NULL || *model == '\0') {
+int check_sim_preconditions(const cJSON *simulation_config,
+                            const feature_set_t *p_features, const relation_set_t *p_relations) {
+    cJSON *model_name = cJSON_GetObjectItemCaseSensitive(simulation_config, "model_id");
+    if (model_name == NULL) {
         return MODEL_EMPTY;
-    } else if (!model_exists(model)) {
+    } else if (!(cJSON_IsString(model_name) && model_exists(model_name->valuestring))) {
         return MODEL_NOT_FOUND;
     }
+    /*
     if (p_features == NULL || feature_set_empty(p_features)) {
         return FEATURE_SET_EMPTY;
     }
@@ -41,17 +43,18 @@ int check_sim_preconditions(const char *model, const feature_set_t *p_features,
     if (inconsistent_data(p_features, p_relations)) {
         return INCONSISTENT_DATA;
     }
-    if (output_path == NULL || *output_path == '\0') {
+    */
+    cJSON *output_path = cJSON_GetObjectItemCaseSensitive(simulation_config, "output_path");
+    if (output_path == NULL || !cJSON_IsString(output_path) || *output_path->valuestring == '\0') {
         return OUTPUT_PATH_EMPTY;
-    }
-    else if (file_exists(output_path)) {
+    } else if (file_exists(output_path->valuestring)) {
         return OUTPUT_FILE_EXISTS;
     }
     return SUCCESS;
 }
 
-int build_simulation_scenario(char *model, feature_set_t *p_features, relation_set_t *p_relations, char *output_path) {
-    int res = check_sim_preconditions(model, p_features, p_relations, output_path);
+int build_simulation_scenario(cJSON *simulation_config, feature_set_t *p_features, relation_set_t *p_relations) {
+    int res = check_sim_preconditions(simulation_config, p_features, p_relations);
     if (res) {
         return res;
     }
@@ -65,6 +68,6 @@ int build_simulation_scenario(char *model, feature_set_t *p_features, relation_s
     /* Create string from result and remove cJSON structures */
     string = cJSON_Print(root);
     cJSON_Delete(root);
-
-    return write_data_to_file(output_path, string);
+    return 0;
+    // return write_data_to_file(output_path, string);
 }

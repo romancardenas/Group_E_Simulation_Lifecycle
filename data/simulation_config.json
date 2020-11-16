@@ -1,0 +1,29 @@
+{
+  "model_id": "sir",
+  "default_config": {
+    "delay": "inertial",
+    "cell_type": "sir",
+    "state": {
+      "population": 0,
+      "susceptible": 0.99,
+      "infected": 0.01,
+      "recovered": 0
+    },
+    "config": {
+      "virulence": 0.6,
+      "recovery": 0.4
+    },
+    "neighborhood": {}
+  },
+  "mapping": {
+    "cell_id": "id",
+    "state": {
+      "population": "pop"
+    },
+    "vicinity": {
+      "connectivity": "that",
+      "mobility": "this"
+    }
+  },
+  "output_path": "./output.json"
+}
