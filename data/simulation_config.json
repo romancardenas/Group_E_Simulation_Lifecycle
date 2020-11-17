@@ -1,5 +1,5 @@
 {
-  "model_id": "sir",
+  "model_id": 4,
   "default_config": {
     "delay": "inertial",
     "cell_type": "sir",
@@ -25,5 +25,6 @@
       "mobility": "this"
     }
   },
-  "output_path": "./output.json"
+  "config_output_path": "./config_output.json",
+  "result_output_path": "./result_output.json"
 }

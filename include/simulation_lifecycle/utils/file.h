@@ -10,7 +10,7 @@
  * @return 1 if file does not exist.
  */
 static inline int file_exists(const char *file_name) {
-    return access(file_name, F_OK) != -1;
+    return file_name != NULL && access(file_name, F_OK) != -1;
 }
 
 /**
