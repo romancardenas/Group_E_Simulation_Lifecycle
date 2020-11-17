@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <cjson/cJSON.h>
+#include "cJSON.h"
+#include "simulation_lifecycle/utils/file.h"
 #include "simulation_lifecycle/simulation.h"
+#include "simulation_lifecycle/error.h"
+#include "simulation_lifecycle/utils/geometry.h"
 
 /**
  * Simulation Lifecycle: main function. So far, it i just a simple hello world.
@@ -15,20 +18,27 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    FILE *f = fopen(argv[1], "rb");
-    fseek(f, 0, SEEK_END);
-    long fsize = ftell(f);
-    fseek(f, 0, SEEK_SET);  /* same as rewind(f); */
+    feature_set_t * fs = NULL;
 
-    char *string = malloc(fsize + 1);
-    fread(string, 1, fsize, f);
-    fclose(f);
-    string[fsize] = '\0';
+    int res = read_geojson_file(argv[1], &fs);
 
-    cJSON *json = cJSON_Parse(string);
-    if (json == NULL) {
-        exit(1);
+    if (res != SUCCESS) {
+        exit(res);
     }
+
+    node_t * current = fs->features;
+
+    while (current != NULL) {
+        feature_t * f = (feature_t *)current->data;
+
+        cJSON * first = get_first(f);
+
+        node_t * ring = get_exterior_ring(first);
+
+        current = current->next;
+    }
+
     build_simulation_scenario("sir", NULL, NULL, "output.json");
-    return json == NULL;
+
+    return SUCCESS;
 }

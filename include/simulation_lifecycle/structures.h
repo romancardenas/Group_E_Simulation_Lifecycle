@@ -2,14 +2,27 @@
 #define __SIMULATION_LIFECYCLE_STRUCTURES_H__
 
 #include "simulation_lifecycle/utils/linked_list.h"
-#include "cjson/cJSON.h"
+#include "cJSON.h"
 
 typedef struct workflow {
     // TODO
 } workflow_t;
 
+typedef struct point {
+    double lat;
+    double lon;
+} point_t;
+
+typedef struct feature {
+    char * type;
+    cJSON * properties;
+    cJSON * coordinates;
+} feature_t;
+
 typedef struct feature_set {
-    // TODO
+    char * name;
+    int n;
+    node_t * features;
 } feature_set_t;
 
 typedef struct relation_set {
