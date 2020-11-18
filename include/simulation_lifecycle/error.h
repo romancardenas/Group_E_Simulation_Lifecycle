@@ -27,6 +27,17 @@
 /* output path issues 330-339 */
 #define OUTPUT_PATH_EMPTY 330
 #define OUTPUT_FILE_EXISTS 331
+/* input path issues 340-349 */
+#define INPUT_PATH_EMPTY 340
+#define INPUT_PATH_FOLDER_ERROR 341
+/* convert results issues 350-359 */
+#define FILE_FORMAT_INCORRECT 350
+#define CONVERSION_FAILED 351
+#define CONVERSION_PATH_FILES_INCORRECT 352
+
+
+
+
 /** VISUALIZATION ERRORS 400-499 */
 // TODO
 

@@ -1,0 +1,11 @@
+{
+    "scenario": {
+        "default_cell_type": "CO2_model",
+        "shape": [38, 57, 1],
+        "default_state": {
+            "out": 0,
+            "out_ty": 0,
+            "out_c": 0
+        }
+    }
+}
