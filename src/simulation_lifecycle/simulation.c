@@ -8,6 +8,7 @@
 #define MODEL_DEFAULT "default"
 
 #define SIM_MODEL_ID "model_id"
+#define SIM_MODEL_DEFAULT_CONFIG "default_config"
 #define SIM_CONFIG_OUTPUT_PATH "config_output_path"
 #define SIM_RESULT_OUTPUT_PATH "result_output_path"
 
@@ -59,8 +60,12 @@ int parse_default_sim_config(const cJSON *simulation_config, cJSON *target) {
         return SIM_MODEL_NOT_FOUND;
     }
     /* 3. Parse default configuration of the model. Parsing functions may detect an error and return an error code */
-    int res = parse_common_default_fields(simulation_config, target);
-    return (res) ? res : p_parser(simulation_config, target);
+    cJSON *default_config = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_DEFAULT_CONFIG);
+    if (default_config == NULL || !cJSON_IsObject(default_config)) {
+        return SIM_MODEL_INVALID;
+    }
+    int res = parse_common_default_fields(default_config, target);
+    return (res) ? res : p_parser(default_config, target);
 }
 
 int write_sim_config(const cJSON *simulation_config, char *config_json) {

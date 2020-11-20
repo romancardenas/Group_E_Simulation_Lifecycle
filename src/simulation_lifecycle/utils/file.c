@@ -50,7 +50,7 @@ int copy_json_values(cJSON_bool (*value_type_checker)(const cJSON *), const cJSO
             res = JSON_VALUE_INVALID;
             break;
         }
-        cJSON_AddItemToObject(to, var, val);
+        cJSON_AddItemToObject(to, var, cJSON_Parse(cJSON_Print(val)));
     }
 
     va_end(args);

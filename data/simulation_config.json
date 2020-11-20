@@ -1,5 +1,5 @@
 {
-  "model_id": "co2",
+  "model_id": "sir",
   "default_config": {
     "delay": "inertial",
     "state": {

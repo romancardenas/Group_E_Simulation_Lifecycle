@@ -71,7 +71,7 @@ int parse_default_sir_model(const cJSON *from, cJSON *target) {
                                                             MODEL_SIRX_VIRULENCE, MODEL_SIRX_RECOVERY, NULL)) {
         return SIM_MODEL_CONFIG_INVALID;
     }
-    cJSON_AddItemToObject(target, MODEL_CELL_CONFIG, default_state);
+    cJSON_AddItemToObject(target, MODEL_CELL_CONFIG, default_config);
 
     return SUCCESS;
 }

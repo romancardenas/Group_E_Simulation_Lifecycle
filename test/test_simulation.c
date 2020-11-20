@@ -12,7 +12,7 @@ void tearDown(void) {
 }
 
 void test_simulation(void) {
-    char file_path[] = "../data/simulation_config.json";
+    char file_path[] = "../../data/simulation_config.json";
     cJSON *json = NULL;
     read_json_file(file_path, &json);
     int res = build_simulation_scenario(json, NULL, NULL);
