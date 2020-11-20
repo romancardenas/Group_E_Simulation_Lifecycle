@@ -4,11 +4,9 @@
 #include "simulation_lifecycle/utils/file.h"
 #include "simulation_lifecycle/structures.h"
 #include "simulation_lifecycle/simulation.h"
+#include "simulation_lifecycle/models.h"
 
-#define MODEL_SIR "sir"
-#define MODEL_SIRS "sirs"
-#define MODEL_SIRD "sird"
-#define MODEL_SIRDS "sirds"
+#define MODEL_DEFAULT "default"
 
 #define SIM_MODEL_ID "model_id"
 #define SIM_CONFIG_OUTPUT_PATH "config_output_path"
@@ -23,13 +21,6 @@
 int load_default_sim_config(const cJSON *simulation_config, cJSON *target);
 
 /**
- * @brief returns pointer to a default configuration parser function.
- * @param[in] model_id string containing the Cell-DEVS model ID.
- * @return pointer to a default configuration function. If model ID couldn't be identified, it returns a NULL pointer.
- */
-int (*get_model_default_config_parser(char *model_id))(const cJSON *, cJSON *);
-
-/**
  * @brief
  * @param[in] simulation_config cJSON structure containing the simulation configuration defined by the user.
  * @param[in] config_json string containing the content of the resulting simulation configuration file.
@@ -38,19 +29,24 @@ int (*get_model_default_config_parser(char *model_id))(const cJSON *, cJSON *);
 int write_sim_config(const cJSON *simulation_config, char *config_json);
 
 /* TODO */
-int parse_default_sir_model(const cJSON *default_config, cJSON *target);
-int parse_default_sirs_model(const cJSON *default_config, cJSON *target);
-int parse_default_sird_model(const cJSON *default_config, cJSON *target);
-int parse_default_sirds_model(const cJSON *default_config, cJSON *target);
 
 
 int build_simulation_scenario(cJSON *simulation_config, feature_set_t *p_features, relation_set_t *p_relations) {
     if (simulation_config == NULL) {
         return SIM_CONFIG_EMPTY;
     }
-
+    int res = SUCCESS;
     cJSON *root = cJSON_CreateObject();
-    int res = load_default_sim_config(simulation_config, root);
+
+    cJSON *default_config = cJSON_CreateObject();
+
+    if ((res = parse_common_default_fields(simulation_config, default_config))) {
+        return res;
+    }
+    if ((res = load_default_sim_config(simulation_config, default_config))) {
+        return res;
+    }
+    cJSON_AddItemToObject(root, MODEL_DEFAULT, default_config);
 
     /* TODO feature set etc. */
 
@@ -73,22 +69,9 @@ int load_default_sim_config(const cJSON *simulation_config, cJSON *target) {
     if (p_parser == NULL) {
         return SIM_MODEL_NOT_FOUND;
     }
-    /* 3. Parse default configuration of the model. The parsing function is in charge of determining the error code */
-    return p_parser(simulation_config, target);
-}
-
-int (*get_model_default_config_parser(char *model_id))(const cJSON *, cJSON *) {
-    if (strcmp(MODEL_SIR, model_id) == 0) {
-        return parse_default_sir_model;
-    } else if (strcmp(MODEL_SIRS, model_id) == 0) {
-        return parse_default_sirs_model;
-    } else if (strcmp(MODEL_SIRD, model_id) == 0) {
-        return parse_default_sird_model;
-    } else if (strcmp(MODEL_SIRDS, model_id) == 0) {
-        return parse_default_sirds_model;
-    } else {
-        return NULL;
-    }
+    /* 3. Parse default configuration of the model. Parsing functions may detect an error and return an error code */
+    int res = parse_common_default_fields(simulation_config, target);
+    return (res) ? res : p_parser(simulation_config, target);
 }
 
 int write_sim_config(const cJSON *simulation_config, char *config_json) {
