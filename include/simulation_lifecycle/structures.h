@@ -13,16 +13,8 @@ typedef struct point {
     double lon;
 } point_t;
 
-typedef struct feature {
-    char * type;
-    cJSON * properties;
-    cJSON * coordinates;
-} feature_t;
-
 typedef struct feature_set {
-    char * name;
-    int n;
-    node_t * features;
+    // TODO
 } feature_set_t;
 
 typedef struct relation_set {

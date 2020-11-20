@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/utils/file.h"
-#include "simulation_lifecycle/utils/json.h"
 
 int write_data_to_file(char * file_path, char *data) {
     FILE *f_out;
@@ -63,22 +62,6 @@ int read_json_file(char * path_to_file, cJSON ** pp_data) {
 
     if (*pp_data == NULL) {
         res = JSON_UNABLE_TO_PARSE;
-    }
-
-    return res;
-}
-
-int read_geojson_file(char * path_to_file, feature_set_t ** pp_data) {
-    cJSON * json = NULL;
-
-    int res = read_json_file(path_to_file, &json);
-
-    if (res == SUCCESS) {
-        *pp_data = feature_set_from_json(json);
-    }
-
-    if (*pp_data == NULL) {
-        res = GEOJSON_UNABLE_TO_PARSE;
     }
 
     return res;
