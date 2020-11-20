@@ -28,4 +28,14 @@ int write_data_to_file(char *filepath, char *data);
  */
 void read_json_file(char *file_path, cJSON **pp_target);
 
+/**
+ * @brief copy a set of values from one cJSON structure to another
+ * @param value_type_checker function to check that value is of the expected type.
+ * @param from cJSON structure that contains the values to be copied.
+ * @param to cJSON structure that will contain the copied values.
+ * @param ... strings with the identifier of the values to be copied. It must end with a guardian NULL pointer.
+ * @return 0 if everything went OK. Otherwise, it returns an error code.
+ */
+int copy_json_values(cJSON_bool (*value_type_checker)(const cJSON * const), const cJSON * from, cJSON * to, ...);
+
 #endif //__SIMULATION_LIFECYCLE_FILE_H__

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include "cJSON.h"
 #include "simulation_lifecycle/error.h"
@@ -35,4 +36,23 @@ void read_json_file(char *file_path, cJSON **p_target) {
 
     *p_target = cJSON_Parse(string);
     free(string);
+}
+
+int copy_json_values(cJSON_bool (*value_type_checker)(const cJSON *), const cJSON *from, cJSON *to, ...) {
+    char *var = NULL;
+    int res = SUCCESS;
+
+    va_list args;
+    va_start(args, to);
+    while((var = va_arg(args, char *)) != NULL) {
+        cJSON *val = cJSON_GetObjectItemCaseSensitive(from, var);
+        if (val == NULL || !value_type_checker(val)) {
+            res = JSON_VALUE_INVALID;
+            break;
+        }
+        cJSON_AddItemToObject(to, var, val);
+    }
+
+    va_end(args);
+    return res;
 }

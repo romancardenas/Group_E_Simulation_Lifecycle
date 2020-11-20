@@ -18,11 +18,4 @@ int parse_common_default_fields(const cJSON *default_config, cJSON *target);
  */
 int (*get_model_default_config_parser(char *model_id))(const cJSON *, cJSON *);
 
-/** FUNCTIONS FOR PARSING DEFAULT CONFIGURATION OF MODELS **/
-
-int parse_default_sir_model(const cJSON *default_config, cJSON *target);
-int parse_default_sirs_model(const cJSON *default_config, cJSON *target);
-int parse_default_sird_model(const cJSON *default_config, cJSON *target);
-int parse_default_sirds_model(const cJSON *default_config, cJSON *target);
-
 #endif //__SIMULATION_LIFECYCLE_MODELS_H__

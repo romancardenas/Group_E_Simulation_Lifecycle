@@ -1,4 +1,3 @@
-#include <string.h>
 #include "cJSON.h"
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/utils/file.h"
@@ -18,32 +17,24 @@
  * @param[out] target cJSON object that will hold the default simulation configuration.
  * @return 0 if the function ran successfully. Otherwise, it returns an error code.
  */
-int load_default_sim_config(const cJSON *simulation_config, cJSON *target);
+int parse_default_sim_config(const cJSON *simulation_config, cJSON *target);
 
 /**
- * @brief
+ * @brief writes JSON configuration to the desired output path.
  * @param[in] simulation_config cJSON structure containing the simulation configuration defined by the user.
  * @param[in] config_json string containing the content of the resulting simulation configuration file.
  * @return 0 if the function ran successfully. Otherwise, it returns an error code.
  */
 int write_sim_config(const cJSON *simulation_config, char *config_json);
 
-/* TODO */
-
-
 int build_simulation_scenario(cJSON *simulation_config, feature_set_t *p_features, relation_set_t *p_relations) {
     if (simulation_config == NULL) {
         return SIM_CONFIG_EMPTY;
     }
-    int res = SUCCESS;
     cJSON *root = cJSON_CreateObject();
-
     cJSON *default_config = cJSON_CreateObject();
-
-    if ((res = parse_common_default_fields(simulation_config, default_config))) {
-        return res;
-    }
-    if ((res = load_default_sim_config(simulation_config, default_config))) {
+    int res = parse_default_sim_config(simulation_config, default_config);
+    if (res) {
         return res;
     }
     cJSON_AddItemToObject(root, MODEL_DEFAULT, default_config);
@@ -56,16 +47,14 @@ int build_simulation_scenario(cJSON *simulation_config, feature_set_t *p_feature
     return write_sim_config(simulation_config, string);
 }
 
-int load_default_sim_config(const cJSON *simulation_config, cJSON *target) {
+int parse_default_sim_config(const cJSON *simulation_config, cJSON *target) {
     /* 1. Check that model ID is provided using a valid format */
     cJSON *model = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_ID);
-    if (model == NULL) {
-        return SIM_MODEL_EMPTY;
-    } else if (!cJSON_IsString(model) || model->valuestring == NULL) {
+    if (model == NULL || !cJSON_IsString(model)) {
         return SIM_MODEL_INVALID;
     }
     /* 2. Check that the model exists and get the corresponding default configuration parser */
-    int (*p_parser)(const cJSON *, cJSON *) = get_model_default_config_parser(model->valuestring);
+    int (*p_parser)(const cJSON *, cJSON *) = get_model_default_config_parser(cJSON_GetStringValue(model));
     if (p_parser == NULL) {
         return SIM_MODEL_NOT_FOUND;
     }
@@ -76,12 +65,10 @@ int load_default_sim_config(const cJSON *simulation_config, cJSON *target) {
 
 int write_sim_config(const cJSON *simulation_config, char *config_json) {
     cJSON *config_output_path = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_CONFIG_OUTPUT_PATH);
-    if (config_output_path == NULL) {
-        return SIM_CONFIG_OUTPUT_PATH_EMPTY;
-    } else if (!cJSON_IsString(config_output_path) || config_output_path->valuestring == NULL) {
+    if (config_output_path == NULL || !cJSON_IsString(config_output_path)) {
         return SIM_CONFIG_OUTPUT_PATH_INVALID;
     } else if (config_json == NULL) {
         return SIM_CONFIG_EMPTY;
     }
-    return write_data_to_file(config_output_path->valuestring, config_json);
+    return write_data_to_file(cJSON_GetStringValue(config_output_path), config_json);
 }

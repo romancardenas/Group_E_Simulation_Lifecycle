@@ -1,5 +1,6 @@
 #include <string.h>
 #include "cJSON.h"
+#include "simulation_lifecycle/utils/file.h"
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/models.h"
 
@@ -32,14 +33,14 @@
 int parse_common_default_fields(const cJSON *default_config, cJSON *target) {
     /* 1. Detect output delay buffer type */
     cJSON *delay = cJSON_GetObjectItemCaseSensitive(default_config, MODEL_CELL_DELAY);
-    if (delay == NULL || !cJSON_IsString(delay) || delay->valuestring == NULL) {
-        return SIM_MODEL_DEFAULT_CONFIG_INVALID;
+    if (delay == NULL || !cJSON_IsString(delay)) {
+        return SIM_MODEL_CONFIG_INVALID;
     }
     char *delay_buffer = delay->valuestring;
     if (strcmp(delay_buffer, DELAY_BUFFER_TRANSPORT) != 0) {
         if (strcmp(delay_buffer, DELAY_BUFFER_INERTIAL) != 0) {
             if (strcmp(delay_buffer, DELAY_BUFFER_HYBRID) != 0) {
-                return SIM_MODEL_DEFAULT_CONFIG_INVALID;
+                return SIM_MODEL_CONFIG_INVALID;
             }
         }
     }
@@ -50,21 +51,108 @@ int parse_common_default_fields(const cJSON *default_config, cJSON *target) {
     return SUCCESS;
 }
 
-int copy_json_number(const cJSON *from, cJSON *to, char *label) {
-    cJSON *val = cJSON_GetObjectItemCaseSensitive(from, label);
-    if (val == NULL || !cJSON_IsNumber(val)) {
-        return SIM_MODEL_DEFAULT_CONFIG_INVALID;  // TODO
+int parse_default_sir_model(const cJSON *from, cJSON *target) {
+    cJSON_AddStringToObject(target, MODEL_CELL_TYPE, "sir");
+
+    /* 1. Copy state parameters (checking that all the required parameters are there) */
+    cJSON *default_state = cJSON_CreateObject();
+    cJSON *s = cJSON_GetObjectItemCaseSensitive(from, MODEL_CELL_STATE);
+    if (s == NULL || !cJSON_IsObject(s) || copy_json_values(cJSON_IsNumber, s, default_state,
+                                                            MODEL_SIRX_POPULATION, MODEL_SIRX_SUSCEPTIBLE,
+                                                            MODEL_SIRX_INFECTED, MODEL_SIRX_RECOVERED, NULL)) {
+        return SIM_MODEL_CONFIG_INVALID;
     }
-    cJSON_AddNumberToObject(to, label, cJSON_GetNumberValue(val));
+    cJSON_AddItemToObject(target, MODEL_CELL_STATE, default_state);
+
+    /* 2. Copy configuration parameters (checking that all the required parameters are there) */
+    cJSON *default_config = cJSON_CreateObject();
+    cJSON *c = cJSON_GetObjectItemCaseSensitive(from, MODEL_CELL_CONFIG);
+    if (c == NULL || !cJSON_IsObject(c) || copy_json_values(cJSON_IsNumber, c, default_config,
+                                                            MODEL_SIRX_VIRULENCE, MODEL_SIRX_RECOVERY, NULL)) {
+        return SIM_MODEL_CONFIG_INVALID;
+    }
+    cJSON_AddItemToObject(target, MODEL_CELL_CONFIG, default_state);
+
     return SUCCESS;
 }
 
-int copy_json_string(const cJSON *from, cJSON *to, char *label) {
-    cJSON *val = cJSON_GetObjectItemCaseSensitive(from, label);
-    if (val == NULL || !cJSON_IsString(val)) {
-        return SIM_MODEL_DEFAULT_CONFIG_INVALID;  // TODO
+int parse_default_sirs_model(const cJSON *from, cJSON *target) {
+    cJSON_AddStringToObject(target, MODEL_CELL_TYPE, "sirs");
+
+    /* 1. Copy state parameters (checking that all the required parameters are there) */
+    cJSON *default_state = cJSON_CreateObject();
+    cJSON *s = cJSON_GetObjectItemCaseSensitive(from, MODEL_CELL_STATE);
+    if (s == NULL || !cJSON_IsObject(s) || copy_json_values(cJSON_IsNumber, s, default_state,
+                                                            MODEL_SIRX_POPULATION, MODEL_SIRX_SUSCEPTIBLE,
+                                                            MODEL_SIRX_INFECTED, MODEL_SIRX_RECOVERED, NULL)) {
+        return SIM_MODEL_CONFIG_INVALID;
     }
-    cJSON_AddStringToObject(to, label, cJSON_GetStringValue(val));
+    cJSON_AddItemToObject(target, MODEL_CELL_STATE, default_state);
+
+    /* 2. Copy configuration parameters (checking that all the required parameters are there) */
+    cJSON *default_config = cJSON_CreateObject();
+    cJSON *c = cJSON_GetObjectItemCaseSensitive(from, MODEL_CELL_CONFIG);
+    if (c == NULL || !cJSON_IsObject(c) || copy_json_values(cJSON_IsNumber, c, default_config,
+                                                            MODEL_SIRX_VIRULENCE, MODEL_SIRX_RECOVERY,
+                                                            MODEL_SIRX_IMMUNITY, NULL)) {
+        return SIM_MODEL_CONFIG_INVALID;
+    }
+    cJSON_AddItemToObject(target, MODEL_CELL_CONFIG, default_state);
+
+    return SUCCESS;
+}
+
+int parse_default_sird_model(const cJSON *from, cJSON *target) {
+    cJSON_AddStringToObject(target, MODEL_CELL_TYPE, "sird");
+
+    /* 1. Copy state parameters (checking that all the required parameters are there) */
+    cJSON *default_state = cJSON_CreateObject();
+    cJSON *s = cJSON_GetObjectItemCaseSensitive(from, MODEL_CELL_STATE);
+    if (s == NULL || !cJSON_IsObject(s) || copy_json_values(cJSON_IsNumber, s, default_state,
+                                                            MODEL_SIRX_POPULATION, MODEL_SIRX_SUSCEPTIBLE,
+                                                            MODEL_SIRX_INFECTED, MODEL_SIRX_RECOVERED,
+                                                            MODEL_SIRX_DECEASED, NULL)) {
+        return SIM_MODEL_CONFIG_INVALID;
+    }
+    cJSON_AddItemToObject(target, MODEL_CELL_STATE, default_state);
+
+    /* 2. Copy configuration parameters (checking that all the required parameters are there) */
+    cJSON *default_config = cJSON_CreateObject();
+    cJSON *c = cJSON_GetObjectItemCaseSensitive(from, MODEL_CELL_CONFIG);
+    if (c == NULL || !cJSON_IsObject(c) || copy_json_values(cJSON_IsNumber, c, default_config,
+                                                            MODEL_SIRX_VIRULENCE, MODEL_SIRX_RECOVERY,
+                                                            MODEL_SIRX_FATALITY, NULL)) {
+        return SIM_MODEL_CONFIG_INVALID;
+    }
+    cJSON_AddItemToObject(target, MODEL_CELL_CONFIG, default_state);
+
+    return SUCCESS;
+}
+
+int parse_default_sirds_model(const cJSON *from, cJSON *target) {
+    cJSON_AddStringToObject(target, MODEL_CELL_TYPE, "sirds");
+
+    /* 1. Copy state parameters (checking that all the required parameters are there) */
+    cJSON *default_state = cJSON_CreateObject();
+    cJSON *s = cJSON_GetObjectItemCaseSensitive(from, MODEL_CELL_STATE);
+    if (s == NULL || !cJSON_IsObject(s) || copy_json_values(cJSON_IsNumber, s, default_state,
+                                                            MODEL_SIRX_POPULATION, MODEL_SIRX_SUSCEPTIBLE,
+                                                            MODEL_SIRX_INFECTED, MODEL_SIRX_RECOVERED,
+                                                            MODEL_SIRX_DECEASED, NULL)) {
+        return SIM_MODEL_CONFIG_INVALID;
+    }
+    cJSON_AddItemToObject(target, MODEL_CELL_STATE, default_state);
+
+    /* 2. Copy configuration parameters (checking that all the required parameters are there) */
+    cJSON *default_config = cJSON_CreateObject();
+    cJSON *c = cJSON_GetObjectItemCaseSensitive(from, MODEL_CELL_CONFIG);
+    if (c == NULL || !cJSON_IsObject(c) || copy_json_values(cJSON_IsNumber, c, default_config,
+                                                            MODEL_SIRX_VIRULENCE, MODEL_SIRX_RECOVERY,
+                                                            MODEL_SIRX_FATALITY, MODEL_SIRX_IMMUNITY, NULL)) {
+        return SIM_MODEL_CONFIG_INVALID;
+    }
+    cJSON_AddItemToObject(target, MODEL_CELL_CONFIG, default_state);
+
     return SUCCESS;
 }
 
@@ -77,54 +165,6 @@ int (*get_model_default_config_parser(char *model_id))(const cJSON *, cJSON *) {
         return parse_default_sird_model;
     } else if (strcmp(MODEL_SIRDS, model_id) == 0) {
         return parse_default_sirds_model;
-    } else {
-        return NULL;
     }
-}
-
-int parse_default_sir_model(const cJSON *from, cJSON *target) {
-    cJSON_AddStringToObject(target, MODEL_CELL_TYPE, "sir");
-
-    cJSON *default_state = cJSON_CreateObject();
-    cJSON *s = cJSON_GetObjectItemCaseSensitive(from, MODEL_CELL_STATE);
-    if (s == NULL || !cJSON_IsObject(s)) {
-        return SIM_MODEL_DEFAULT_CONFIG_INVALID;
-    }
-    int res = copy_json_number(s, default_state, MODEL_SIRX_POPULATION);
-    res += copy_json_number(s, default_state, MODEL_SIRX_SUSCEPTIBLE);
-    res += copy_json_number(s, default_state, MODEL_SIRX_INFECTED);
-    res += copy_json_number(s, default_state, MODEL_SIRX_RECOVERED);
-    if (res) {
-        return SIM_MODEL_DEFAULT_CONFIG_INVALID;
-    }
-    cJSON_AddItemToObject(target, MODEL_CELL_STATE, default_state);
-
-    cJSON *default_config = cJSON_CreateObject();
-    cJSON *c = cJSON_GetObjectItemCaseSensitive(from, MODEL_CELL_CONFIG);
-    res += copy_json_number(c, default_config, MODEL_SIRX_VIRULENCE);
-    res += copy_json_number(c, default_config, MODEL_SIRX_RECOVERY);
-    if (res) {
-        return SIM_MODEL_DEFAULT_CONFIG_INVALID;
-    }
-    cJSON_AddItemToObject(target, MODEL_CELL_CONFIG, default_state);
-    
-    return SUCCESS;
-}
-
-int parse_default_sirs_model(const cJSON *default_config, cJSON *target) {
-    cJSON_AddStringToObject(target, MODEL_CELL_TYPE, "sirs");
-
-    return SUCCESS;
-}
-
-int parse_default_sird_model(const cJSON *default_config, cJSON *target) {
-    cJSON_AddStringToObject(target, MODEL_CELL_TYPE, "sird");
-
-    return SUCCESS;
-}
-
-int parse_default_sirds_model(const cJSON *default_config, cJSON *target) {
-    cJSON_AddStringToObject(target, MODEL_CELL_TYPE, "sirds");
-
-    return SUCCESS;
+    return NULL;
 }

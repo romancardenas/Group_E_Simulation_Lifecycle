@@ -1,8 +1,7 @@
 {
-  "model_id": 4,
+  "model_id": "co2",
   "default_config": {
     "delay": "inertial",
-    "cell_type": "sir",
     "state": {
       "population": 0,
       "susceptible": 0.99,
