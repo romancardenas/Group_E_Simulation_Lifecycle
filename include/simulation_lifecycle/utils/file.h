@@ -37,12 +37,4 @@ int read_file(char * path_to_file, char ** pp_data);
  */
 int read_json_file(char * path_to_file, cJSON ** pp_data);
 
-/**
- * @brief reads a geojson file as a feature_set_t struct.
- * @param path_to_file path to input geojson file.
- * @param pp_data a pointer to a feature_set_t struct that will contain the content of the input file.
- * @return 0 if the file is successfully read. Otherwise, it returns an error code (see error.h)
- */
-int read_geojson_file(char * path_to_file, feature_set_t ** pp_data);
-
 #endif //__SIMULATION_LIFECYCLE_FILE_H__

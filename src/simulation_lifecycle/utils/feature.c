@@ -5,7 +5,6 @@
 #include "simulation_lifecycle/structures.h"
 
 cJSON * geojson_get_features(cJSON * geo_json) {
-    // Whenever you retrieve an array, you have to access child to be able to loop through it with ->next
     return  cJSON_GetObjectItem(geo_json, "features");
 }
 
@@ -64,8 +63,10 @@ char * feature_get_geometry_type(cJSON * feature_json) {
     return (type == NULL) ? NULL : cJSON_GetStringValue(type);
 }
 
-cJSON * feature_get_first_geometry_in_multi(cJSON * feature_json) {
+cJSON * feature_get_first_geometry_coordinates_in_multi(cJSON * feature_json) {
     char * type = feature_get_geometry_type(feature_json);
+
+    if (type == NULL) return NULL;
 
     if (strcmp(type, "MultiPoint") != 0 && strcmp(type, "MultiPolygon") != 0 && strcmp(type, "MultiLine") != 0) {
         return NULL;
@@ -77,7 +78,6 @@ cJSON * feature_get_first_geometry_in_multi(cJSON * feature_json) {
 
     if (cJSON_GetArraySize(coordinates) == 0) return NULL;
 
-    // Not sure about the child part
     return cJSON_GetArrayItem(coordinates, 0);
 }
 
@@ -85,12 +85,14 @@ cJSON * feature_get_exterior_ring(cJSON * feature_json) {
     char * type = feature_get_geometry_type(feature_json);
     cJSON * polygon = NULL;
 
+    if (type == NULL) return NULL;
+
     if (strcmp(type, "MultiPolygon") == 0) {
-        polygon = feature_get_first_geometry_in_multi(feature_json);
+        polygon = feature_get_first_geometry_coordinates_in_multi(feature_json);
     }
 
     else if (strcmp(type, "Polygon") == 0) {
-        polygon = feature_json;
+        polygon = feature_get_geometry_coordinates(feature_json);
     }
 
     if (polygon == NULL) return NULL;
@@ -102,8 +104,14 @@ cJSON * feature_get_exterior_ring(cJSON * feature_json) {
 point_t * json_to_point(cJSON * json) {
     point_t * v = malloc(sizeof(point_t));
 
-    v->lon = cJSON_GetArrayItem(json, 0)->valuedouble;
-    v->lat = cJSON_GetArrayItem(json, 1)->valuedouble;
+    cJSON * lon = cJSON_GetArrayItem(json, 0);
+    cJSON * lat = cJSON_GetArrayItem(json, 1);
+
+    if (lat == NULL) return NULL;
+    if (lon == NULL) return NULL;
+
+    v->lon = lon->valuedouble;
+    v->lat = lat->valuedouble;
 
     return v;
 }
@@ -115,6 +123,9 @@ node_t * json_ring_to_points(cJSON * json) {
         cJSON * current = cJSON_GetArrayItem(json, i);
 
         point_t * point = json_to_point(current);
+
+        // TODO: Should free complete list, but app exits anyway, is it necessary?
+        if (point == NULL) return NULL;
 
         push_node(&ring, point, sizeof(point_t));
     }
