@@ -34,13 +34,13 @@ int parse_common_default_fields(const cJSON *default_config, cJSON *target) {
     /* 1. Detect output delay buffer type */
     cJSON *delay = cJSON_GetObjectItemCaseSensitive(default_config, MODEL_CELL_DELAY);
     if (delay == NULL || !cJSON_IsString(delay)) {
-        return SIM_MODEL_CONFIG_INVALID;
+        return SIM_MODEL_COMMON_CONFIG_INVALID;
     }
     char *delay_buffer = delay->valuestring;
     if (strcmp(delay_buffer, DELAY_BUFFER_TRANSPORT) != 0) {
         if (strcmp(delay_buffer, DELAY_BUFFER_INERTIAL) != 0) {
             if (strcmp(delay_buffer, DELAY_BUFFER_HYBRID) != 0) {
-                return SIM_MODEL_CONFIG_INVALID;
+                return SIM_MODEL_COMMON_CONFIG_INVALID;
             }
         }
     }
@@ -60,7 +60,7 @@ int parse_default_sir_model(const cJSON *from, cJSON *target) {
     if (s == NULL || !cJSON_IsObject(s) || copy_json_values(cJSON_IsNumber, s, default_state,
                                                             MODEL_SIRX_POPULATION, MODEL_SIRX_SUSCEPTIBLE,
                                                             MODEL_SIRX_INFECTED, MODEL_SIRX_RECOVERED, NULL)) {
-        return SIM_MODEL_CONFIG_INVALID;
+        return SIM_MODEL_SPECIFIC_CONFIG_INVALID;
     }
     cJSON_AddItemToObject(target, MODEL_CELL_STATE, default_state);
 
@@ -69,7 +69,7 @@ int parse_default_sir_model(const cJSON *from, cJSON *target) {
     cJSON *c = cJSON_GetObjectItemCaseSensitive(from, MODEL_CELL_CONFIG);
     if (c == NULL || !cJSON_IsObject(c) || copy_json_values(cJSON_IsNumber, c, default_config,
                                                             MODEL_SIRX_VIRULENCE, MODEL_SIRX_RECOVERY, NULL)) {
-        return SIM_MODEL_CONFIG_INVALID;
+        return SIM_MODEL_SPECIFIC_CONFIG_INVALID;
     }
     cJSON_AddItemToObject(target, MODEL_CELL_CONFIG, default_config);
 
@@ -85,7 +85,7 @@ int parse_default_sirs_model(const cJSON *from, cJSON *target) {
     if (s == NULL || !cJSON_IsObject(s) || copy_json_values(cJSON_IsNumber, s, default_state,
                                                             MODEL_SIRX_POPULATION, MODEL_SIRX_SUSCEPTIBLE,
                                                             MODEL_SIRX_INFECTED, MODEL_SIRX_RECOVERED, NULL)) {
-        return SIM_MODEL_CONFIG_INVALID;
+        return SIM_MODEL_SPECIFIC_CONFIG_INVALID;
     }
     cJSON_AddItemToObject(target, MODEL_CELL_STATE, default_state);
 
@@ -95,7 +95,7 @@ int parse_default_sirs_model(const cJSON *from, cJSON *target) {
     if (c == NULL || !cJSON_IsObject(c) || copy_json_values(cJSON_IsNumber, c, default_config,
                                                             MODEL_SIRX_VIRULENCE, MODEL_SIRX_RECOVERY,
                                                             MODEL_SIRX_IMMUNITY, NULL)) {
-        return SIM_MODEL_CONFIG_INVALID;
+        return SIM_MODEL_SPECIFIC_CONFIG_INVALID;
     }
     cJSON_AddItemToObject(target, MODEL_CELL_CONFIG, default_state);
 
@@ -112,7 +112,7 @@ int parse_default_sird_model(const cJSON *from, cJSON *target) {
                                                             MODEL_SIRX_POPULATION, MODEL_SIRX_SUSCEPTIBLE,
                                                             MODEL_SIRX_INFECTED, MODEL_SIRX_RECOVERED,
                                                             MODEL_SIRX_DECEASED, NULL)) {
-        return SIM_MODEL_CONFIG_INVALID;
+        return SIM_MODEL_SPECIFIC_CONFIG_INVALID;
     }
     cJSON_AddItemToObject(target, MODEL_CELL_STATE, default_state);
 
@@ -122,7 +122,7 @@ int parse_default_sird_model(const cJSON *from, cJSON *target) {
     if (c == NULL || !cJSON_IsObject(c) || copy_json_values(cJSON_IsNumber, c, default_config,
                                                             MODEL_SIRX_VIRULENCE, MODEL_SIRX_RECOVERY,
                                                             MODEL_SIRX_FATALITY, NULL)) {
-        return SIM_MODEL_CONFIG_INVALID;
+        return SIM_MODEL_SPECIFIC_CONFIG_INVALID;
     }
     cJSON_AddItemToObject(target, MODEL_CELL_CONFIG, default_state);
 
@@ -139,7 +139,7 @@ int parse_default_sirds_model(const cJSON *from, cJSON *target) {
                                                             MODEL_SIRX_POPULATION, MODEL_SIRX_SUSCEPTIBLE,
                                                             MODEL_SIRX_INFECTED, MODEL_SIRX_RECOVERED,
                                                             MODEL_SIRX_DECEASED, NULL)) {
-        return SIM_MODEL_CONFIG_INVALID;
+        return SIM_MODEL_SPECIFIC_CONFIG_INVALID;
     }
     cJSON_AddItemToObject(target, MODEL_CELL_STATE, default_state);
 
@@ -149,7 +149,7 @@ int parse_default_sirds_model(const cJSON *from, cJSON *target) {
     if (c == NULL || !cJSON_IsObject(c) || copy_json_values(cJSON_IsNumber, c, default_config,
                                                             MODEL_SIRX_VIRULENCE, MODEL_SIRX_RECOVERY,
                                                             MODEL_SIRX_FATALITY, MODEL_SIRX_IMMUNITY, NULL)) {
-        return SIM_MODEL_CONFIG_INVALID;
+        return SIM_MODEL_SPECIFIC_CONFIG_INVALID;
     }
     cJSON_AddItemToObject(target, MODEL_CELL_CONFIG, default_state);
 

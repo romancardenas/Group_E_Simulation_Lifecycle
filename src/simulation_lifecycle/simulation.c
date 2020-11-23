@@ -24,6 +24,7 @@ int parse_default_sim_config(const cJSON *simulation_config, cJSON *target);
  * @brief writes JSON configuration to the desired output path.
  * @param[in] simulation_config cJSON structure containing the simulation configuration defined by the user.
  * @param[in] config_json string containing the content of the resulting simulation configuration file.
+ *            It cannot be a NULL pointer. Otherwise, the function will raise an exception.
  * @return 0 if the function ran successfully. Otherwise, it returns an error code.
  */
 int write_sim_config(const cJSON *simulation_config, char *config_json);
@@ -52,17 +53,17 @@ int parse_default_sim_config(const cJSON *simulation_config, cJSON *target) {
     /* 1. Check that model ID is provided using a valid format */
     cJSON *model = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_ID);
     if (model == NULL || !cJSON_IsString(model)) {
-        return SIM_MODEL_INVALID;
+        return SIM_MODEL_SELECTION_INVALID;
     }
     /* 2. Check that the model exists and get the corresponding default configuration parser */
     int (*p_parser)(const cJSON *, cJSON *) = get_model_default_config_parser(cJSON_GetStringValue(model));
     if (p_parser == NULL) {
-        return SIM_MODEL_NOT_FOUND;
+        return SIM_MODEL_SELECTION_INVALID;
     }
     /* 3. Parse default configuration of the model. Parsing functions may detect an error and return an error code */
     cJSON *default_config = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_DEFAULT_CONFIG);
     if (default_config == NULL || !cJSON_IsObject(default_config)) {
-        return SIM_MODEL_INVALID;
+        return SIM_MODEL_COMMON_CONFIG_INVALID;
     }
     int res = parse_common_default_fields(default_config, target);
     return (res) ? res : p_parser(default_config, target);
@@ -72,8 +73,6 @@ int write_sim_config(const cJSON *simulation_config, char *config_json) {
     cJSON *config_output_path = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_CONFIG_OUTPUT_PATH);
     if (config_output_path == NULL || !cJSON_IsString(config_output_path)) {
         return SIM_CONFIG_OUTPUT_PATH_INVALID;
-    } else if (config_json == NULL) {
-        return SIM_CONFIG_EMPTY;
     }
     return write_data_to_file(cJSON_GetStringValue(config_output_path), config_json);
 }

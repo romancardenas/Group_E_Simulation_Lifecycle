@@ -1,0 +1,17 @@
+{
+  "model_id": "sir",
+  "default_config": {
+    "delay": "hybrid",
+    "state": {
+      "population": 100,
+      "susceptible": 1,
+      "infected": 0,
+      "recovered": 0
+    },
+    "config": {
+      "virulence": 0,
+      "recovery": 1
+    }
+  },
+  "config_output_path": "data/simulation/2_1_empty_config.json"
+}

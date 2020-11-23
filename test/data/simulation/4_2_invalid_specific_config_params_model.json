@@ -1,0 +1,16 @@
+{
+  "model_id": "sir",
+  "default_config": {
+    "delay": "hybrid",
+    "state": {
+      "population": "100",
+      "susceptible": "100",
+      "infected": "100",
+      "recovered": "100"
+    },
+    "config": {
+      "virulence": 0,
+      "recovery": 1
+    }
+  }
+}
