@@ -13,5 +13,5 @@
       "recovery": 1
     }
   },
-  "config_output_path": "data/simulation/2_1_empty_config.json"
+  "config_output_path": "../test/data/simulation/2_1_empty_config.json"
 }
