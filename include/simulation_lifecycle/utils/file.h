@@ -13,6 +13,13 @@ static inline int file_exists(const char *file_name) {
 }
 
 /**
+ * @brief Reads JSON file and fills a cJSON structure with the corresponding data.
+ * @param[in] file_path path to JSON file.
+ * @param[out] pp_target pointer to pointer to cJSON structure.
+ */
+void read_json_file(char *file_path, cJSON **pp_target);
+
+/**
  * @brief writes string to file.
  * @param filepath path to output file.
  * @param data string containing the data to be written on file.
