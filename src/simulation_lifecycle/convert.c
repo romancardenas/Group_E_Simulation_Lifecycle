@@ -15,7 +15,7 @@
 int convert_results(char *path_results) {
 
     /* stat() function and the S_ISDIR() macro on the st_mode field
-     * of the stat structure will be used to determine if the path_results
+     * of the stat structure will be used to determine if path_results
      * exists and if path_results points to a folder. */
     struct stat path_stat;
     stat(path_results, &path_stat);
@@ -42,8 +42,8 @@ int convert_results(char *path_results) {
         * directory_results is a pointer to manage the directory.*/
         DIR *directory_results = opendir(path_results);
         if (directory_results == NULL) {
-            printf("\n Could not open the directory containing");
-            printf("\n the simulation results.");
+            /*printf("\n Could not open the directory containing");*/
+            /*printf("\n the simulation results.");*/
             return INPUT_PATH_FOLDER_ERROR;
         }
 
@@ -77,18 +77,18 @@ int convert_results(char *path_results) {
         closedir(directory_results);
 
         /* This function is only executed if path_results only contain
-         * one .json file, one .txt file and no .txt file. */
+         * one .json file, one .txt file and no .log file. */
         if (count_txt_files != 1 || count_json_files != 1 || count_log_files != 0) {
-            printf("\n Please ensure that your simulation results folder");
-            printf("\n contains only one .json file, one .txt file and");
-            printf("\n no .log file.");
+            /*printf("\n Please ensure that your simulation results folder");*/
+            /*printf("\n contains only one .json file, one .txt file and");*/
+            /*printf("\n no .log file.");*/
             return CONVERSION_PATH_FILES_INCORRECT;
         } else {
             strcat(path_json, path_results);
             strcat(path_json, filename_json);
             strcat(path_txt, path_results);
             strcat(path_txt, filename_txt);
-            printf("\n txt filename is: %s",path_txt);
+            /*printf("\n txt filename is: %s",path_txt);*/
 
             /* The function convert result files only if the path_results
              * has one .txt file using the Cadmium Cell-DEVS format.
@@ -108,8 +108,8 @@ int convert_results(char *path_results) {
             /* Comparing the 18th first characters of the third line
              * with "[cadmium::celldevs" */
             if (strncmp(line, "[cadmium::celldevs", 18) != 0) {
-                printf("\n Please verify that your txt file contain");
-                printf("\n the Cadmium Cell-Devs format.");
+                /*printf("\n Please verify that your txt file contain");*/
+                /*printf("\n the Cadmium Cell-Devs format.");*/
                 return FILE_FORMAT_INCORRECT;
             }
 
@@ -161,12 +161,12 @@ int convert_results(char *path_results) {
             if (count_json_files_after_conversion == 2 &&
                 count_txt_files_after_conversion == 1 &&
                 count_log_files_after_conversion == 1) {
-                printf("\n Converted results are now found");
-                printf("\n in the results folder.");
+                /*printf("\n Converted results are now found");*/
+                /*printf("\n in the results folder.");*/
                 return SUCCESS;
             } else {
-                printf("\n Something went wrong...");
-                printf("\n Expected files are not all in the results folder.");
+                /*printf("\n Something went wrong...");*/
+                /*printf("\n Expected files are not all in the results folder.");*/
                 return CONVERSION_FAILED;
             }
         }
@@ -181,7 +181,7 @@ int convert_json_file(char *path_results,char *json_filename) {
     FILE *f_input_json = fopen(json_filename, "r");
 
     if (f_input_json == NULL) {
-        printf("\n File could not be opened.");
+        /*printf("\n File could not be opened.");*/
         return UNABLE_OPEN_FILE;
     }
 
@@ -198,7 +198,7 @@ int convert_json_file(char *path_results,char *json_filename) {
     free(string);
 
     if (input_json == NULL) {
-        printf("\n input_json is NULL.");
+        /*printf("\n input_json is NULL.");*/
         return UNABLE_OPEN_FILE;
     }
 
@@ -305,7 +305,7 @@ int convert_txt_file(char *path_results, char *txt_filename) {
     FILE *f_input_txt = fopen(txt_filename, "r");
 
     if (f_input_txt == NULL) {
-        printf("\n File could not be opened.");
+        /*printf("\n File could not be opened.");*/
         return UNABLE_OPEN_FILE;
     }
 
@@ -318,7 +318,7 @@ int convert_txt_file(char *path_results, char *txt_filename) {
     FILE *f_output_txt = fopen(log_filename, "w");
 
     if (f_output_txt == NULL) {
-        printf("\n File could not be opened.");
+        /*printf("\n File could not be opened.");*/
         return UNABLE_OPEN_FILE;
     }
 

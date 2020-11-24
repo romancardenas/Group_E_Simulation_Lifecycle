@@ -3,6 +3,8 @@
 #include "cJSON.h"
 #include "simulation_lifecycle/simulation.h"
 #include "simulation_lifecycle/convert.h"
+#include "simulation_lifecycle/error.h"
+
 
 /**
  * Simulation Lifecycle: main function. So far, it i just a simple hello world.
@@ -32,16 +34,10 @@ int main(int argc, char *argv[]) {
     }
 
     build_simulation_scenario("sir", NULL, NULL, "output.json");
-    //return json == NULL;
+    /*return json == NULL;*/
 
-    int error;
-    error = convert_results("../data/results/");
-    printf("\n Error code is:  %d",error);
-    return error;
+    convert_results("../data/results/");
 
-    /*
-
-
-*/
+    return SUCCESS;
 
 }
