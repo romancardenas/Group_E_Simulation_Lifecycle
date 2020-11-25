@@ -21,12 +21,12 @@ int convert_results(char *path_results) {
     stat(path_results, &path_stat);
 
     if (path_results == NULL) {
-        return INPUT_PATH_EMPTY;
-    } else if (path_results == "\0") {
-        return INPUT_PATH_EMPTY;
+        return CONVERT_INPUT_PATH_INCORRECT;
+    } else if (strlen(path_results) == 0) {
+        return CONVERT_INPUT_PATH_INCORRECT;
         /*This allows to check if path exists and if path points to a folder.*/
     } else if (!S_ISDIR((path_stat.st_mode))) {
-        return INPUT_PATH_FOLDER_ERROR;
+        return CONVERT_INPUT_PATH_FOLDER_ERROR;
     } else {
         const char delimiter_period = '.';
         char *p_start_extract = NULL;
@@ -44,7 +44,7 @@ int convert_results(char *path_results) {
         if (directory_results == NULL) {
             /*printf("\n Could not open the directory containing");*/
             /*printf("\n the simulation results.");*/
-            return INPUT_PATH_FOLDER_ERROR;
+            return CONVERT_INPUT_PATH_FOLDER_ERROR;
         }
 
         /* Searching for .json and .txt files in the folder containing
@@ -82,7 +82,7 @@ int convert_results(char *path_results) {
             /*printf("\n Please ensure that your simulation results folder");*/
             /*printf("\n contains only one .json file, one .txt file and");*/
             /*printf("\n no .log file.");*/
-            return CONVERSION_PATH_FILES_INCORRECT;
+            return CONVERT_PATH_FILES_INCORRECT;
         } else {
             strcat(path_json, path_results);
             strcat(path_json, filename_json);
@@ -110,7 +110,7 @@ int convert_results(char *path_results) {
             if (strncmp(line, "[cadmium::celldevs", 18) != 0) {
                 /*printf("\n Please verify that your txt file contain");*/
                 /*printf("\n the Cadmium Cell-Devs format.");*/
-                return FILE_FORMAT_INCORRECT;
+                return CONVERT_FILE_FORMAT_INCORRECT;
             }
 
             fclose(f_input_txt);
