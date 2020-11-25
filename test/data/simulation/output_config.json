@@ -1,9 +1,7 @@
 {
 	"default":	{
-		"delay":	"hybrid",
-		"neighborhood":	{
-		},
 		"cell_type":	"sir",
+		"delay":	"hybrid",
 		"state":	{
 			"population":	100,
 			"susceptible":	1,
@@ -13,6 +11,8 @@
 		"config":	{
 			"virulence":	0,
 			"recovery":	1
+		},
+		"neighborhood":	{
 		}
 	}
 }

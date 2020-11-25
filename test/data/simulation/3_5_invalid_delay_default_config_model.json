@@ -1,6 +1,8 @@
 {
-  "model_id": "sir",
+  "model_id": "2_2_agent_sir_config",
   "default_config": {
-    "delay": "that"
+    "cell_type": "sir",
+    "delay": "that",
+    "state": 0
   }
 }

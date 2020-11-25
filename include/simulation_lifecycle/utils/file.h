@@ -5,12 +5,21 @@
 #include "cJSON.h"
 
 /**
- * @brief checks if there is an existing file.
+ * @brief checks if there is an existing file with read permissions.
  * @param[in] file_name path to the file to be checked.
  * @return 1 if file does not exist.
  */
 static inline int file_exists(const char *file_name) {
     return file_name != NULL && access(file_name, F_OK) != -1;
+}
+
+/**
+ * @brief checks if there is an existing file with execute permissions.
+ * @param[in] file_name path to the file to be checked.
+ * @return 1 if file does not exist.
+ */
+static inline int executable_exists(const char *file_name) {
+    return file_name != NULL && access(file_name, X_OK) != -1;
 }
 
 /**

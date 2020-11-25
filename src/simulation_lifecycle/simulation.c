@@ -1,6 +1,8 @@
+#include <stdlib.h>
 #include "cJSON.h"
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/utils/file.h"
+#include "simulation_lifecycle/utils/strings.h"
 #include "simulation_lifecycle/structures.h"
 #include "simulation_lifecycle/simulation.h"
 #include "simulation_lifecycle/models.h"
@@ -8,6 +10,7 @@
 #define MODEL_DEFAULT "default"
 
 #define SIM_MODEL_ID "model_id"
+#define SIM_MODEL_LIBRARY "../third_party/CellDEVS_models/tutorial/bin/"
 #define SIM_MODEL_DEFAULT_CONFIG "default_config"
 #define SIM_CONFIG_OUTPUT_PATH "config_output_path"
 #define SIM_RESULT_OUTPUT_PATH "result_output_path"
@@ -55,9 +58,11 @@ int parse_default_sim_config(const cJSON *simulation_config, cJSON *target) {
     if (model == NULL || !cJSON_IsString(model)) {
         return SIM_MODEL_SELECTION_INVALID;
     }
-    /* 2. Check that the model exists and get the corresponding default configuration parser */
-    int (*p_parser)(const cJSON *, cJSON *) = get_model_default_config_parser(cJSON_GetStringValue(model));
-    if (p_parser == NULL) {
+    // Check that the model exists
+    char *model_path = concat(SIM_MODEL_LIBRARY, cJSON_GetStringValue(model));
+    int model_found = executable_exists(model_path);
+    free(model_path);
+    if (!model_found) {
         return SIM_MODEL_SELECTION_INVALID;
     }
     /* 3. Parse default configuration of the model. Parsing functions may detect an error and return an error code */
@@ -65,8 +70,7 @@ int parse_default_sim_config(const cJSON *simulation_config, cJSON *target) {
     if (default_config == NULL || !cJSON_IsObject(default_config)) {
         return SIM_MODEL_COMMON_CONFIG_INVALID;
     }
-    int res = parse_common_default_fields(default_config, target);
-    return (res) ? res : p_parser(default_config, target);
+    return parse_common_default_fields(default_config, target);
 }
 
 int write_sim_config(const cJSON *simulation_config, char *config_json) {

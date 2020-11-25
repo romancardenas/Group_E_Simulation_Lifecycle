@@ -50,32 +50,19 @@ void test_invalid_default_model_common_config(void) {
     TEST_ASSERT_EQUAL(SIM_MODEL_COMMON_CONFIG_INVALID, build_simulation_scenario(json, NULL, NULL));
 }
 
-void test_invalid_default_model_specific_config(void) {
-    cJSON *json = NULL;
-
-    read_json_file("../test/data/simulation/4_1_empty_specific_config_model.json", &json);
-    TEST_ASSERT_EQUAL(SIM_MODEL_SPECIFIC_CONFIG_INVALID, build_simulation_scenario(json, NULL, NULL));
-
-    read_json_file("../test/data/simulation/4_2_invalid_specific_config_params_model.json", &json);
-    TEST_ASSERT_EQUAL(SIM_MODEL_SPECIFIC_CONFIG_INVALID, build_simulation_scenario(json, NULL, NULL));
-
-    read_json_file("../test/data/simulation/4_3_missing_specific_config_params_model.json", &json);
-    TEST_ASSERT_EQUAL(SIM_MODEL_SPECIFIC_CONFIG_INVALID, build_simulation_scenario(json, NULL, NULL));
-}
-
 void test_invalid_output_config_path(void) {
     cJSON *json = NULL;
 
-    read_json_file("../test/data/simulation/5_1_missing_output_config_path.json", &json);
+    read_json_file("../test/data/simulation/4_1_missing_output_config_path.json", &json);
     TEST_ASSERT_EQUAL(SIM_CONFIG_OUTPUT_PATH_INVALID, build_simulation_scenario(json, NULL, NULL));
 
-    read_json_file("../test/data/simulation/5_2_invalid_output_config_path.json", &json);
+    read_json_file("../test/data/simulation/4_2_invalid_output_config_path.json", &json);
     TEST_ASSERT_EQUAL(SIM_CONFIG_OUTPUT_PATH_INVALID, build_simulation_scenario(json, NULL, NULL));
 
-    read_json_file("../test/data/simulation/5_3_existing_output_config_path.json", &json);
+    read_json_file("../test/data/simulation/4_3_existing_output_config_path.json", &json);
     TEST_ASSERT_EQUAL(FILE_EXISTS_ERROR, build_simulation_scenario(json, NULL, NULL));
 
-    read_json_file("../test/data/simulation/5_4_valid_output_config_path.json", &json);
+    read_json_file("../test/data/simulation/4_4_valid_output_config_path.json", &json);
     TEST_ASSERT_EQUAL(SUCCESS, build_simulation_scenario(json, NULL, NULL));
 }
 
@@ -84,7 +71,6 @@ int main(void) {
     RUN_TEST(test_null_cjson);
     RUN_TEST(test_invalid_model_selection);
     RUN_TEST(test_invalid_default_model_common_config);
-    RUN_TEST(test_invalid_default_model_specific_config);
     RUN_TEST(test_invalid_output_config_path);
     return UNITY_END();
 }

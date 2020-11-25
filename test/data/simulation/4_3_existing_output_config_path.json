@@ -1,6 +1,7 @@
 {
-  "model_id": "sir",
+  "model_id": "2_2_agent_sir_config",
   "default_config": {
+    "cell_type": "sir",
     "delay": "hybrid",
     "state": {
       "population": 100,
@@ -12,5 +13,6 @@
       "virulence": 0,
       "recovery": 1
     }
-  }
+  },
+  "config_output_path": "../test/data/simulation/2_1_empty_config.json"
 }
