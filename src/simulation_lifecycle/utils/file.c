@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include "cJSON.h"
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/utils/file.h"
 
@@ -29,11 +31,9 @@ int read_file(char * path_to_file, char ** pp_data) {
 
     if (!file_exists(path_to_file)) {
         res = FILE_DOES_NOT_EXIST;
-    }
-    else if ((f = fopen(path_to_file, "rb")) == NULL) {
+    } else if ((f = fopen(path_to_file, "rb")) == NULL) {
         res = UNABLE_OPEN_FILE;
-    }
-    else {
+    } else {
         fseek(f, 0, SEEK_END);
         long fsize = ftell(f);
         fseek(f, 0, SEEK_SET);  /* same as rewind(f); */
