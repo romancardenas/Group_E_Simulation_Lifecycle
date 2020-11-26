@@ -1,0 +1,82 @@
+{
+    "data_sources": [{
+            "id": "hospitals"
+        }, {
+            "id": "db_ottawa",
+            "path": "path/to/db_ottawa/data.geojson"
+        }
+    ],
+    "spatial_analysis": [{
+            "id": 1,
+            "operation": "centroids",
+            "parameters": {
+                "data": {
+                    "type": "data",
+                    "source": "db_ottawa"
+                }
+            }
+        }, {
+            "id": 2,
+            "operation": "select_by_attributes",
+            "parameters": {
+                "data": {
+                    "type": "data",
+                    "source": "hospitals"
+                },
+                "field": "odhf_facility_type",
+                "value": "Hospitals"
+            }
+        }, {
+            "id": 3,
+            "operation": "closest_distance",
+            "parameters": {
+                "origin": {
+                    "type": "data",
+                    "source": "hospitals"
+                },
+                "destination": {
+                    "type": "result",
+                    "source": 1
+                }
+            }
+        }
+    ],
+    "visualization": {
+        "basemap": "openstreetmap",
+        "layers": [{
+                "id": "db_ottawa",
+                "label": "Ottawa dissemination blocks (DB)"
+            }, {
+                "id": "hospitals",
+                "label": "Ottawa hospitals"
+            }
+        ],
+        "styles": [{
+                "layer": "db_ottawa",
+                "property": "emergency_state",
+                "symbol": [{
+                    "type": "unique_value",
+                    "attribute": "fill",
+                    "default": [0, 0, 140, 0],
+                    "classes": {
+                        "value": "emergency",
+                        "color": [255, 0, 0, 0]
+                    }
+                }]
+            }, {
+                "layer": "hospitals",
+                "property": "number_of_emergencies",
+                "symbol": {
+                    "type": "equivalent",
+                    "attribute": "radius",
+					"minimum" : 5,
+					"maximum" : 20,
+                    "classes": 4
+                }
+            }
+        ]
+    },
+    "simulation": {
+        
+    }
+}

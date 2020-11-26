@@ -1,0 +1,45 @@
+{
+    "data_sources": [{
+            "id": "hospitals",
+            "path": "path/to/hospital/data.geojson"
+        }, {
+            "id": "db_ottawa",
+            "path": "path/to/db_ottawa/data.geojson"
+        }
+    ],
+    "spatial_analysis": [{
+            "id": 1,
+            "operation": "centroids",
+            "parameters": {
+                "data": {
+                    "type": "data",
+                    "source": "db_ottawa"
+                }
+            }
+        }, {
+            "id": 2,
+            "operation": "select_by_attributes",
+            "parameters": {
+                "data": {
+                    "type": "data",
+                    "source": "hospitals"
+                },
+                "field": "odhf_facility_type",
+                "value": "Hospitals"
+            }
+        }, {
+            "id": 3,
+            "operation": "closest_distance",
+            "parameters": {
+                "origin": {
+                    "type": "data",
+                    "source": "hospitals"
+                },
+                "destination": {
+                    "type": "result",
+                    "source": 1
+                }
+            }
+        }
+    ]
+}
