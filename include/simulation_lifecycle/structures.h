@@ -8,6 +8,11 @@ typedef struct workflow {
     // TODO
 } workflow_t;
 
+typedef struct point {
+    double lat;
+    double lon;
+} point_t;
+
 typedef struct feature_set {
     // TODO
 } feature_set_t;
