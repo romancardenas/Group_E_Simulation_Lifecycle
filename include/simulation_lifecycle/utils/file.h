@@ -2,15 +2,24 @@
 #define __SIMULATION_LIFECYCLE_FILE_H__
 
 #include <unistd.h>
-#include "simulation_lifecycle/structures.h"
+#include "cJSON.h"
 
 /**
- * @brief checks if there is an existing file.
+ * @brief checks if there is an existing file with read permissions.
  * @param[in] file_name path to the file to be checked.
  * @return 1 if file does not exist.
  */
 static inline int file_exists(const char *file_name) {
-    return access(file_name, F_OK) != -1;
+    return file_name != NULL && access(file_name, F_OK) != -1;
+}
+
+/**
+ * @brief checks if there is an existing file with execute permissions.
+ * @param[in] file_name path to the file to be checked.
+ * @return 1 if file does not exist.
+ */
+static inline int executable_exists(const char *file_name) {
+    return file_name != NULL && access(file_name, X_OK) != -1;
 }
 
 /**
@@ -22,11 +31,21 @@ void read_json_file(char *file_path, cJSON **pp_target);
 
 /**
  * @brief writes string to file.
- * @param filepath path to output file.
- * @param data string containing the data to be written on file.
+ * @param[in] filepath path to output file.
+ * @param[in] data string containing the data to be written on file.
  * @return 0 if data is successfully written on file. Otherwise, it returns an error code (see error.h)
  */
 int write_data_to_file(char *filepath, char *data);
+
+/**
+ * @brief copy a set of values from one cJSON structure to another
+ * @param value_type_checker function to check that value is of the expected type.
+ * @param from cJSON structure that contains the values to be copied.
+ * @param to cJSON structure that will contain the copied values.
+ * @param ... strings with the identifier of the values to be copied. It must end with a guardian NULL pointer.
+ * @return 0 if everything went OK. Otherwise, it returns an error code.
+ */
+int copy_json_values(cJSON_bool (*value_type_checker)(const cJSON * const), const cJSON * from, cJSON * to, ...);
 
 /**
  * @brief reads a file as a string.

@@ -5,16 +5,15 @@
 /* Common errors 0-49 */
 #define SUCCESS 0
 #define GENERIC_ERROR 1
-/* File-related errors 50-99 */
+/* File-related errors 50-74 */
 #define FILE_EXISTS_ERROR 50
 #define FILE_DOES_NOT_EXIST 51
 #define UNABLE_OPEN_FILE 52
 #define UNABLE_CLOSE_FILE 53
 #define UNABLE_WRITE_FILE 54
-
 #define JSON_UNABLE_TO_PARSE 60
 #define GEOJSON_UNABLE_TO_PARSE 61
-
+#define JSON_VALUE_INVALID 75
 /** WORKFLOW ERRORS 100-199 **/
 #define WORKFLOW_DOES_NOT_EXIST 100
 #define NULL_DATA_SOURCES 101
@@ -30,17 +29,20 @@
 /** SPATIAL ANALYSIS ERRORS 200-299 **/
 // TODO
 /** SIMULATION ERRORS 300-399 **/
-/* model selection issues 300-309 */
-#define MODEL_EMPTY 300
-#define MODEL_NOT_FOUND 301
-/* feature set issues 310-319 */
-#define FEATURE_SET_EMPTY 310
-/* relation set issues 320-329 */
-#define RELATION_SET_EMPTY 320
-#define INCONSISTENT_DATA 325
-/* output path issues 330-339 */
-#define OUTPUT_PATH_EMPTY 330
-#define OUTPUT_FILE_EXISTS 331
+#define SIM_CONFIG_EMPTY 300
+/* model selection issues 305-309 */
+#define SIM_MODEL_SELECTION_INVALID 305
+/* model configuration issues 310-320*/
+#define SIM_MODEL_COMMON_CONFIG_INVALID 310
+#define SIM_MODEL_SPECIFIC_CONFIG_INVALID 311
+/* feature set issues 320-329 */
+#define FEATURE_SET_EMPTY 320
+/* relation set issues 330-339 */
+#define RELATION_SET_EMPTY 330
+#define INCONSISTENT_DATA 335
+/* output path issues 340-349 */
+#define SIM_CONFIG_OUTPUT_PATH_INVALID 340
+#define SIM_RESULT_OUTPUT_PATH_EMPTY 341
 /** VISUALIZATION ERRORS 400-499 */
 // TODO
 /* temporary uncategorized issues 500-599 */
