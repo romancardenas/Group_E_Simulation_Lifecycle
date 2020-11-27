@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Wrong number of arguments.\n");
         return -1;
     }
+
     cJSON *json = NULL;
-    read_json_file(argv[1], &json);
-    return json == NULL;
+    return read_json_file(argv[1], &json);
 }

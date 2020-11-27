@@ -23,19 +23,19 @@ static inline int executable_exists(const char *file_name) {
 }
 
 /**
+ * @brief Reads JSON file and fills a cJSON structure with the corresponding data.
+ * @param[in] file_path path to JSON file.
+ * @param[out] pp_target pointer to pointer to cJSON structure.
+ */
+void read_json_file(char *file_path, cJSON **pp_target);
+
+/**
  * @brief writes string to file.
  * @param[in] filepath path to output file.
  * @param[in] data string containing the data to be written on file.
  * @return 0 if data is successfully written on file. Otherwise, it returns an error code (see error.h)
  */
 int write_data_to_file(char *filepath, char *data);
-
-/**
- * @brief Reads JSON file and fills a cJSON structure with the corresponding data.
- * @param[in] file_path path to JSON file.
- * @param[out] pp_target pointer to pointer to cJSON structure.
- */
-void read_json_file(char *file_path, cJSON **pp_target);
 
 /**
  * @brief copy a set of values from one cJSON structure to another
@@ -46,5 +46,21 @@ void read_json_file(char *file_path, cJSON **pp_target);
  * @return 0 if everything went OK. Otherwise, it returns an error code.
  */
 int copy_json_values(cJSON_bool (*value_type_checker)(const cJSON * const), const cJSON * from, cJSON * to, ...);
+
+/**
+ * @brief reads a file as a string.
+ * @param path_to_file path to input file.
+ * @param pp_data a pointer to a string that will contain the content of the input file.
+ * @return 0 if the file is successfully read. Otherwise, it returns an error code (see error.h)
+ */
+int read_file(char * path_to_file, char ** pp_data);
+
+/**
+ * @brief reads a json file as a cJSON struct.
+ * @param path_to_file path to input json file.
+ * @param pp_data a pointer to a cJSON struct that will contain the content of the input file.
+ * @return 0 if the file is successfully read. Otherwise, it returns an error code (see error.h)
+ */
+int read_json_file(char * path_to_file, cJSON ** pp_data);
 
 #endif //__SIMULATION_LIFECYCLE_FILE_H__
