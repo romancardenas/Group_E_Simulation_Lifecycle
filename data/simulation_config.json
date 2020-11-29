@@ -16,13 +16,16 @@
     "neighborhood": {}
   },
   "mapping": {
-    "cell_id": "id",
+    "cell_id": [1, "id"],
     "state": {
-      "population": "pop"
+      "population": [1, "population"],
+      "susceptible": [1, "population"],
+      "infected": [1, "population"],
+      "recovered": [1, "population"]
     },
     "vicinity": {
-      "connectivity": "that",
-      "mobility": "this"
+      "connectivity": [1, "that"],
+      "mobility": [1, "this"]
     }
   },
   "config_output_path": "./config_output.json",
