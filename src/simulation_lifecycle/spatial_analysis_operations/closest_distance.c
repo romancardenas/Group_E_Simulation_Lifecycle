@@ -7,6 +7,6 @@ int closest_distance_validate(cJSON * parameters) {
     return SUCCESS;
 }
 
-int closest_distance_execute(node_t * data_sources, cJSON * parameters, node_t ** results) {
+int closest_distance_execute(node_t ** data, cJSON * parameters) {
     return SUCCESS;
 }

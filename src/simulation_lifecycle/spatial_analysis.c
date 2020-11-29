@@ -61,7 +61,7 @@ operation_t * get_operation(char * name) {
     return NULL;
 }
 
-void register_operation(char * name, int (* validate)(cJSON * parameters), int (* execute)(node_t * data_sources, cJSON * parameters, node_t ** results)) {
+void register_operation(char * name, int (* validate)(cJSON * parameters), int (* execute)(node_t ** data, cJSON * parameters)) {
     operation_t * operation = (operation_t *)malloc(sizeof(operation_t));
 
     operation->name = name;
@@ -78,9 +78,9 @@ void register_operations(void) {
 }
 
 int execute_workflow(cJSON * workflow, node_t ** results) {
-    node_t * data_sources = NULL;
+    node_t * data = NULL;
 
-    int res = read_data_in(workflow, &data_sources);
+    int res = read_data_in(workflow, &data);
 
     if (res != SUCCESS) return res;
 
@@ -107,7 +107,7 @@ int execute_workflow(cJSON * workflow, node_t ** results) {
 
         if (res != SUCCESS) return res;
 
-        res = op->execute(data_sources, parameters, results);
+        res = op->execute(&data, parameters);
 
         if (res != SUCCESS) return res;
     }

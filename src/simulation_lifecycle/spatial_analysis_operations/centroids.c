@@ -7,6 +7,6 @@ int centroids_validate(cJSON * parameters) {
     return SUCCESS;
 }
 
-int centroids_execute(node_t * data_sources, cJSON * parameters, node_t ** results) {
+int centroids_execute(node_t ** data, cJSON * parameters) {
     return SUCCESS;
 }

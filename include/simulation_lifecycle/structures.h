@@ -39,7 +39,7 @@ typedef struct data_source {
 typedef struct operation {
     char * name;
     int (* validate)(cJSON * parameters);
-    int (* execute)(node_t * data_sources, cJSON * parameters, node_t ** results);
+    int (* execute)(node_t ** data_sources, cJSON * parameters);
 } operation_t;
 
 int feature_set_empty(const feature_set_t *p_features);  // TODO

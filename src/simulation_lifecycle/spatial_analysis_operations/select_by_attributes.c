@@ -7,6 +7,6 @@ int select_by_attributes_validate(cJSON * parameters) {
     return SUCCESS;
 }
 
-int select_by_attributes_execute(node_t * data_sources, cJSON * parameters, node_t ** results) {
+int select_by_attributes_execute(node_t ** data, cJSON * parameters) {
     return SUCCESS;
 }
