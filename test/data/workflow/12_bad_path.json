@@ -1,7 +1,7 @@
 {
     "data_sources": [{
             "id": "hospitals",
-            "path": "./data/DA_Ottawa.geojson"
+            "path": "./data/bad_path.geojson"
           }, {
             "id": "db_ottawa",
             "path": "./data/Hospitals.geojson"
