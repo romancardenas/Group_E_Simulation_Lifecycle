@@ -9,7 +9,7 @@
         }
     ],
     "spatial_analysis": [{
-            "id": 1,
+            "id": "db_centroids",
             "operation": "centroids",
             "parameters": {
                 "data": {
@@ -18,7 +18,7 @@
                 }
             }
         }, {
-            "id": 2,
+            "id": "hospitals_selected",
             "operation": "select_by_attributes",
             "parameters": {
                 "data": {
@@ -29,7 +29,7 @@
                 "value": "Hospitals"
             }
         }, {
-            "id": 3,
+            "id": "hospital_db_distance",
             "operation": "closest_distance",
             "parameters": {
                 "origin": {

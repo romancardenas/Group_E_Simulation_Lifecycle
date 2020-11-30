@@ -19,17 +19,17 @@ include_directories(${INCLUDE_DIRS} ${CJSON_INCLUDE} ${UNITY_INCLUDE})
 # Collect source files
 AUX_SOURCE_DIRECTORY(src/simulation_lifecycle SOURCE_FILES)
 AUX_SOURCE_DIRECTORY(src/simulation_lifecycle/utils UTILS_SOURCES)
-
+AUX_SOURCE_DIRECTORY(src/simulation_lifecycle/spatial_analysis_operations SPATIAL_ANALYSIS_OPERATIONS)
 
 set (CJSON_SRC ${CJSON_SRC} ${PROJECT_SOURCE_DIR}/third_party/cJSON/cJSON.c)
 set (UNITY_SRC ${UNITY_SRC} ${PROJECT_SOURCE_DIR}/third_party/Unity/src/unity.c)
 
 # Add executable from src/main.c file
-add_executable(simulation_lifecycle src/main.c ${SOURCE_FILES} ${UTILS_SOURCES} ${CJSON_SRC})
+add_executable(simulation_lifecycle src/main.c ${SOURCE_FILES} ${UTILS_SOURCES} ${SPATIAL_ANALYSIS_OPERATIONS} ${CJSON_SRC})
 
 # Unit tests
 FILE(GLOB TestSources RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} test/test_*.c)
 foreach (testSrc ${TestSources})
     get_filename_component(testName ${testSrc} NAME_WE)
-    add_executable(${testName} ${testSrc}  ${SOURCE_FILES} ${UTILS_SOURCES} ${CJSON_SRC} ${UNITY_SRC})
+    add_executable(${testName} ${testSrc}  ${SOURCE_FILES} ${UTILS_SOURCES} ${SPATIAL_ANALYSIS_OPERATIONS} ${CJSON_SRC} ${UNITY_SRC})
 endforeach (testSrc)
