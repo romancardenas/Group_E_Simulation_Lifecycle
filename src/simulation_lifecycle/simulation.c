@@ -94,19 +94,22 @@ int run_sim(const cJSON *simulation_config){
 
     char *command = concat(model_executable_path," ");
     command = concat(command,config_path);
+
+    /* Run simulation */
     int sim_status = system(command);
 
-    /* Check the simulation was properly runned */
+    /* Check if simulation was properly ran. */
     if (sim_status != 0){
         return SIM_RUN_ERROR;
     }else{
         char *results_filename = concat(cJSON_GetStringValue(model), SIM_RESULTS_END_FILENAME);
         results_filename = concat(SIM_RESULTS_DEFAULT_PATH,results_filename);
+
         /* Check if results file exists */
         if (!file_exists(results_filename)) {
             return SIM_RUN_NO_RESULTS;
         }else{
-            /* Moving the results file */
+            /* Moving the results file to predefined result output path. */
             char *results_filename_new = concat(SIM_RESULT_OUTPUT_PATH,results_filename);
             int sim_results_move_status = rename(results_filename,results_filename_new);
             if (sim_results_move_status =! 0) {
@@ -116,5 +119,4 @@ int run_sim(const cJSON *simulation_config){
             }
         }
     }
-
 }
