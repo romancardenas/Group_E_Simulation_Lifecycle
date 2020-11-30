@@ -16,7 +16,6 @@
 
 #define SIM_DATA_SOURCE "source"
 #define SIM_MODEL_CELLS "cells"
-#define SIM_CELL_ID "cell_id"
 #define SIM_MODEL_DEFAULT "default"
 #define SIM_MODEL_VICINITIES "vicinities"
 
@@ -59,39 +58,38 @@ int build_simulation_scenario(cJSON *simulation_config, node_t **data_sources) {
     if (simulation_config == NULL) {
         return SIM_CONFIG_EMPTY;
     }
-    cJSON *root = cJSON_CreateObject();
-
-    cJSON *cells_config = cJSON_CreateObject(), *default_config = cJSON_CreateObject();
-    int res = parse_default_sim_config(simulation_config, default_config);
-    if (res) {
+    int res;
+    /* 1. Parse default configuration */
+    cJSON *default_config = cJSON_CreateObject();
+    if ((res = parse_default_sim_config(simulation_config, default_config))) {
+        cJSON_Delete(default_config);
         return res;
     }
-    cJSON_AddItemToObject(cells_config, SIM_MODEL_DEFAULT, default_config);
+    cJSON *cells_config = cJSON_CreateObject();
+    cJSON_AddItemToObject(cells_config, SIM_MODEL_DEFAULT, default_config); // default_config is now inside cells_config
+    /* 2. We only keep filling configuration parameters if result is SUCCESS */
     res = parse_cells_config(simulation_config, data_sources, cells_config);
-    if (res) {
-        return res;
-    }
-    res = parse_vicinities(simulation_config, data_sources, cells_config);
-    if (res) {
+    if (res || (res = parse_vicinities(simulation_config, data_sources, cells_config))) {
+        cJSON_Delete(cells_config);
         return res;
     }
 
-    cJSON_AddItemToObject(root, SIM_MODEL_CELLS, cells_config);
-
-    /* Create string from result and remove cJSON structures */
-    char *string = cJSON_Print(root);
+    /* 3. Try to write simulation config file, remove cJSON structures, and return the corresponding error code. */
+    cJSON *root = cJSON_CreateObject();
+    cJSON_AddItemToObject(root, SIM_MODEL_CELLS, cells_config);  // cells_config is now inside root_config
+    res = write_sim_config(simulation_config, cJSON_Print(root));
     cJSON_Delete(root);
-    return write_sim_config(simulation_config, string);
+    return res;
 }
 
 int parse_default_sim_config(const cJSON *simulation_config, cJSON *target) {
     /* 1. Check that model ID is provided using a valid format */
-    cJSON *model = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_ID);
-    if (model == NULL || !cJSON_IsString(model)) {
+    char *model = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_ID));
+    if (model == NULL) {
         return SIM_MODEL_SELECTION_INVALID;
     }
     // Check that the model exists
-    char *model_path = concat(SIM_MODEL_LIBRARY, cJSON_GetStringValue(model));
+    char *model_path = concat(SIM_MODEL_LIBRARY, model);
     int model_found = executable_exists(model_path);
     free(model_path);
     if (!model_found) {
@@ -99,7 +97,7 @@ int parse_default_sim_config(const cJSON *simulation_config, cJSON *target) {
     }
     /* 3. Parse default configuration of the model. Parsing functions may detect an error and return an error code */
     cJSON *default_config = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_DEFAULT_CONFIG);
-    if (default_config == NULL || !cJSON_IsObject(default_config)) {
+    if (!cJSON_IsObject(default_config)) {
         return SIM_MODEL_COMMON_CONFIG_INVALID;
     }
     return parse_common_default_fields(default_config, target);
@@ -111,34 +109,24 @@ int parse_cells_config(const cJSON *simulation_config, node_t **data_sources, cJ
     if (!cJSON_IsArray(cells)) {
         return SIM_MODEL_CELLS_CONFIG_INVALID;
     }
+    /* Target already has the default cell config. We store this configuration in default_cell. */
+    cJSON *default_cell = cJSON_GetObjectItemCaseSensitive(target, SIM_MODEL_DEFAULT);
 
     /* Iterate over each data-source-to-cells mapper (data may be scatter around more than one data source) */
+    int res;
     cJSON *cells_mapper = NULL;
     cJSON_ArrayForEach(cells_mapper, cells) {
-        /* parse data source ID and data-source-field-to-cell-id key. They must be strings */
+        /* Get corresponding data source ID */
         char * data_source_id = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(cells_mapper, SIM_DATA_SOURCE));
-        char *id_key = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(cells_mapper, SIM_CELL_ID));
-        if (data_source_id == NULL || id_key == NULL) {
+        if (data_source_id == NULL) {
             return SIM_MODEL_CELLS_CONFIG_INVALID;
         }
-        /* Find target data source from data source list. It must exist */
         data_source_t *data_source = get_data_source(data_sources, data_source_id);
         if (data_source == NULL) {
             return SIM_MODEL_CELLS_CONFIG_INVALID;
         }
-
-        /* Iterate over each data source element and create the corresponding cell configuration */
-        cJSON *cell_iterator = NULL;
-        cJSON_ArrayForEach(cell_iterator, data_source->data) {
-            /* Cell ID is a mandatory field. It must exist in the data source */
-            char *cell_id = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(cell_iterator, id_key));
-            if(cell_id == NULL) {
-                return SIM_MODEL_CELLS_CONFIG_INVALID;
-            }
-
-            cJSON *cell_config = cJSON_CreateObject();
-            // TODO look for state and config variables
-            cJSON_AddItemToObject(target, cell_id, cell_config);
+        if((res = parse_cells_from_data_source(cells_mapper, data_source, default_cell, target))) {
+            return res;
         }
     }
     /* Check that there is at least one valid cell */
@@ -146,6 +134,7 @@ int parse_cells_config(const cJSON *simulation_config, node_t **data_sources, cJ
 }
 
 int parse_vicinities(const cJSON *simulation_config, node_t **data_sources, cJSON *target) {
+    return SUCCESS; // TODO remove this when the cell part is done
     cJSON *vicinities = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_VICINITIES);
     if (vicinities == NULL || !cJSON_IsObject(vicinities)) {
         return SIM_MODEL_VICINITIES_CONFIG_INVALID;
