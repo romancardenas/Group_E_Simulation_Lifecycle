@@ -1,5 +1,5 @@
 {
-  "model_id": "invalid",
+  "model_id": "2_2_agent_sir_config",
   "default_config": {
     "cell_type": "sir",
     "delay": "hybrid",

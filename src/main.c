@@ -1,12 +1,10 @@
 #include <stdio.h>
 #include "cJSON.h"
 #include "simulation_lifecycle/utils/file.h"
-<<<<<<< HEAD
 #include "simulation_lifecycle/simulation.h"
-=======
 #include "simulation_lifecycle/utils/linked_list.h"
 #include "simulation_lifecycle/spatial_analysis.h"
->>>>>>> cae67c957b9f3a639588bab8b0cd32e22f8ee11e
+
 
 /**
  * Simulation Lifecycle: main function. So far, it simply reads a JSON file.
@@ -20,16 +18,12 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-<<<<<<< HEAD
     cJSON *json = NULL;
 
 
-   char *path = "../data/simulation_config.json";
-   read_json_file(path,&json);
-   run_sim(json);
     //printf("\n Test.");
     //return read_json_file(argv[1], &json);
-=======
+
     cJSON * workflow = NULL;
     node_t * results;
 
@@ -44,5 +38,5 @@ int main(int argc, char *argv[]) {
     if (res != SUCCESS) return res;
 
     return SUCCESS;
->>>>>>> cae67c957b9f3a639588bab8b0cd32e22f8ee11e
+
 }

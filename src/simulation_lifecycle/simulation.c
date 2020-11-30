@@ -35,7 +35,7 @@ int parse_default_sim_config(const cJSON *simulation_config, cJSON *target);
  */
 int write_sim_config(const cJSON *simulation_config, char *config_json);
 
-int build_simulation_scenario(cJSON *simulation_config, Node_t  **data_sources) {
+int build_simulation_scenario(cJSON *simulation_config, feature_set_t *p_features, relation_set_t *p_relations) {
 
     // p_features -> list of data sources
 
@@ -94,37 +94,55 @@ int write_sim_config(const cJSON *simulation_config, char *config_json) {
 }
 
 int run_sim(const cJSON *simulation_config){
-    cJSON *model = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_ID);
-    char *model_executable_path = concat(SIM_MODEL_LIBRARY, cJSON_GetStringValue(model));
-    model_executable_path = concat(model_executable_path,".exe");
 
+    /* Get model name - e.g. 2_2_agent_sir_config */
+    cJSON *model_id = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_ID);
+    char *model = cJSON_GetStringValue(model_id);
+
+    /* Define executable - e.g. 2_2_agent_sir_config.exe */
+    char *model_executable = concat(model, ".exe");
+
+    /* Get config output path */
     cJSON *config = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_CONFIG_OUTPUT_PATH);
     char *config_path = cJSON_GetStringValue(config);
 
-    char *command = concat(model_executable_path," ");
-    command = concat(command,config_path);
-
-    /* Run simulation */
+    /* Define a command and run simulation:
+     * The command is changing to the directory containing the .exe file.
+     * Then, the command executes the .exe file with one argument
+     * which is the scenario config json file.
+     * Example: cd ../third_party/CellDEVS_models/tutorial/bin/ ;
+     * ./2_2_agent_sir_config.exe ../../../../test/data/run_simulation/config.json
+     */
+    char *command = concat("cd ",SIM_MODEL_LIBRARY);
+    command = concat(command, " ; ./");
+    command = concat(command, model_executable);
+    command = concat(command, " ");
+    command = concat(command, config_path);
     int sim_status = system(command);
 
     /* Check if simulation was properly ran. */
     if (sim_status != 0){
         return SIM_RUN_ERROR;
     }else{
-        char *results_filename = concat(cJSON_GetStringValue(model), SIM_RESULTS_END_FILENAME);
-        results_filename = concat(SIM_RESULTS_DEFAULT_PATH,results_filename);
+        /* Define results filename */
+        char *results_filename = concat(model, SIM_RESULTS_END_FILENAME);
+        char *results_filename_path = concat(SIM_RESULTS_DEFAULT_PATH,results_filename);
 
         /* Check if results file exists */
-        if (!file_exists(results_filename)) {
+        if (!file_exists(results_filename_path)) {
             return SIM_RUN_NO_RESULTS;
         }else{
             /* Moving the results file to predefined result output path. */
-            char *results_filename_new = concat(SIM_RESULT_OUTPUT_PATH,results_filename);
-            int sim_results_move_status = rename(results_filename,results_filename_new);
-            if (sim_results_move_status =! 0) {
-                return SIM_RUN_RESULTS_MOVE_FAILED;
-            }else{
+            cJSON *result = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_RESULT_OUTPUT_PATH);
+            char *result_path = cJSON_GetStringValue(result);
+            char *results_filename_new = concat(result_path,results_filename);
+            int sim_results_move_status = rename(results_filename_path,results_filename_new);
+
+            /* Check if rename function was successful and if the new file exists */
+            if (sim_results_move_status == 0 && file_exists(results_filename_new)) {
                 return SUCCESS;
+            }else{
+                return SIM_RUN_RESULTS_MOVE_FAILED;
             }
         }
     }
