@@ -13,6 +13,5 @@
       "virulence": 0,
       "recovery": 1
     }
-  },
-  "config_output_path": "../test/data/simulation/output_config.json"
+  }
 }
