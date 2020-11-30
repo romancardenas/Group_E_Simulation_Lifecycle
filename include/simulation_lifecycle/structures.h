@@ -30,6 +30,18 @@ typedef struct viz_options {
     // TODO
 } viz_options_t;
 
+typedef struct data_source {
+    char * id;
+    char * path;
+    cJSON * data;
+} data_source_t;
+
+typedef struct operation {
+    char * name;
+    int (* validate)(cJSON * parameters);
+    int (* execute)(node_t ** data_sources, cJSON * parameters);
+} operation_t;
+
 int feature_set_empty(const feature_set_t *p_features);  // TODO
 int relation_set_empty(const relation_set_t *p_relations);  // TODO
 int inconsistent_data(const feature_set_t *p_features, const relation_set_t *p_relations);  // TODO
