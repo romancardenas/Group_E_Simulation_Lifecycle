@@ -1,7 +1,6 @@
 {
     "data_sources": [{
-            "id": "hospitals",
-            "path": "./data/DA_Ottawa.geojson"
+            "id": "hospitals"
           }, {
             "id": "db_ottawa",
             "path": "./data/Hospitals.geojson"
@@ -17,7 +16,7 @@
                 }
             }
         }, {
-            "id": "hospitals_selected",
+		    "id": "hospitals_selected",
             "operation": "select_by_attributes",
             "parameters": {
                 "data": {
@@ -37,7 +36,7 @@
                 },
                 "destination": {
                     "type": "result",
-                    "source": "db_centroids"
+                    "source": 1
                 }
             }
         }
