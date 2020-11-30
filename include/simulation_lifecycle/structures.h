@@ -42,6 +42,15 @@ typedef struct operation {
     int (* execute)(node_t ** data_sources, cJSON * parameters);
 } operation_t;
 
+/**
+ * @brief from a list of data sources, it returns a pointer to the data source with the desired ID.
+ *        It returns a NULL pointer if the data source is not found.
+ * @param[in] data_sources pointer to list of data sources.
+ * @param[in] id ID of the desired data source.
+ * @return pointer to data source with matching ID. If no data source is found, it returns a NULL pointer.
+ */
+data_source_t * get_data_source(node_t **data_sources, char *id);
+
 int feature_set_empty(const feature_set_t *p_features);  // TODO
 int relation_set_empty(const relation_set_t *p_relations);  // TODO
 int inconsistent_data(const feature_set_t *p_features, const relation_set_t *p_relations);  // TODO

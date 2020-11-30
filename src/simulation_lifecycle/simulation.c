@@ -106,20 +106,40 @@ int parse_default_sim_config(const cJSON *simulation_config, cJSON *target) {
 }
 
 int parse_cells_config(const cJSON *simulation_config, node_t **data_sources, cJSON *target) {
+    /* Get array that describes which data sources contain information regarding cell in the scenario */
     cJSON *cells = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_CELLS);
-    if (cells == NULL || !cJSON_IsArray(cells)) {
+    if (!cJSON_IsArray(cells)) {
         return SIM_MODEL_CELLS_CONFIG_INVALID;
     }
 
-    cJSON *iterator = NULL;
-    cJSON_ArrayForEach(iterator, cells) {
-        cJSON *source = cJSON_GetObjectItemCaseSensitive(iterator, SIM_DATA_SOURCE);
-        cJSON *id_map = cJSON_GetObjectItemCaseSensitive(iterator, SIM_CELL_ID);
-        if (!cJSON_IsString(source) || !cJSON_IsString(id_map)) {
+    /* Iterate over each data-source-to-cells mapper (data may be scatter around more than one data source) */
+    cJSON *cells_mapper = NULL;
+    cJSON_ArrayForEach(cells_mapper, cells) {
+        /* parse data source ID and data-source-field-to-cell-id key. They must be strings */
+        char * data_source_id = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(cells_mapper, SIM_DATA_SOURCE));
+        char *id_key = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(cells_mapper, SIM_CELL_ID));
+        if (data_source_id == NULL || id_key == NULL) {
             return SIM_MODEL_CELLS_CONFIG_INVALID;
         }
-        // TODO -> get data source, iterate over elements and fill the configuration
-        cJSON *cell_config = cJSON_CreateObject();
+        /* Find target data source from data source list. It must exist */
+        data_source_t *data_source = get_data_source(data_sources, data_source_id);
+        if (data_source == NULL) {
+            return SIM_MODEL_CELLS_CONFIG_INVALID;
+        }
+
+        /* Iterate over each data source element and create the corresponding cell configuration */
+        cJSON *cell_iterator = NULL;
+        cJSON_ArrayForEach(cell_iterator, data_source->data) {
+            /* Cell ID is a mandatory field. It must exist in the data source */
+            char *cell_id = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(cell_iterator, id_key));
+            if(cell_id == NULL) {
+                return SIM_MODEL_CELLS_CONFIG_INVALID;
+            }
+
+            cJSON *cell_config = cJSON_CreateObject();
+            // TODO look for state and config variables
+            cJSON_AddItemToObject(target, cell_id, cell_config);
+        }
     }
     /* Check that there is at least one valid cell */
     return (cJSON_GetArraySize(target) > 1) ? SUCCESS : SIM_MODEL_CELLS_CONFIG_INVALID;
