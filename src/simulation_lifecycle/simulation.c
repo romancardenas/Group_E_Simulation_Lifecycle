@@ -32,7 +32,16 @@ int parse_default_sim_config(const cJSON *simulation_config, cJSON *target);
  */
 int write_sim_config(const cJSON *simulation_config, char *config_json);
 
-int build_simulation_scenario(cJSON *simulation_config, feature_set_t *p_features, relation_set_t *p_relations) {
+int build_simulation_scenario(cJSON *simulation_config, Node_t  **data_sources) {
+
+    // p_features -> list of data sources
+
+    /*
+     *
+     * [{"id": "db_ottawa", "data": {...}}}, {"id"}]
+     *
+     *
+     */
     if (simulation_config == NULL) {
         return SIM_CONFIG_EMPTY;
     }
