@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "cJSON.h"
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/utils/file.h"
@@ -14,6 +15,8 @@
 #define SIM_MODEL_DEFAULT_CONFIG "default_config"
 #define SIM_CONFIG_OUTPUT_PATH "config_output_path"
 #define SIM_RESULT_OUTPUT_PATH "result_output_path"
+#define SIM_RESULTS_DEFAULT_PATH "../third_party/CellDEVS_models/tutorial/logs/"
+#define SIM_RESULTS_END_FILENAME "_outputs.txt"
 
 /**
  * @brief reads simulation configuration and fills the default Cell-DEVS configuration of the simulation scenario.
@@ -79,4 +82,39 @@ int write_sim_config(const cJSON *simulation_config, char *config_json) {
         return SIM_CONFIG_OUTPUT_PATH_INVALID;
     }
     return write_data_to_file(cJSON_GetStringValue(config_output_path), config_json);
+}
+
+int run_sim(const cJSON *simulation_config){
+    cJSON *model = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_ID);
+    char *model_executable_path = concat(SIM_MODEL_LIBRARY, cJSON_GetStringValue(model));
+    model_executable_path = concat(model_executable_path,".exe");
+
+    cJSON *config = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_CONFIG_OUTPUT_PATH);
+    char *config_path = cJSON_GetStringValue(config);
+
+    char *command = concat(model_executable_path," ");
+    command = concat(command,config_path);
+    int sim_status = system(command);
+
+    /* Check the simulation was properly runned */
+    if (sim_status != 0){
+        return SIM_RUN_ERROR;
+    }else{
+        char *results_filename = concat(cJSON_GetStringValue(model), SIM_RESULTS_END_FILENAME);
+        results_filename = concat(SIM_RESULTS_DEFAULT_PATH,results_filename);
+        /* Check if results file exists */
+        if (!file_exists(results_filename)) {
+            return SIM_RUN_NO_RESULTS;
+        }else{
+            /* Moving the results file */
+            char *results_filename_new = concat(SIM_RESULT_OUTPUT_PATH,results_filename);
+            int sim_results_move_status = rename(results_filename,results_filename_new);
+            if (sim_results_move_status =! 0) {
+                return SIM_RUN_RESULTS_MOVE_FAILED;
+            }else{
+                return SUCCESS;
+            }
+        }
+    }
+
 }

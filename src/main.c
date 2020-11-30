@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "cJSON.h"
 #include "simulation_lifecycle/utils/file.h"
+#include "simulation_lifecycle/simulation.h"
 
 /**
  * Simulation Lifecycle: main function. So far, it simply reads a JSON file.
@@ -15,5 +16,11 @@ int main(int argc, char *argv[]) {
     }
 
     cJSON *json = NULL;
-    return read_json_file(argv[1], &json);
+
+
+   char *path = "../data/simulation_config.json";
+   read_json_file(path,&json);
+   run_sim(json);
+    //printf("\n Test.");
+    //return read_json_file(argv[1], &json);
 }
