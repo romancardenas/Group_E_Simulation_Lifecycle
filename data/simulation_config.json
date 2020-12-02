@@ -34,8 +34,8 @@
   ],
   "vicinities": {
     "source": "vicinity_db_ottawa",
-    "cell_from": "from",
-    "cell_to": "to",
+    "from": "from",
+    "to": "to",
     "vicinity": {
       "connectivity": "conn",
       "mobility": "mob"

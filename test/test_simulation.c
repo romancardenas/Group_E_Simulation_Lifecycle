@@ -96,40 +96,97 @@ void test_invalid_cells_config(void) {
     TEST_ASSERT_EQUAL(SIM_MODEL_CELL_MAPPING_INVALID, build_simulation_scenario(json, &data_sources));
 
     cJSON_Delete(json);
-    read_json_file("../test/data/simulation/4_8_cells_config_valid_simple.json", &json);
-    TEST_ASSERT_EQUAL(SUCCESS, build_simulation_scenario(json, &data_sources));
-
-    remove("../test/data/simulation/output_config.json");
-    cJSON_Delete(json);
-    read_json_file("../test/data/simulation/4_9_cells_config_invalid_pop_mapping.json", &json);
+    read_json_file("../test/data/simulation/4_8_cells_config_invalid_pop_mapping.json", &json);
     TEST_ASSERT_EQUAL(SIM_MODEL_CELL_MAPPING_INVALID, build_simulation_scenario(json, &data_sources));
 
     cJSON_Delete(json);
-    read_json_file("../test/data/simulation/4_10_cells_config_valid_pop_mapping.json", &json);
-    TEST_ASSERT_EQUAL(SUCCESS, build_simulation_scenario(json, &data_sources));
-
     cJSON_Delete(data);
     remove_list(&data_sources);
 }
 
 void test_invalid_vicinities_config(void) {
-    cJSON *json = NULL;  // TODO
+    node_t *data_sources = NULL;
+    cJSON *data = NULL, *vicinities = NULL, *isolated_vicinities = NULL, *incorrect_vicinities = NULL;
+    read_json_file("../test/data/DB_Ottawa_Simple.geojson", &data);
+    read_json_file("../test/data/DB_Ottawa_Vicinities_Simple.geojson", &vicinities);
+    read_json_file("../test/data/DB_Ottawa_Vicinities_IsolatedCell.geojson", &isolated_vicinities);
+    read_json_file("../test/data/DB_Ottawa_Vicinities_IncorrectID.geojson", &incorrect_vicinities);
+
+    data_source_t d_source = {"data", "../test/DB_Ottawa_Simple.geojson", cJSON_GetObjectItem(data, "features")};
+    data_source_t v_source = {"vicinities", "../test/DB_Ottawa_Vicinities_Simple.geojson", vicinities};
+    data_source_t iv_source = {"incomplete_vicinities", "../test/DB_Ottawa_Vicinities_Simple.geojson", isolated_vicinities};
+    data_source_t nv_source = {"incorrect_vicinities", "../test/DB_Ottawa_Vicinities_Simple.geojson", incorrect_vicinities};
+    push_node_left(&data_sources, &d_source, sizeof(data_source_t));
+    push_node_left(&data_sources, &v_source, sizeof(data_source_t));
+    push_node_left(&data_sources, &iv_source, sizeof(data_source_t));
+    push_node_left(&data_sources, &nv_source, sizeof(data_source_t));
+
+    cJSON *json = NULL;
+
+    cJSON_Delete(json);
+    read_json_file("../test/data/simulation/5_1_missing_vicinities_config.json", &json);
+    TEST_ASSERT_EQUAL(SIM_MODEL_VICINITIES_CONFIG_INVALID, build_simulation_scenario(json, &data_sources));
+
+    cJSON_Delete(json);
+    read_json_file("../test/data/simulation/5_2_empty_vicinities_config.json", &json);
+    TEST_ASSERT_EQUAL(SIM_MODEL_VICINITIES_CONFIG_INVALID, build_simulation_scenario(json, &data_sources));
+
+    cJSON_Delete(json);
+    read_json_file("../test/data/simulation/5_3_vicinities_config_invalid_source.json", &json);
+    TEST_ASSERT_EQUAL(SIM_MODEL_VICINITIES_CONFIG_INVALID, build_simulation_scenario(json, &data_sources));
+
+    cJSON_Delete(json);
+    read_json_file("../test/data/simulation/5_4_vicinities_config_invalid_id_map.json", &json);
+    TEST_ASSERT_EQUAL(SIM_MODEL_VICINITY_MAPPING_INVALID, build_simulation_scenario(json, &data_sources));
+
+    cJSON_Delete(json);
+    read_json_file("../test/data/simulation/5_5_vicinities_config_incorrect_source.json", &json);
+    TEST_ASSERT_EQUAL(SIM_MODEL_VICINITY_MAPPING_INVALID, build_simulation_scenario(json, &data_sources));
+
+    cJSON_Delete(json);
+    read_json_file("../test/data/simulation/5_6_vicinities_config_incomplete_source.json", &json);
+    TEST_ASSERT_EQUAL(SIM_MODEL_VICINITY_MAPPING_INVALID, build_simulation_scenario(json, &data_sources));
+
+    cJSON_Delete(json);
+    cJSON_Delete(data);
+    cJSON_Delete(vicinities);
+    cJSON_Delete(isolated_vicinities);
+    cJSON_Delete(incorrect_vicinities);
+    remove_list(&data_sources);
 }
 
 void test_invalid_output_config_path(void) {
-    return;  // TODO remove this when everything is working
+    node_t *data_sources = NULL;
+    cJSON *data = NULL, *vicinities = NULL;
+    read_json_file("../test/data/DB_Ottawa_Simple.geojson", &data);
+    read_json_file("../test/data/DB_Ottawa_Vicinities_Simple.geojson", &vicinities);
+
+    data_source_t d_source = {"data", "../test/DB_Ottawa_Simple.geojson", cJSON_GetObjectItem(data, "features")};
+    data_source_t v_source = {"vicinities", "../test/DB_Ottawa_Vicinities_Simple.geojson", vicinities};
+    push_node_left(&data_sources, &d_source, sizeof(data_source_t));
+    push_node_left(&data_sources, &v_source, sizeof(data_source_t));
+
     cJSON *json = NULL;
 
     read_json_file("../test/data/simulation/6_1_missing_output_config_path.json", &json);
-    TEST_ASSERT_EQUAL(SIM_CONFIG_OUTPUT_PATH_INVALID, build_simulation_scenario(json, NULL));
+    TEST_ASSERT_EQUAL(SIM_CONFIG_OUTPUT_PATH_INVALID, build_simulation_scenario(json, &data_sources));
 
+    cJSON_Delete(json);
     read_json_file("../test/data/simulation/6_2_invalid_output_config_path.json", &json);
-    TEST_ASSERT_EQUAL(SIM_CONFIG_OUTPUT_PATH_INVALID, build_simulation_scenario(json, NULL));
+    TEST_ASSERT_EQUAL(SIM_CONFIG_OUTPUT_PATH_INVALID, build_simulation_scenario(json, &data_sources));
 
+    cJSON_Delete(json);
     read_json_file("../test/data/simulation/6_3_existing_output_config_path.json", &json);
-    TEST_ASSERT_EQUAL(FILE_EXISTS_ERROR, build_simulation_scenario(json, NULL));
+    TEST_ASSERT_EQUAL(FILE_EXISTS_ERROR, build_simulation_scenario(json, &data_sources));
 
-    // TODO Add a valid file with all the required fields
+    cJSON_Delete(json);
+    read_json_file("../test/data/simulation/6_4_valid_config.json", &json);
+    TEST_ASSERT_EQUAL(SUCCESS, build_simulation_scenario(json, &data_sources));
+
+    cJSON_Delete(json);
+    cJSON_Delete(data);
+    cJSON_Delete(vicinities);
+    remove_list(&data_sources);
 }
 
 int main(void) {
@@ -138,7 +195,7 @@ int main(void) {
     RUN_TEST(test_invalid_model_selection);
     RUN_TEST(test_invalid_default_model_common_config);
     RUN_TEST(test_invalid_cells_config);
-    //RUN_TEST(test_invalid_vicinities_config);
-    //RUN_TEST(test_invalid_output_config_path);
+    RUN_TEST(test_invalid_vicinities_config);
+    RUN_TEST(test_invalid_output_config_path);
     return UNITY_END();
 }

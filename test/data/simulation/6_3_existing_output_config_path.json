@@ -14,5 +14,23 @@
       "recovery": 1
     }
   },
+  "cells": [
+    {
+      "source": "data",
+      "cell_id": "dbuid",
+      "state": {
+        "population": "id"
+      }
+    }
+  ],
+  "vicinities": {
+    "from": "from",
+    "to": "to",
+    "source": "vicinities",
+    "vicinity": {
+      "connectivity": "conn",
+      "mobility": "mob"
+    }
+  },
   "config_output_path": "../test/data/simulation/2_1_empty_config.json"
 }

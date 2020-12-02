@@ -23,5 +23,13 @@
       }
     }
   ],
-  "config_output_path": "../test/data/simulation/output_config.json"
+  "vicinities": {
+    "from": "invalid",
+    "to": "invalid",
+    "source": "vicinities",
+    "vicinity": {
+      "connectivity": "conn",
+      "mobility": "mob"
+    }
+  }
 }

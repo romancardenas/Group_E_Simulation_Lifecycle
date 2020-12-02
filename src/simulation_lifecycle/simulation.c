@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "cJSON.h"
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/utils/linked_list.h"
@@ -17,7 +18,11 @@
 #define SIM_DATA_SOURCE "source"
 #define SIM_MODEL_CELLS "cells"
 #define SIM_MODEL_DEFAULT "default"
+#define SIM_MODEL_VICINITY "vicinity"
 #define SIM_MODEL_VICINITIES "vicinities"
+#define SIM_MODEL_VICINITIES_FROM "from"
+#define SIM_MODEL_VICINITIES_TO "to"
+#define SIM_MODEL_NEIGHBORHOOD "neighborhood"
 
 /**
  * @brief reads simulation configuration and fills the default Cell-DEVS configuration of the simulation scenario.
@@ -44,6 +49,13 @@ int parse_cells_config(const cJSON *simulation_config, node_t **data_sources, cJ
  * @return 0 if the function ran successfully. Otherwise, it returns an error code.
  */
 int parse_vicinities(const cJSON *simulation_config, node_t **data_sources, cJSON *target);
+
+/**
+ * @brief checks that all the cells of the model have at least one neighboring cell.
+ * @param[in] target cJSON struct with all the cells of the scenario that needs to be checked.
+ * @return 0 if the function ran successfully. Otherwiese, it returns an error code.
+ */
+int check_valid_vicinities(cJSON *target);
 
 /**
  * @brief writes JSON configuration to the desired output path.
@@ -134,12 +146,37 @@ int parse_cells_config(const cJSON *simulation_config, node_t **data_sources, cJ
 }
 
 int parse_vicinities(const cJSON *simulation_config, node_t **data_sources, cJSON *target) {
-    return SUCCESS; // TODO remove this when the cell part is done
     cJSON *vicinities = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_VICINITIES);
     if (vicinities == NULL || !cJSON_IsObject(vicinities)) {
         return SIM_MODEL_VICINITIES_CONFIG_INVALID;
     }
-    return SUCCESS; // TODO
+
+    char *from_map = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(vicinities, SIM_MODEL_VICINITIES_FROM));
+    char *to_map = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(vicinities, SIM_MODEL_VICINITIES_TO));
+    char * data_source_id = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(vicinities, SIM_DATA_SOURCE));
+    cJSON * vicinity_map = cJSON_GetObjectItemCaseSensitive(vicinities, SIM_MODEL_VICINITY);
+    if (from_map == NULL || to_map == NULL|| data_source_id == NULL || vicinity_map == NULL) {
+        return SIM_MODEL_VICINITIES_CONFIG_INVALID;
+    }
+    data_source_t *data_source = get_data_source(data_sources, data_source_id);
+    if (data_source == NULL) {
+        return SIM_MODEL_VICINITIES_CONFIG_INVALID;
+    }
+    int res = parse_vicinities_from_data_source(data_source, from_map, to_map, vicinity_map, target);
+    return (res)? res : check_valid_vicinities(target);
+}
+
+int check_valid_vicinities(cJSON *target) {
+    cJSON *cell;
+    cJSON_ArrayForEach(cell, target) {
+        if (strcmp(cell->string, SIM_MODEL_DEFAULT) != 0) {
+            cJSON *neighborhood = cJSON_GetObjectItemCaseSensitive(cell, SIM_MODEL_NEIGHBORHOOD);
+            if (!cJSON_GetArraySize(neighborhood)) {
+                return SIM_MODEL_VICINITY_MAPPING_INVALID;
+            }
+        }
+    }
+    return SUCCESS;
 }
 
 int write_sim_config(const cJSON *simulation_config, char *config_json) {

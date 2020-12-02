@@ -22,6 +22,12 @@
 				"susceptible":	1,
 				"infected":	0,
 				"recovered":	0
+			},
+			"neighborhood":	{
+				"35061444007":	{
+					"connectivity":	1,
+					"mobility":	1
+				}
 			}
 		},
 		"35061380011":	{
@@ -30,6 +36,12 @@
 				"susceptible":	1,
 				"infected":	0,
 				"recovered":	0
+			},
+			"neighborhood":	{
+				"35061380011":	{
+					"connectivity":	1,
+					"mobility":	1
+				}
 			}
 		},
 		"35061444010":	{
@@ -38,6 +50,12 @@
 				"susceptible":	1,
 				"infected":	0,
 				"recovered":	0
+			},
+			"neighborhood":	{
+				"35061444010":	{
+					"connectivity":	1,
+					"mobility":	1
+				}
 			}
 		},
 		"35061380012":	{
@@ -46,6 +64,12 @@
 				"susceptible":	1,
 				"infected":	0,
 				"recovered":	0
+			},
+			"neighborhood":	{
+				"35061380012":	{
+					"connectivity":	1,
+					"mobility":	1
+				}
 			}
 		},
 		"35061380013":	{
@@ -54,6 +78,12 @@
 				"susceptible":	1,
 				"infected":	0,
 				"recovered":	0
+			},
+			"neighborhood":	{
+				"35061380013":	{
+					"connectivity":	1,
+					"mobility":	1
+				}
 			}
 		},
 		"35061444008":	{
@@ -62,6 +92,12 @@
 				"susceptible":	1,
 				"infected":	0,
 				"recovered":	0
+			},
+			"neighborhood":	{
+				"35061444008":	{
+					"connectivity":	1,
+					"mobility":	1
+				}
 			}
 		},
 		"35061379010":	{
@@ -70,6 +106,12 @@
 				"susceptible":	1,
 				"infected":	0,
 				"recovered":	0
+			},
+			"neighborhood":	{
+				"35061379010":	{
+					"connectivity":	1,
+					"mobility":	1
+				}
 			}
 		},
 		"35061380002":	{
@@ -78,6 +120,12 @@
 				"susceptible":	1,
 				"infected":	0,
 				"recovered":	0
+			},
+			"neighborhood":	{
+				"35061380002":	{
+					"connectivity":	1,
+					"mobility":	1
+				}
 			}
 		},
 		"35061380003":	{
@@ -86,6 +134,12 @@
 				"susceptible":	1,
 				"infected":	0,
 				"recovered":	0
+			},
+			"neighborhood":	{
+				"35061380003":	{
+					"connectivity":	1,
+					"mobility":	1
+				}
 			}
 		},
 		"35061380005":	{
@@ -94,6 +148,12 @@
 				"susceptible":	1,
 				"infected":	0,
 				"recovered":	0
+			},
+			"neighborhood":	{
+				"35061380005":	{
+					"connectivity":	1,
+					"mobility":	1
+				}
 			}
 		},
 		"35061380008":	{
@@ -102,6 +162,12 @@
 				"susceptible":	1,
 				"infected":	0,
 				"recovered":	0
+			},
+			"neighborhood":	{
+				"35061380008":	{
+					"connectivity":	1,
+					"mobility":	1
+				}
 			}
 		},
 		"35061380009":	{
@@ -110,6 +176,16 @@
 				"susceptible":	1,
 				"infected":	0,
 				"recovered":	0
+			},
+			"neighborhood":	{
+				"35061380009":	{
+					"connectivity":	1,
+					"mobility":	1
+				},
+				"35061380008":	{
+					"connectivity":	0.8,
+					"mobility":	0.3
+				}
 			}
 		}
 	}

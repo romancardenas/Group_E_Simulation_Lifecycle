@@ -31,5 +31,6 @@
       "connectivity": "conn",
       "mobility": "mob"
     }
-  }
+  },
+  "config_output_path": "../test/data/simulation/output_config.json"
 }

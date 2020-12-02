@@ -26,7 +26,7 @@
   "vicinities": {
     "from": "from",
     "to": "to",
-    "source": "vicinities",
+    "source": "incomplete_vicinities",
     "vicinity": {
       "connectivity": "conn",
       "mobility": "mob"

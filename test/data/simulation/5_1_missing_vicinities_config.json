@@ -22,14 +22,5 @@
         "population": "id"
       }
     }
-  ],
-  "vicinities": {
-    "from": "from",
-    "to": "to",
-    "source": "vicinities",
-    "vicinity": {
-      "connectivity": "conn",
-      "mobility": "mob"
-    }
-  }
+  ]
 }

@@ -10,6 +10,7 @@
 #define MODEL_CELL_STATE "state"
 #define MODEL_CELL_CONFIG "config"
 #define MODEL_NEIGHBORHOOD "neighborhood"
+#define MODEL_VICINITY "vicinity"
 
 #define DELAY_BUFFER_TRANSPORT "transport"
 #define DELAY_BUFFER_HYBRID "hybrid"
@@ -124,6 +125,38 @@ int parse_cells_from_data_source(cJSON *map, data_source_t *data_source, cJSON *
     return SUCCESS;
 }
 
+int parse_vicinities_from_data_source(data_source_t *data_source, char *from_map, char *to_map, cJSON *vicinity_map, cJSON *target) {
+    cJSON *vicinity_iterator = NULL;
+    cJSON_ArrayForEach(vicinity_iterator, data_source->data) {
+        char *cell_from = feature_get_string_property(vicinity_iterator, from_map);
+        char *cell_to = feature_get_string_property(vicinity_iterator, to_map);
+        if(cell_from == NULL || cell_to == NULL) {
+            return SIM_MODEL_VICINITY_MAPPING_INVALID;
+        }
+        /* Cells of the vicinity must be already defined in target cJSON */
+        cJSON *destination_cell = cJSON_GetObjectItemCaseSensitive(target, cell_to);
+        if (destination_cell == NULL || cJSON_GetObjectItemCaseSensitive(target, cell_from) == NULL) {
+            return SIM_MODEL_VICINITY_MAPPING_INVALID;
+        }
+        /* Source cell cannot be already a neighbor of destination cell */
+        cJSON * neighborhood = cJSON_GetObjectItemCaseSensitive(destination_cell, MODEL_NEIGHBORHOOD);
+        if (neighborhood == NULL) {
+            neighborhood = cJSON_CreateObject();
+            cJSON_AddItemToObject(destination_cell, MODEL_NEIGHBORHOOD, neighborhood);
+        } else if (cJSON_GetObjectItemCaseSensitive(neighborhood, cell_from) != NULL) {
+            return SIM_MODEL_VICINITY_MAPPING_INVALID;
+        }
+        /* We reuse the function for default state. As there is no default vicinity, we use the vicinity map as default */
+        cJSON *vicinity = create_param_from_feature(vicinity_iterator, vicinity_map, vicinity_map);
+        if (vicinity == NULL) {
+            return SIM_MODEL_VICINITY_MAPPING_INVALID;
+        }
+        /* If everything went OK, we add the new vicinity to the corresponding neighborhood */
+        cJSON_AddItemToObject(neighborhood, cell_from, vicinity);
+    }
+    return SUCCESS;
+}
+
 int valid_delay(char *delay_id) {
     if (strcmp(delay_id, DELAY_BUFFER_TRANSPORT) != 0) {
         if (strcmp(delay_id, DELAY_BUFFER_INERTIAL) != 0) {
@@ -167,4 +200,3 @@ cJSON * create_param_from_feature(cJSON *feature, cJSON *default_param, cJSON *s
         return NULL;
     }
 }
-

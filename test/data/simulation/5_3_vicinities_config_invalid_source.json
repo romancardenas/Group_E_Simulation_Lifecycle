@@ -17,8 +17,19 @@
   "cells": [
     {
       "source": "data",
-      "cell_id": "dbuid"
+      "cell_id": "dbuid",
+      "state": {
+        "population": "id"
+      }
     }
   ],
-  "config_output_path": "../test/data/simulation/output_config.json"
+  "vicinities": {
+    "from": "invalid",
+    "to": "invalid",
+    "source": "invalid",
+    "vicinity": {
+      "connectivity": "conn",
+      "mobility": "mob"
+    }
+  }
 }
