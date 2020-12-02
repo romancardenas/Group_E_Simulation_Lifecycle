@@ -2,6 +2,7 @@
 #include "cJSON.h"
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/models.h"
+#include "simulation_lifecycle/utils/feature.h"
 
 #define MODEL_CELL_TYPE "cell_type"
 #define MODEL_CELL_DELAY "delay"
@@ -23,12 +24,12 @@ int valid_delay(char *delay_id);
 
 /**
  * @brief creates state configuration of a cell from a data source.
- * @param[in] data_source pointer to the data source
+ * @param[in] feature pointer to the data feature that represents a cell
  * @param[in] default_param default cell parameter. It is used to select default values when needed.
  * @param[in] source_to_param_map JSON file that maps parameters with fields of the data source.
  * @return pointer to cJSON struct containing the cell parameter. If anything went wrong, the function returns NULL.
  */
-cJSON * create_param_from_source(data_source_t *data_source, cJSON *default_param, cJSON *source_to_param_map);
+cJSON * create_param_from_feature(cJSON *feature, cJSON *default_param, cJSON *source_to_param_map);
 
 int parse_common_default_fields(const cJSON *default_config, cJSON *target) {
     /* 1. Detect default cell type */
@@ -66,13 +67,13 @@ int parse_cells_from_data_source(cJSON *map, data_source_t *data_source, cJSON *
     /* parse data source ID and data-source-field-to-cell-id map. They must be strings */
     char *id_key = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(map, MODEL_CELL_ID));
     if (id_key == NULL) {
-        return SIM_MODEL_CELLS_CONFIG_INVALID;
+        return SIM_MODEL_CELL_MAPPING_INVALID;
     }
     /* Get data-source-to-state map. They can be NULL */
     char *data_cell_type = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(map, MODEL_CELL_TYPE));
     char *data_delay_type = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(map, MODEL_CELL_DELAY));
     if (data_delay_type != NULL && !valid_delay(data_delay_type)) {
-        return SIM_MODEL_CELLS_CONFIG_INVALID;
+        return SIM_MODEL_CELL_MAPPING_INVALID;
     }
     cJSON *data_to_state_map = cJSON_GetObjectItemCaseSensitive(map, MODEL_CELL_STATE);
     cJSON *data_to_config_map = cJSON_GetObjectItemCaseSensitive(map, MODEL_CELL_CONFIG);
@@ -81,9 +82,9 @@ int parse_cells_from_data_source(cJSON *map, data_source_t *data_source, cJSON *
     cJSON *cell_iterator = NULL;
     cJSON_ArrayForEach(cell_iterator, data_source->data) {
         /* Cell ID is a mandatory field. It must exist in the data source */
-        char *cell_id = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(cell_iterator, id_key));
+        char *cell_id = feature_get_string_property(cell_iterator, id_key);
         if(cell_id == NULL) {
-            return SIM_MODEL_CELLS_CONFIG_INVALID;
+            return SIM_MODEL_CELL_MAPPING_INVALID;
         }
 
         /* Cell config is a JSON object. It may be empty if it inherits all the default values */
@@ -100,10 +101,10 @@ int parse_cells_from_data_source(cJSON *map, data_source_t *data_source, cJSON *
         /* Check if a state mapping is necessary */
         if (data_to_state_map != NULL) {
             cJSON * default_state = cJSON_GetObjectItemCaseSensitive(default_cell, MODEL_CELL_STATE);
-            cJSON *state = create_param_from_source(data_source, default_state, data_to_state_map);
+            cJSON *state = create_param_from_feature(cell_iterator, default_state, data_to_state_map);
             if (state == NULL) {
                 cJSON_Delete(cell_config);
-                return SIM_MODEL_CELLS_CONFIG_INVALID;
+                return SIM_MODEL_CELL_MAPPING_INVALID;
             }
             cJSON_AddItemToObject(cell_config, MODEL_CELL_STATE, state);
         }
@@ -111,10 +112,10 @@ int parse_cells_from_data_source(cJSON *map, data_source_t *data_source, cJSON *
         /* Check if a config mapping is necessary */
         if (data_to_config_map != NULL) {
             cJSON * default_config = cJSON_GetObjectItemCaseSensitive(default_cell, MODEL_CELL_CONFIG);
-            cJSON *config = create_param_from_source(data_source, default_config, data_to_config_map);
+            cJSON *config = create_param_from_feature(cell_iterator, default_config, data_to_config_map);
             if (config == NULL) {
                 cJSON_Delete(cell_config);
-                return SIM_MODEL_CELLS_CONFIG_INVALID;
+                return SIM_MODEL_CELL_MAPPING_INVALID;
             }
             cJSON_AddItemToObject(cell_config, MODEL_CELL_CONFIG, config);
         }
@@ -134,7 +135,7 @@ int valid_delay(char *delay_id) {
     return 1;
 }
 
-cJSON * create_param_from_source(data_source_t *data_source, cJSON *default_param, cJSON *source_to_param_map) {
+cJSON * create_param_from_feature(cJSON *feature, cJSON *default_param, cJSON *source_to_param_map) {
     /* 1. If default state is a cJSON object, we call the function recursively to explore each of its items */
     if (cJSON_IsObject(default_param)) {
         cJSON *res = cJSON_CreateObject();
@@ -142,7 +143,7 @@ cJSON * create_param_from_source(data_source_t *data_source, cJSON *default_para
         cJSON_ArrayForEach(param_iterator, default_param) {
             /* 1.1. We get the map for the specific child item of the object */
             cJSON *submap = cJSON_GetObjectItemCaseSensitive(source_to_param_map, param_iterator->string);
-            cJSON *param = create_param_from_source(data_source, param_iterator, submap);
+            cJSON *param = create_param_from_feature(feature, param_iterator, submap);
             /* 1.2. If result is NULL, something went wrong -> remove result and return NULL */
             if (param == NULL) {
                 cJSON_Delete(res);
@@ -156,7 +157,7 @@ cJSON * create_param_from_source(data_source_t *data_source, cJSON *default_para
         return res;
         /* 2. If default state is not a cJSON object and the source-to-state map is a string -> we try to map the value */
     } else if (cJSON_IsString(source_to_param_map)) {
-        cJSON *res = cJSON_GetObjectItemCaseSensitive(data_source->data, cJSON_GetStringValue(source_to_param_map));
+        cJSON *res = feature_get_property(feature, cJSON_GetStringValue(source_to_param_map));
         return (res == NULL) ? res : cJSON_Parse(cJSON_Print(res));
         /* 3. If user didn't specified a string for the source-to-state map, we just copy the default value */
     } else if (source_to_param_map == NULL) {
