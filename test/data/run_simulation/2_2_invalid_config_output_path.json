@@ -1,5 +1,5 @@
 {
-  "model_id": "invalid",
+  "model_id": "2_2_agent_sir_config",
   "default_config": {
     "cell_type": "sir",
     "delay": "hybrid",
@@ -14,6 +14,6 @@
       "recovery": 1
     }
   },
-  "config_output_path": "../../../../test/data/run_simulation/config.json",
-  "result_output_path": "../test/data/run_simulation/"
+  "config_output_path": 5,
+  "result_output_path": "../test/data/run_simulation/simulation_output_messages.txt"
 }
