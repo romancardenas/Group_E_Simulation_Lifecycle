@@ -73,7 +73,7 @@ int parse_default_sim_config(const cJSON *simulation_config, cJSON *target) {
     }
     // Check that the model exists
     char *model_path = concat(SIM_MODEL_LIBRARY, cJSON_GetStringValue(model));
-    int model_found = file_exists(model_path);
+    int model_found = executable_exists(model_path);
     free(model_path);
     if (!model_found) {
         return SIM_MODEL_SELECTION_INVALID;
@@ -106,7 +106,7 @@ int run_sim(const cJSON *simulation_config){
 
     /* Check that the model exists. */
     char *model_path = concat(SIM_MODEL_LIBRARY, cJSON_GetStringValue(model));
-    int model_found = file_exists(model_path);
+    int model_found = executable_exists(model_path);
     if (!model_found) {
         return SIM_MODEL_SELECTION_INVALID;
     }
@@ -121,18 +121,10 @@ int run_sim(const cJSON *simulation_config){
     chdir(SIM_MODEL_LIBRARY);
 
     /* Get config output path which is relative to SIM_MODEL_LIBRARY. */
-    cJSON *config = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_CONFIG_OUTPUT_PATH);
+    char *config_path = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_CONFIG_OUTPUT_PATH));
 
     /* Check that config output path is provided using a valid format. */
-    if (config == NULL || !cJSON_IsString(config)) {
-        chdir(current_dir);
-        return SIM_CONFIG_OUTPUT_PATH_INVALID;
-    }
-
-    /* Check that the config output path exists. */
-    char *config_path = cJSON_GetStringValue(config);
-    int path_found = file_exists(config_path);
-    if (!path_found) {
+    if (config_path == NULL || !file_exists(config_path)) {
         chdir(current_dir);
         return SIM_CONFIG_OUTPUT_PATH_INVALID;
     }
@@ -167,18 +159,16 @@ int run_sim(const cJSON *simulation_config){
         }else{
             /* Moving the results file to predefined result output path. */
             /* Get result output path */
-            cJSON *result = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_RESULT_OUTPUT_PATH);
+            char *result_path = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_RESULT_OUTPUT_PATH));
 
             /* Check that config output path is provided and valid. */
-            if (result == NULL || !cJSON_IsString(result)) {
+            if (result_path == NULL){
                 return SIM_RESULT_OUTPUT_PATH_INVALID;
             }
 
             /* Check if config output path already exists. */
             /* This check will avoid overwriting on previous simulation results. */
-            char *result_path = cJSON_GetStringValue(result);
-            int result_path_found = file_exists(result_path);
-            if (result_path_found) {
+            if (file_exists(result_path)){
                 return SIM_RESULT_OUTPUT_PATH_ALREADY_EXISTS ;
             }
 
