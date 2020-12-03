@@ -10,7 +10,6 @@
 #define MODEL_CELL_STATE "state"
 #define MODEL_CELL_CONFIG "config"
 #define MODEL_NEIGHBORHOOD "neighborhood"
-#define MODEL_VICINITY "vicinity"
 
 #define DELAY_BUFFER_TRANSPORT "transport"
 #define DELAY_BUFFER_HYBRID "hybrid"
@@ -87,7 +86,6 @@ int parse_cells_from_data_source(cJSON *map, data_source_t *data_source, cJSON *
         if(cell_id == NULL) {
             return SIM_MODEL_CELL_MAPPING_INVALID;
         }
-
         /* Cell config is a JSON object. It may be empty if it inherits all the default values */
         cJSON *cell_config = cJSON_CreateObject();
 
@@ -109,7 +107,6 @@ int parse_cells_from_data_source(cJSON *map, data_source_t *data_source, cJSON *
             }
             cJSON_AddItemToObject(cell_config, MODEL_CELL_STATE, state);
         }
-
         /* Check if a config mapping is necessary */
         if (data_to_config_map != NULL) {
             cJSON * default_config = cJSON_GetObjectItemCaseSensitive(default_cell, MODEL_CELL_CONFIG);
@@ -138,11 +135,12 @@ int parse_vicinities_from_data_source(data_source_t *data_source, char *from_map
         if (destination_cell == NULL || cJSON_GetObjectItemCaseSensitive(target, cell_from) == NULL) {
             return SIM_MODEL_VICINITY_MAPPING_INVALID;
         }
-        /* Source cell cannot be already a neighbor of destination cell */
         cJSON * neighborhood = cJSON_GetObjectItemCaseSensitive(destination_cell, MODEL_NEIGHBORHOOD);
+        /* If this is the very first neighbor of the cell, then we create the neighborhood cJSON object */
         if (neighborhood == NULL) {
             neighborhood = cJSON_CreateObject();
             cJSON_AddItemToObject(destination_cell, MODEL_NEIGHBORHOOD, neighborhood);
+        /* Source cell cannot be already a neighbor of destination cell */
         } else if (cJSON_GetObjectItemCaseSensitive(neighborhood, cell_from) != NULL) {
             return SIM_MODEL_VICINITY_MAPPING_INVALID;
         }
@@ -158,7 +156,9 @@ int parse_vicinities_from_data_source(data_source_t *data_source, char *from_map
 }
 
 int valid_delay(char *delay_id) {
-    if (strcmp(delay_id, DELAY_BUFFER_TRANSPORT) != 0) {
+    if (delay_id == NULL) {
+        return 0;
+    } else if (strcmp(delay_id, DELAY_BUFFER_TRANSPORT) != 0) {
         if (strcmp(delay_id, DELAY_BUFFER_INERTIAL) != 0) {
             if (strcmp(delay_id, DELAY_BUFFER_HYBRID) != 0) {
                 return 0;
