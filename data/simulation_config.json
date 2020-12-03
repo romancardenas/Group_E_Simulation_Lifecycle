@@ -34,6 +34,6 @@
       }
     }
   },
-  "config_output_path": "./config_output.json",
-  "result_output_path": "./result_output.json"
+  "config_output_path": "../../../../data/config.json",
+  "result_output_path": "../data/results/simulation_output_messages.txt"
 }

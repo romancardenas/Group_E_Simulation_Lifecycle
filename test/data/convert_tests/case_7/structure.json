@@ -1,0 +1,25 @@
+{
+	"info":	{
+		"simulator":	"Cadmium",
+		"name":	"transport_output_messages",
+		"type":	"Cell-DEVS"
+	},
+	"nodes":	[{
+			"name":	"CO2_model",
+			"type":	"coupled",
+			"size":	[38, 57, 1]
+		}],
+	"ports":	[{
+			"model":	"CO2_model",
+			"name":	"out",
+			"type":	"output"
+		}, {
+			"model":	"CO2_model",
+			"name":	"out_ty",
+			"type":	"output"
+		}, {
+			"model":	"CO2_model",
+			"name":	"out_c",
+			"type":	"output"
+		}]
+}

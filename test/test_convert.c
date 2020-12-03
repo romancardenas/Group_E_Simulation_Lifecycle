@@ -1,18 +1,25 @@
 #include <unity.h>
+#include "simulation_lifecycle/utils/strings.h"
 #include "simulation_lifecycle/convert.h"
 #include "simulation_lifecycle/error.h"
 
 void setUp(void) {
     // set stuff up here
+
+    char *log_filename = CONVERTED_RESULTS_LOG_FILENAME;
+    char *json_filename = CONVERTED_RESULTS_JSON_FILENAME;
+    char *path = "../test/data/convert_tests/case_7/";
+
+    log_filename = concat(path,log_filename);
+    json_filename = concat(path,json_filename);
+
+    remove(log_filename);
+    remove(json_filename);
+
 }
 
 void tearDown(void) {
     // clean stuff up here
-
-    /* TODO create a remove_file function to remove newly created files
-     * in folder ../test/data/convert_tests/case_7
-     */
-
 
 }
 

@@ -9,9 +9,6 @@
 #include "simulation_lifecycle/utils/file.h"
 #include "simulation_lifecycle/convert.h"
 
-#define CONVERTED_RESULTS_LOG_FILENAME "messages.log"
-#define CONVERTED_RESULTS_JSON_FILENAME "structure.json"
-
 int convert_results(char *path_results) {
 
     /* stat() function and the S_ISDIR() macro on the st_mode field
