@@ -1,6 +1,9 @@
 #ifndef __SIMULATION_LIFECYCLE_CONVERT_H__
 #define __SIMULATION_LIFECYCLE_CONVERT_H__
 
+#define CONVERTED_RESULTS_LOG_FILENAME "messages.log"
+#define CONVERTED_RESULTS_JSON_FILENAME "structure.json"
+
 /**
  * @brief convert the cell-DEVS simulation results .json file into the required
  * format for the simulation viewer.
@@ -30,6 +33,5 @@ int convert_txt_file(char *path_results, char *txt_filename);
  * code.
  */
 int convert_results(char *path_results);
-
 
 #endif //__SIMULATION_LIFECYCLE_CONVERT_H__

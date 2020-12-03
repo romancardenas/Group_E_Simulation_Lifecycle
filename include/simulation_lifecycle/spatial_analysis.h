@@ -1,8 +1,8 @@
 #ifndef __SIMULATION_LIFECYCLE_SPATIAL_ANALYSIS_H__
 #define __SIMULATION_LIFECYCLE_SPATIAL_ANALYSIS_H__
-#include "stdlib.h"
+#include <stdlib.h>
+#include <string.h>
 #include "cJSON.h"
-#include "string.h"
 #include "simulation_lifecycle/structures.h"
 #include "simulation_lifecycle/utils/file.h"
 #include "simulation_lifecycle/spatial_analysis_operations/centroids.h"

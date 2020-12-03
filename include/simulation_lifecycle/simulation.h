@@ -12,4 +12,11 @@
  */
 int build_simulation_scenario(cJSON *simulation_config, node_t **data_sources);
 
+/**
+ * Run the simulation and copy the results in the result output path indicated in the JSON configuration file.
+ * @param[in] simulation_config cJSON structure containing the simulation configuration defined by the user.
+ * @return 0 if the function ran successfully. Otherwise, it returns an error code.
+ */
+int run_sim(const cJSON *simulation_config);
+
 #endif //__SIMULATION_LIFECYCLE_SIMULATION_H__
