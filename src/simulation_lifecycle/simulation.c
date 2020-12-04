@@ -44,7 +44,7 @@ int parse_default_sim_config(const cJSON *simulation_config, cJSON *target);
  * @param[out] target cJSON object that will hold the cells simulation configuration.
  * @return 0 if the function ran successfully. Otherwise, it returns an error code.
  */
-int parse_cells_config(const cJSON *simulation_config, const node_t **data_sources, cJSON *target);
+int parse_cells_config(const cJSON *simulation_config, node_t **data_sources, cJSON *target);
 
 /**
  * @brief reads simulation configuration and fills the vicinity configuration between the cells in the scenario.
@@ -53,7 +53,7 @@ int parse_cells_config(const cJSON *simulation_config, const node_t **data_sourc
  * @param[out] target cJSON object that will hold the cells vicinities simulation configuration.
  * @return 0 if the function ran successfully. Otherwise, it returns an error code.
  */
-int parse_vicinities(const cJSON *simulation_config, const node_t **data_sources, cJSON *target);
+int parse_vicinities(const cJSON *simulation_config, node_t **data_sources, cJSON *target);
 
 /**
  * @brief checks that all the cells of the model have at least one neighboring cell.
@@ -71,7 +71,7 @@ int check_valid_vicinities(const cJSON *target);
  */
 int write_sim_config(const cJSON *simulation_config, char *config_json);
 
-int build_simulation_scenario(const cJSON *const simulation_config, const node_t **const data_sources) {
+int build_simulation_scenario(const cJSON *const simulation_config, node_t ** data_sources) {
     if (simulation_config == NULL) {
         return SIM_CONFIG_EMPTY;
     }
@@ -120,7 +120,7 @@ int parse_default_sim_config(const cJSON *const simulation_config, cJSON *target
     return parse_common_default_fields(default_config, target);
 }
 
-int parse_cells_config(const cJSON *const simulation_config, const node_t **const data_sources, cJSON *target) {
+int parse_cells_config(const cJSON *const simulation_config, node_t ** data_sources, cJSON *target) {
     /* Get array that describes which data sources contain information regarding cell in the scenario */
     cJSON *cells = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_CELLS);
     if (!cJSON_IsArray(cells)) {
@@ -150,7 +150,7 @@ int parse_cells_config(const cJSON *const simulation_config, const node_t **cons
     return (cJSON_GetArraySize(target) > 1)? SUCCESS : SIM_MODEL_CELLS_CONFIG_INVALID;
 }
 
-int parse_vicinities(const cJSON *const simulation_config, const node_t **const data_sources, cJSON *target) {
+int parse_vicinities(const cJSON *const simulation_config,  node_t ** data_sources, cJSON *target) {
     /* Get mandatory fields for vicinity mapping. Check that they have valid values. */
     cJSON *vicinities = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_VICINITIES);
     if (vicinities == NULL || !cJSON_IsObject(vicinities)) {
@@ -225,7 +225,13 @@ int run_sim(const cJSON *simulation_config){
     char *config_path = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_CONFIG_OUTPUT_PATH));
 
     /* Check that config output path is provided using a valid format. */
-    if (config_path == NULL || !file_exists(config_path)) {
+    if (config_path == NULL) {
+        chdir(current_dir);
+        return SIM_CONFIG_OUTPUT_PATH_INVALID;
+    }
+    char absolute_config_path[MAX_LEN] = "";
+    snprintf(absolute_config_path, sizeof(absolute_config_path), "%s/%s", current_dir, config_path);
+    if(!file_exists(absolute_config_path)) {
         chdir(current_dir);
         return SIM_CONFIG_OUTPUT_PATH_INVALID;
     }
@@ -240,7 +246,7 @@ int run_sim(const cJSON *simulation_config){
     /* TODO Find a better solution than using a relative config output path from "../third_party/CellDEVS_models/tutorial/bin/" */
 
     char command[MAX_LEN] = "";
-    snprintf(command, sizeof(command), "./%s %s", model_name, config_path);
+    snprintf(command, sizeof(command), "./%s %s", model_name, absolute_config_path);
 
     int sim_status = system(command);
 

@@ -11,21 +11,21 @@
 
 /**
  * Reads data sources specified in the workflow file and stores their content in a list of data_source_t
- * @param workflow a cJSON object containing the complete workflow content
- * @param data_sources a pointer to a NULL list of node_t objects
- * @return 0 if the operation was successfull, an error code otherwise
+ * @param[in] workflow a cJSON object containing the complete workflow content
+ * @param[out] data_sources a pointer to a NULL list of node_t objects
+ * @return 0 if the operation was successful, an error code otherwise
  * @effect the data_sources list contains data_source_t objects with the content of the data specified in the workflow
  */
-int read_data_in(cJSON * workflow, node_t ** data_sources);
+int read_data_in(cJSON * workflow, node_t **data_sources);
 
 /**
  * Executes the entire spatial analysis workflow and stores results in the list of results_t
  * @param workflow a cJSON object containing the complete workflow content
  * @param data_sources a pointer to a NULL list of result_t objects
- * @return 0 if the operation was successfull, an error code otherwise
+ * @return 0 if the operation was successful, an error code otherwise
  * @effect the results list contains result_t objects with the results of each spatial analysis operation
  */
-int execute_workflow(cJSON * workflow, node_t ** results);
+int execute_workflow(cJSON * workflow, node_t **results);
 
 /**
  * Registers an operation to a global list of available operations to be used by the execute_workflow function

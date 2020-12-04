@@ -78,9 +78,13 @@ int parse_cells_from_data_source(cJSON *map, data_source_t *data_source, cJSON *
     cJSON *data_to_state_map = cJSON_GetObjectItemCaseSensitive(map, MODEL_CELL_STATE);
     cJSON *data_to_config_map = cJSON_GetObjectItemCaseSensitive(map, MODEL_CELL_CONFIG);
 
+    cJSON *features = cJSON_GetObjectItemCaseSensitive(data_source->data, DATA_SOURCE_FEATURES);
+    if (!cJSON_IsArray(features)) {
+        return SIM_MODEL_CELL_MAPPING_INVALID;
+    }
     /* Iterate over each data source element and create the corresponding cell configuration */
     cJSON *cell_iterator = NULL;
-    cJSON_ArrayForEach(cell_iterator, data_source->data) {
+    cJSON_ArrayForEach(cell_iterator, features) {
         /* Cell ID is a mandatory field. It must exist in the data source */
         char *cell_id = feature_get_string_property(cell_iterator, id_key);
         if(cell_id == NULL) {
@@ -123,8 +127,12 @@ int parse_cells_from_data_source(cJSON *map, data_source_t *data_source, cJSON *
 }
 
 int parse_vicinities_from_data_source(data_source_t *data_source, char *from_map, char *to_map, cJSON *vicinity_map, cJSON *target) {
+    cJSON *features = cJSON_GetObjectItemCaseSensitive(data_source->data, DATA_SOURCE_FEATURES);
+    if (!cJSON_IsArray(features)) {
+        return SIM_MODEL_VICINITY_MAPPING_INVALID;
+    }
     cJSON *vicinity_iterator = NULL;
-    cJSON_ArrayForEach(vicinity_iterator, data_source->data) {
+    cJSON_ArrayForEach(vicinity_iterator, features) {
         char *cell_from = feature_get_string_property(vicinity_iterator, from_map);
         char *cell_to = feature_get_string_property(vicinity_iterator, to_map);
         if(cell_from == NULL || cell_to == NULL) {
