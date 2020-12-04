@@ -4,6 +4,7 @@
 #include "simulation_lifecycle/simulation.h"
 #include "simulation_lifecycle/utils/linked_list.h"
 #include "simulation_lifecycle/spatial_analysis.h"
+#include "simulation_lifecycle/convert.h"
 
 
 /**
@@ -18,12 +19,9 @@ int main(int argc, char *argv[]) {
         return -1;
     }*/
 
-    cJSON *json = NULL;
-
-    read_json_file("../data/simulation_config.json", &json);
-    int res = 0;
-    res = run_sim(json);
-    return res;
+    char *results_folder_path = "../data/results/";
+    int error_code = convert_results(results_folder_path);
+    return error_code;
 
     /*
 

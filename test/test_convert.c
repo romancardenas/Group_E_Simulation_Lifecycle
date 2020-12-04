@@ -4,8 +4,6 @@
 #include "simulation_lifecycle/error.h"
 
 void setUp(void) {
-    // set stuff up here
-
     char *log_filename = CONVERTED_RESULTS_LOG_FILENAME;
     char *json_filename = CONVERTED_RESULTS_JSON_FILENAME;
     char *path = "../test/data/convert_tests/case_7/";
@@ -15,11 +13,9 @@ void setUp(void) {
 
     remove(log_filename);
     remove(json_filename);
-
 }
 
 void tearDown(void) {
-    // clean stuff up here
 
 }
 
@@ -46,18 +42,18 @@ void test_function_convert_results_test_case_2(void) {
  * Description: Call the function with path pointing to a file.
  */
 void test_function_convert_results_test_case_3(void) {
-    char *results_folder_path = "../test/data/convert_tests/case_3_and_5/co2.json";
+    char *results_folder_path = "../test/data/convert_tests/case_3_and_5/data.json";
     int error_code = convert_results(results_folder_path);
-    TEST_ASSERT_EQUAL(CONVERT_INPUT_PATH_FOLDER_ERROR,error_code);
+    TEST_ASSERT_EQUAL(CONVERT_INPUT_PATH_INCORRECT,error_code);
 }
 
 /* Function convert_results - Test case #4
  * Description: Call the function with path that does not exist.
  */
 void test_function_convert_results_test_case_4(void) {
-    char *results_folder_path = "../test/data/convert_tests/fake/";
+    char *results_folder_path = "../test/data/convert_tests/invalid/";
     int error_code = convert_results(results_folder_path);
-    TEST_ASSERT_EQUAL(CONVERT_INPUT_PATH_FOLDER_ERROR, error_code);
+    TEST_ASSERT_EQUAL(CONVERT_INPUT_PATH_INCORRECT, error_code);
 }
 
 /* Function convert_results - Test case #5
