@@ -44,7 +44,7 @@ int parse_default_sim_config(const cJSON *simulation_config, cJSON *target);
  * @param[out] target cJSON object that will hold the cells simulation configuration.
  * @return 0 if the function ran successfully. Otherwise, it returns an error code.
  */
-int parse_cells_config(const cJSON *simulation_config, node_t **data_sources, cJSON *target);
+int parse_cells_config(const cJSON *simulation_config, const node_t **data_sources, cJSON *target);
 
 /**
  * @brief reads simulation configuration and fills the vicinity configuration between the cells in the scenario.
@@ -53,14 +53,14 @@ int parse_cells_config(const cJSON *simulation_config, node_t **data_sources, cJ
  * @param[out] target cJSON object that will hold the cells vicinities simulation configuration.
  * @return 0 if the function ran successfully. Otherwise, it returns an error code.
  */
-int parse_vicinities(const cJSON *simulation_config, node_t **data_sources, cJSON *target);
+int parse_vicinities(const cJSON *simulation_config, const node_t **data_sources, cJSON *target);
 
 /**
  * @brief checks that all the cells of the model have at least one neighboring cell.
  * @param[in] target cJSON struct with all the cells of the scenario that needs to be checked.
  * @return 0 if the function ran successfully. Otherwiese, it returns an error code.
  */
-int check_valid_vicinities(cJSON *target);
+int check_valid_vicinities(const cJSON *target);
 
 /**
  * @brief writes JSON configuration to the desired output path.
@@ -71,7 +71,7 @@ int check_valid_vicinities(cJSON *target);
  */
 int write_sim_config(const cJSON *simulation_config, char *config_json);
 
-int build_simulation_scenario(cJSON *simulation_config, node_t **data_sources) {
+int build_simulation_scenario(const cJSON *const simulation_config, const node_t **const data_sources) {
     if (simulation_config == NULL) {
         return SIM_CONFIG_EMPTY;
     }
@@ -99,7 +99,7 @@ int build_simulation_scenario(cJSON *simulation_config, node_t **data_sources) {
     return res;
 }
 
-int parse_default_sim_config(const cJSON *simulation_config, cJSON *target) {
+int parse_default_sim_config(const cJSON *const simulation_config, cJSON *target) {
     /* 1. Check that model ID is provided using a valid format */
     char *model = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_ID));
     if (model == NULL) {
@@ -120,7 +120,7 @@ int parse_default_sim_config(const cJSON *simulation_config, cJSON *target) {
     return parse_common_default_fields(default_config, target);
 }
 
-int parse_cells_config(const cJSON *simulation_config, node_t **data_sources, cJSON *target) {
+int parse_cells_config(const cJSON *const simulation_config, const node_t **const data_sources, cJSON *target) {
     /* Get array that describes which data sources contain information regarding cell in the scenario */
     cJSON *cells = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_CELLS);
     if (!cJSON_IsArray(cells)) {
@@ -150,7 +150,7 @@ int parse_cells_config(const cJSON *simulation_config, node_t **data_sources, cJ
     return (cJSON_GetArraySize(target) > 1)? SUCCESS : SIM_MODEL_CELLS_CONFIG_INVALID;
 }
 
-int parse_vicinities(const cJSON *simulation_config, node_t **data_sources, cJSON *target) {
+int parse_vicinities(const cJSON *const simulation_config, const node_t **const data_sources, cJSON *target) {
     /* Get mandatory fields for vicinity mapping. Check that they have valid values. */
     cJSON *vicinities = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_VICINITIES);
     if (vicinities == NULL || !cJSON_IsObject(vicinities)) {
@@ -173,7 +173,7 @@ int parse_vicinities(const cJSON *simulation_config, node_t **data_sources, cJSO
     return (res)? res : check_valid_vicinities(target);
 }
 
-int check_valid_vicinities(cJSON *target) {
+int check_valid_vicinities(const cJSON *const target) {
     cJSON *cell;
     cJSON_ArrayForEach(cell, target) {
         if (strcmp(cell->string, SIM_MODEL_DEFAULT) != 0) { /* the default cell may not have neighborhood. */

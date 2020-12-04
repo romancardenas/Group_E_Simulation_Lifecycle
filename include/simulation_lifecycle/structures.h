@@ -49,6 +49,6 @@ typedef struct operation {
  * @param[in] id ID of the desired data source.
  * @return pointer to data source with matching ID. If no data source is found, it returns a NULL pointer.
  */
-data_source_t * get_data_source(node_t **data_sources, char *id);
+data_source_t * get_data_source(const node_t **data_sources, char *id);
 
 #endif //__SIMULATION_LIFECYCLE_STRUCTURES_H__

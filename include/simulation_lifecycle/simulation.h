@@ -10,7 +10,7 @@
  * @param[in] data_sources pointer to linked list containing data sources.
  * @return 0 if function was executed successfully. Otherwise, it returns an error code.
  */
-int build_simulation_scenario(cJSON *simulation_config, node_t **data_sources);
+int build_simulation_scenario(const cJSON *simulation_config, const node_t **data_sources);
 
 /**
  * Run the simulation and copy the results in the result output path indicated in the JSON configuration file.
