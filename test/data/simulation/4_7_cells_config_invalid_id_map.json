@@ -14,5 +14,11 @@
       "recovery": 1
     }
   },
-  "config_output_path": "../test/data/simulation/2_1_empty_config.json"
+  "cells": [
+    {
+      "source": "data",
+      "cell_id": "invalid",
+      "cell_type": "sir"
+    }
+  ]
 }

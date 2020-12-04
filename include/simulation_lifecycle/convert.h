@@ -34,5 +34,4 @@ int convert_txt_file(char *path_results, char *txt_filename);
  */
 int convert_results(char *path_results);
 
-
 #endif //__SIMULATION_LIFECYCLE_CONVERT_H__

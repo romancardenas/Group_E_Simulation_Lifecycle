@@ -75,4 +75,10 @@ void pop_node(node_t **pp_head);
  */
 void pop_node_left(node_t **pp_head);
 
+/**
+ * @brief removes all the elements of the list.
+ * @param pp_head pointer to the list.
+ */
+void remove_list(node_t **pp_head);
+
 #endif //__SIMULATION_LIFECYCLE_LINKED_LIST_H__

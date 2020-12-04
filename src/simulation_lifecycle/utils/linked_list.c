@@ -58,7 +58,7 @@ node_t * get_node(node_t **pp_head, int n) {
 node_t * get_tail(node_t **pp_head) {
     node_t * current;
     for (current = *pp_head; current != NULL && current->next != NULL; current = current->next) {
-    };
+    }
     return current;
 }
 
@@ -83,5 +83,11 @@ void pop_node_left(node_t **pp_head) {
         node_t * prev = *pp_head;
         *pp_head = prev->next;
         remove_node(prev);
+    }
+}
+
+void remove_list(node_t **pp_head) {
+    while(*pp_head != NULL) {
+        pop_node_left(pp_head);
     }
 }
