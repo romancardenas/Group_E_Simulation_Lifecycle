@@ -43,7 +43,8 @@
         }
     ],
     "visualization": {
-        "basemap": "openstreetmap",
+      "field":   "[\"field_1\",\"field_2\",\"field_3\",\"field_4\"]",
+      "basemap": "openstreetmap",
         "layers": [{
                 "id": "db_ottawa",
                 "label": "Ottawa dissemination blocks (DB)"
