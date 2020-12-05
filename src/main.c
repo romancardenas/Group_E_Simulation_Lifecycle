@@ -13,6 +13,7 @@
  * @return 0 if flow ran successfully.  TODO better documentation
  */
 int main(int argc, char *argv[]) {
+
     if (argc != 2) {
         fprintf(stderr, "Wrong number of arguments.\n");
         return -1;
@@ -22,6 +23,7 @@ int main(int argc, char *argv[]) {
     cJSON *workflow = read_workflow_file(argv[1]);
 
     int res = validate_workflow(workflow);
+    
     if (res) {
         fprintf(stderr, "Workflow is invalid.\n");
         goto main_end;
