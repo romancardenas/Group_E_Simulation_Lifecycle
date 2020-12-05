@@ -10,8 +10,11 @@
 #define NAME_MAX 255
 #define PATH_MAX 4096
 #define LENGTH_MAX 500
+#define VALID_FORMAT "[cadmium::celldevs::cell_ports_def<std::string"
+#define VIZ_OBJECT "fields"
+#define RESULT_OBJECT "cells"
 
-int convert_results(char *path_results) {
+int convert_results(char *path_results, cJSON *visualization) {
 
     if (path_results == NULL) {
         return CONVERT_INPUT_PATH_INCORRECT;
@@ -68,7 +71,8 @@ int convert_results(char *path_results) {
     closedir(p_directory_results);
 
     /* This function is only executed if path_results only contain
-     * one .json file, one .txt file and no .log file. */
+     * one .json file, one .txt file and no .log file.
+     * This avoids overwriting over previous simulation results. */
     if (count_txt_files != 1 || count_json_files != 1 || count_log_files != 0) {
         return CONVERT_PATH_FILES_INCORRECT;
     } else {
@@ -94,19 +98,25 @@ int convert_results(char *path_results) {
 
         /* Comparing the 46th first characters of the third line
          * with "[cadmium::celldevs::cell_ports_def<std::string"*/
-        if (strncmp(line, "[cadmium::celldevs::cell_ports_def<std::string", 46) != 0) {
+        if (strncmp(line, VALID_FORMAT, strlen(VALID_FORMAT)) != 0) {
             return CONVERT_FILE_FORMAT_INCORRECT;
         }
 
         fclose(f_input_txt);
 
-        /* Calling the function convert_json_file(path_json) to convert
+        /* Calling the function convert_json_file to convert
          * the .json into the proper format for the simulation viewer. */
-        convert_json_file(path_results, path_json);
+        int res = convert_json_file(path_results, path_json, visualization);
+        if(res != 0){
+            return res;
+        }
 
-        /* Calling the function convert_txt_file(path_txt) to convert
+        /* Calling the function convert_txt_file to convert
          * the .txt into the proper format for the simulation viewer. */
-        convert_txt_file(path_results, path_txt);
+        res = convert_txt_file(path_results, path_txt);
+        if(res != 0){
+            return res;
+        }
 
         /* Verifying that the results folder now contains the
          * converted results files.
@@ -146,14 +156,14 @@ int convert_results(char *path_results) {
         if (count_json_files_after_conversion == 2 &&
             count_txt_files_after_conversion == 1 &&
             count_log_files_after_conversion == 1) {
-            return SUCCESS;
+            return res;
         } else {
             return CONVERSION_FAILED;
         }
     }
 }
 
-int convert_json_file(char *path_results, char *json_filename) {
+int convert_json_file(char *path_results, char *json_filename, cJSON *visualization) {
 
     /* Open .json file and start extracting text */
     FILE *f_input_json = fopen(json_filename, "r");
@@ -178,38 +188,28 @@ int convert_json_file(char *path_results, char *json_filename) {
         return UNABLE_OPEN_FILE;
     }
 
-    /* Get "output" object */
-    cJSON *output_object = NULL;
-    output_object = cJSON_GetObjectItemCaseSensitive(input_json, "output");
-    int size_output_object = cJSON_GetArraySize(output_object);
-    char output_object_value[size_output_object][100];
-    char template[LENGTH_MAX] = "";
-    char template_temp[LENGTH_MAX] = "";
-    char template_final[LENGTH_MAX] = "";
-    for (int i = 0; i < size_output_object; i++) {
-        strcpy(output_object_value[i], cJSON_GetArrayItem(output_object, i)->valuestring);
-        strcat(template, output_object_value[i]);
-        strcat(template, "\",\"");
+    char *fields = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(visualization, VIZ_OBJECT));
+    if (fields == NULL || fields[0] == '\0') {
+        return CONVERT_VIZ_FIELDS_INVALID;
     }
 
-    /* Need to remove the extra ," at the end. */
-    int len_template = strlen(template) - 2;
-    strncpy(template_temp, template, len_template);
-    sprintf(template_final, "[\"%s]", template_temp);
-
-    /* Get "cell id" sub object */
+    /* Get "cells" sub object */
     cJSON *cells_object = NULL;
-    cells_object = cJSON_GetObjectItemCaseSensitive(input_json, "cells");
+    cells_object = cJSON_GetObjectItem(input_json, RESULT_OBJECT);
     int size_cell_object = cJSON_GetArraySize(cells_object);
-    char cell_id[size_cell_object][100];
-    char *cell_id_name;
-    for (int i = 0; i < size_cell_object; i++) {
-        cJSON *sub_cell_object = cJSON_GetArrayItem(cells_object, i);
-        cell_id_name = cJSON_GetObjectItem(sub_cell_object, "cell_id")->valuestring;
-        strcpy(cell_id[i], cell_id_name);
+    char cell[size_cell_object][LENGTH_MAX];
+
+    int i = 0;
+    if (cells_object){
+        cJSON *cells_sub_object = cells_object->child;
+        while(cells_sub_object){
+            strcpy(cell[i],cells_sub_object->string);
+            cells_sub_object = cells_sub_object->next;
+            i++;
+        }
     }
 
-    /* Create new json structure and then write data to new json file. */
+    /* Create new json structure. Then, write data to new json file. */
     char *out;
     cJSON *root;
     cJSON *info;
@@ -231,15 +231,15 @@ int convert_json_file(char *path_results, char *json_filename) {
 
 
     cJSON_AddItemToObject(root, "nodes", nodes);
-    for (int i = 0; i < size_cell_object; i++) {
+    for (int i = 1; i < size_cell_object; i++) {
         cJSON_AddItemToArray
                 (nodes, node = cJSON_CreateObject());
         cJSON_AddItemToObject
-                (node, "name", cJSON_CreateString(cell_id[i]));
+                (node, "name", cJSON_CreateString(cell[i]));
         cJSON_AddItemToObject
                 (node, "type", cJSON_CreateString("atomic"));
         cJSON_AddItemToObject
-                (node, "template", cJSON_CreateStringReference(template_final));
+                (node, "template", cJSON_CreateStringReference(fields));
     }
 
     out = cJSON_Print(root);
