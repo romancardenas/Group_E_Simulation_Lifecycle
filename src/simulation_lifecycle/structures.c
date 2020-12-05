@@ -1,7 +1,7 @@
 #include <string.h>
 #include "simulation_lifecycle/structures.h"
 
-data_source_t * get_data_source(const node_t ** data_sources, char *id) {
+data_source_t * get_data_source(node_t ** data_sources, char *id) {
     data_source_t *res = NULL;
     if (id != NULL) {
         const node_t *current;

@@ -79,32 +79,40 @@
         ]
     },
     "simulation": {
-      "model_id": "sir",
+      "model_id": "2_2_agent_sir_config",
       "default_config": {
-        "delay": "inertial",
+        "cell_type": "sir",
+        "delay": "hybrid",
         "state": {
-          "population": 0,
-          "susceptible": 0.99,
-          "infected": 0.01,
+          "population": 100,
+          "susceptible": 1,
+          "infected": 0,
           "recovered": 0
         },
         "config": {
-          "virulence": 0.6,
-          "recovery": 0.4
-        },
-        "neighborhood": {}
-      },
-      "mapping": {
-        "cell_id": "id",
-        "state": {
-          "population": "pop"
-        },
-        "vicinity": {
-          "connectivity": "that",
-          "mobility": "this"
+          "virulence": 0,
+          "recovery": 1
         }
       },
-      "config_output_path": "./config_output.json",
-      "result_output_path": "./result_output.json"
+      "cells": [
+        {
+          "source": "data",
+          "cell_id": "dbuid",
+          "state": {
+            "population": "id"
+          }
+        }
+      ],
+      "vicinities": {
+        "from": "from",
+        "to": "to",
+        "source": "vicinities",
+        "vicinity": {
+          "connectivity": "conn",
+          "mobility": "mob"
+        }
+      },
+      "config_output_path": "../test/data/simulation/output_config.json",
+      "result_output_path": "../test/data/run_simulation/simulation_output_messages.txt"
     }
 }

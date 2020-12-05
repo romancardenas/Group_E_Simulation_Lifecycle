@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdio.h>
 #include "cJSON.h"
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/utils/file.h"
@@ -83,13 +84,15 @@ int validate_workflow(const cJSON *const workflow){
     //Check spatial analysis
     cJSON * spatial_analysis = read_spatial_analysis(workflow);
     if (spatial_analysis == NULL) {
-        return NULL_SPATIAL_ANALYSIS;
+        fprintf(stderr, "No spatial analysis section. As it is not implemented, we skip this issue.\n");
+        // return NULL_SPATIAL_ANALYSIS; TODO enable when ready
     }
 
     //Check visualization
     cJSON * visualization = read_visualization(workflow);
     if (visualization == NULL) {
-        return NULL_VISUALIZATION;
+        fprintf(stderr, "No visualization section. As it is not implemented, we skip this issue.\n");
+        // return NULL_VISUALIZATION; TODO enable when ready
     }
 
     //Check simulation

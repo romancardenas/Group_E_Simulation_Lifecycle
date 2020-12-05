@@ -1,18 +1,16 @@
 #include <stdio.h>
 #include "cJSON.h"
-#include "simulation_lifecycle/utils/file.h"
-#include "simulation_lifecycle/simulation.h"
 #include "simulation_lifecycle/utils/linked_list.h"
-#include "simulation_lifecycle/spatial_analysis.h"
-#include "simulation_lifecycle/convert.h"
 #include "simulation_lifecycle/utils/workflow.h"
-
+#include "simulation_lifecycle/spatial_analysis.h"
+#include "simulation_lifecycle/simulation.h"
+#include "simulation_lifecycle/convert.h"
 
 /**
- * Simulation Lifecycle: main function. So far, it simply reads a JSON file.
+ * Simulation Lifecycle: main function.
  * @param argc number of arguments.
  * @param argv value of the arguments.
- * @return 0 if JSON file is read successfully.
+ * @return 0 if flow ran successfully.  TODO better documentation
  */
 int main(int argc, char *argv[]) {
 
@@ -21,28 +19,49 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    //return read_json_file(argv[1], &json);
+    node_t *data_sources = NULL;
+    cJSON *workflow = read_workflow_file(argv[1]);
 
-    cJSON * workflow = NULL;
-    node_t * results;
+    int res = validate_workflow(workflow);
+    
+    if (res) {
+        fprintf(stderr, "Workflow is invalid.\n");
+        goto main_end;
+    }
 
-    int res = read_json_file(argv[1], &workflow);
+    if (spatial_analysis_required(workflow)) {
+        fprintf(stderr, "Spatial analysis is not currently available. Skipping this part.\n"); // TODO
+    }
 
-    if (res != SUCCESS) return res;
+    if (build_sim_scenario_required(workflow)) {
+        res = read_data_in(workflow, &data_sources);
+        if (res) {
+            fprintf(stderr, "Build simulation scenario failed. Error code: %d\n", res);
+            goto main_end;
+        }
+        if ((res = build_simulation_scenario(read_simulation(workflow), &data_sources))) {
+            fprintf(stderr, "Build simulation scenario failed. Error code: %d\n", res);
+            fprintf(stderr, "Hint: did you remove the output file of a previous scenario building?\n");
+            goto main_end;
+        }
+    }
 
+    if (run_sim_required(workflow)) {
+        if ((res = run_sim(read_simulation(workflow)))) {
+            fprintf(stderr, "Run simulation failed. Error code: %d\n", res);
+            fprintf(stderr, "Hint: did you remove the output file of a previous simulation?\n");
+            goto main_end;
+        }
+    }
 
-    cJSON *visualization = read_visualization(workflow);
-    char *results_folder_path = "../data/results/";
-    int error_code = convert_results(results_folder_path,visualization);
-    return error_code;
+    if (create_viz_required(workflow)) {
+        fprintf(stderr, "Visualization is not currently available. Skipping this part.\n"); // TODO
+    }
 
-    /*
-    register_operations();
-
-    res = execute_workflow(workflow, &results);
-
-    if (res != SUCCESS) return res;*/
-
-    return SUCCESS;
-
+main_end:  /* We use label to return error code and clean the workflow object TODO anything else? */
+    if (workflow != NULL) {
+        cJSON_Delete(workflow);
+    }
+    return res;
+    remove_list(&data_sources);
 }
