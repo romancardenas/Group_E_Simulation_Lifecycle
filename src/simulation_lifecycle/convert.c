@@ -22,7 +22,7 @@ char * get_output_path(cJSON * conv) {
     return (path == NULL) ? NULL : cJSON_GetStringValue(path);
 }
 
-char * get_intput_path(cJSON * conv) {
+char * get_input_path(cJSON * conv) {
     cJSON * path = cJSON_GetObjectItem(conv, "input");
 
     return (path == NULL) ? NULL : cJSON_GetStringValue(path);

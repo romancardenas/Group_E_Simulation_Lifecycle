@@ -42,7 +42,7 @@ void test_workflow_data_sources(void){
     file = read_workflow_file("../test/data/workflow/11_duplicate_data_path.json");
     TEST_ASSERT_EQUAL(DUPLICATE_DATA_SOURCE_PATH, validate_workflow(file));
 }
-
+/*
 void test_spatial_analysis(void){
     cJSON *file = NULL;
 
@@ -63,7 +63,7 @@ void test_simulation(void){
     file = read_workflow_file("../test/data/workflow/8_null_simulation.json");
     TEST_ASSERT_EQUAL(NULL_SIMULATION, validate_workflow(file));
 }
-
+*/
 void test_valid_workflow(void){
     cJSON *file = NULL;
 
@@ -75,9 +75,9 @@ int main(void){
     UNITY_BEGIN();
     RUN_TEST(test_null_cJSON);
     RUN_TEST(test_workflow_data_sources);
-    RUN_TEST(test_spatial_analysis);
-    RUN_TEST(test_visualization);
-    RUN_TEST(test_simulation);
+   // RUN_TEST(test_spatial_analysis);
+   // RUN_TEST(test_visualization);
+   // RUN_TEST(test_simulation);
     RUN_TEST(test_valid_workflow);
     return UNITY_END();
 }

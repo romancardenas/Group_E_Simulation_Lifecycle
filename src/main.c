@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
     fprintf(stdout, "Converting simulation results to WebViewer format... ");
     if (conversion_required(workflow)) {
         cJSON * conv = read_conversion(workflow);
-        char * input = get_intput_path(conv);
+        char * input = get_input_path(conv);
         char * output = get_output_path(conv);
 
         if ((res = convert_results(input, output, conv))) {
