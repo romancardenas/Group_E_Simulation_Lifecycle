@@ -29,12 +29,11 @@ char * get_intput_path(cJSON * conv) {
 }
 
 int convert_results(char *input, char *output, cJSON *visualization) {
-
     if (input == NULL || strlen(input) == 0) {
         return CONVERT_INPUT_PATH_INCORRECT;
     }
 
-    if (output == NULL ||strlen(output) == 0) {
+    if (output == NULL || strlen(output) == 0) {
         return CONVERT_OUTPUT_PATH_INCORRECT;
     }
 
@@ -90,10 +89,10 @@ int convert_results(char *input, char *output, cJSON *visualization) {
      * This avoids overwriting over previous simulation results. */
     if (count_txt_files != 1 || count_json_files != 1 || count_log_files != 0) {
         return CONVERT_PATH_FILES_INCORRECT;
-    } else {
+    } 
+    else {
         sprintf(path_json, "%s%s", input, filename_json);
         sprintf(path_txt, "%s%s", input, filename_txt);
-
 
         /* The function convert result files only if the path_results
          * has one .txt file using the irregular Cadmium Cell-DEVS format.
@@ -129,24 +128,24 @@ int convert_results(char *input, char *output, cJSON *visualization) {
         /* Calling the function convert_txt_file to convert
          * the .txt into the proper format for the simulation viewer. */
         res = convert_txt_file(output, path_txt);
+
         if(res != 0){
             return res;
         }
 
+        // TODO: I think just checking if the 2 files exist at the output location is sufficient.
         /* Verifying that the results folder now contains the
          * converted results files.
          * Results folder should now contain:
          * 1) 2 x .json file,
          * 2) 1 x .txt file, and
          * 3) 1 x .log file. */
-
         if (!file_exists(path_txt) || !file_exists(path_json)) {
             res = CONVERSION_FAILED;
         }
 
         return res;
 
-        // TODO: I think just checking if the 2 files exist at the output location is sufficient.
         /*
         int count_json_files_after_conversion = 0;
         int count_txt_files_after_conversion = 0;
@@ -161,6 +160,7 @@ int convert_results(char *input, char *output, cJSON *visualization) {
 
             // start_extract == NULL when a filename does not
             //contain an extension.
+
             if (start_extract == NULL) {
                 continue;
             }
@@ -172,6 +172,7 @@ int convert_results(char *input, char *output, cJSON *visualization) {
                 count_log_files_after_conversion++;
                 // When the filename extension is not a
                 // ".json" or ".txt" or ".log".
+
             } else {
                 continue;
             }

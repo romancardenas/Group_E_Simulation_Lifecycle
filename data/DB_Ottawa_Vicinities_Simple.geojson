@@ -1,0 +1,117 @@
+{
+    "type": "FeatureCollection",
+    "name": "DB_Ottawa",
+    "crs": {
+        "type": "name",
+        "properties": {
+            "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+        }
+    },
+    "features":[
+        {
+            "type": "Feature",
+            "properties": {
+                "from": "35061444007",
+                "to": "35061444007",
+                "conn": 1,
+                "mob": 1
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "35061380011",
+                "to": "35061380011",
+                "conn": 1,
+                "mob": 1
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "35061444010",
+                "to": "35061444010",
+                "conn": 1,
+                "mob": 1
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "35061380012",
+                "to": "35061380012",
+                "conn": 1,
+                "mob": 1
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "35061380013",
+                "to": "35061380013",
+                "conn": 1,
+                "mob": 1
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "35061444008",
+                "to": "35061444008",
+                "conn": 1,
+                "mob": 1
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "35061379010",
+                "to": "35061379010",
+                "conn": 1,
+                "mob": 1
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "35061380002",
+                "to": "35061380002",
+                "conn": 1,
+                "mob": 1
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "35061380003",
+                "to": "35061380003",
+                "conn": 1,
+                "mob": 1
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "35061380005",
+                "to": "35061380005",
+                "conn": 1,
+                "mob": 1
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "35061380008",
+                "to": "35061380008",
+                "conn": 1,
+                "mob": 1
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "35061380009",
+                "to": "35061380009",
+                "conn": 1,
+                "mob": 1
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "35061380008",
+                "to": "35061380009",
+                "conn": 0.8,
+                "mob": 0.3
+            }
+        }
+    ]
+}
