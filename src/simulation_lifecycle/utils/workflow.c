@@ -87,18 +87,20 @@ int validate_workflow(const cJSON *const workflow){
     }
 
     // TODO careful, we may not want to simulate stuff, for instance.
+    // TODO: I don't think any of the 3 following checks should be there since a workflow cna stop before any of them.
+    /*
     //Check spatial analysis
     cJSON * spatial_analysis = read_spatial_analysis(workflow);
     if (spatial_analysis == NULL) {
-        fprintf(stderr, "No spatial analysis section. As it is not implemented, we skip this issue.\n");
-        // return NULL_SPATIAL_ANALYSIS; TODO enable when ready
+        // fprintf(stderr, "No spatial analysis section. As it is not implemented, we skip this issue.\n");
+        return NULL_SPATIAL_ANALYSIS; TODO enable when ready
     }
 
     //Check visualization
     cJSON * visualization = read_visualization(workflow);
     if (visualization == NULL) {
-        fprintf(stderr, "No visualization section. As it is not implemented, we skip this issue.\n");
-        // return NULL_VISUALIZATION; TODO enable when ready
+        // fprintf(stderr, "No visualization section. As it is not implemented, we skip this issue.\n");
+        return NULL_VISUALIZATION; TODO enable when ready
     }
 
     //Check simulation
@@ -106,7 +108,7 @@ int validate_workflow(const cJSON *const workflow){
     if (simulation == NULL) {
         return NULL_SIMULATION;
     }
-
+    */
     return SUCCESS;
 }
 
