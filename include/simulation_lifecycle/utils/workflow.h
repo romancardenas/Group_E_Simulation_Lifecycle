@@ -33,6 +33,13 @@ cJSON * read_simulation(const cJSON *workflow);
 cJSON * read_spatial_analysis(const cJSON *workflow);
 
 /**
+ * @brief Reads conversion object from workflow.
+ * @param[in] workflow cJSON workflow from read_workflow_file().
+ * @return cJSON object containing the conversion object.
+ */
+cJSON * read_conversion(const cJSON *workflow);
+
+/**
  * @brief Reads visualization object from workflow.
  * @param[in] workflow cJSON workflow from read_workflow_file().
  * @return cJSON object containing the visualization object.
@@ -63,6 +70,12 @@ int build_sim_scenario_required(const cJSON *workflow);
 * @return 1 if run simulation is needed, 0 otherwise.
 */
 int run_sim_required(const cJSON *workflow);
+
+/**
+* @brief checks if workflow provided by the user wants to convert visualization files.
+* @return 1 if create visualization is needed, 0 otherwise.
+*/
+int conversion_required(const cJSON *workflow);
 
 /**
 * @brief checks if workflow provided by the user wants to create visualization files.
