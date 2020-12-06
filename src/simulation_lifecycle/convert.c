@@ -1,184 +1,199 @@
 #include <stdio.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include "cJSON.h"
 #include <dirent.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include "simulation_lifecycle/error.h"
-#include "simulation_lifecycle/utils/file.h"
 #include "simulation_lifecycle/convert.h"
+#include "simulation_lifecycle/utils/file.h"
 
-int convert_results(char *path_results) {
+#define NAME_MAX 255
+#define PATH_MAX 4096
+#define LENGTH_MAX 500
+#define VALID_FORMAT "[cadmium::celldevs::cell_ports_def<std::string"
+#define VIZ_OBJECT "fields"
+#define RESULT_OBJECT "cells"
 
-    /* stat() function and the S_ISDIR() macro on the st_mode field
-     * of the stat structure will be used to determine if path_results
-     * exists and if path_results points to a folder. */
-    struct stat path_stat;
-    stat(path_results, &path_stat);
 
-    if (path_results == NULL) {
+char * get_output_path(cJSON * conv) {
+    cJSON * path = cJSON_GetObjectItem(conv, "output");
+
+    return (path == NULL) ? NULL : cJSON_GetStringValue(path);
+}
+
+char * get_intput_path(cJSON * conv) {
+    cJSON * path = cJSON_GetObjectItem(conv, "input");
+
+    return (path == NULL) ? NULL : cJSON_GetStringValue(path);
+}
+
+int convert_results(char *input, char *output, cJSON *visualization) {
+
+    if (input == NULL || strlen(input) == 0) {
         return CONVERT_INPUT_PATH_INCORRECT;
-    } else if (strlen(path_results) == 0) {
+    }
+
+    if (output == NULL ||strlen(output) == 0) {
+        return CONVERT_OUTPUT_PATH_INCORRECT;
+    }
+
+    /* Opening the directory containing the results.
+    * directory_results is a pointer to manage the directory.*/
+    DIR *p_directory_results = opendir(input);
+
+    if (p_directory_results == NULL) {
         return CONVERT_INPUT_PATH_INCORRECT;
-        /*This allows to check if path exists and if path points to a folder.*/
-    } else if (!S_ISDIR((path_stat.st_mode))) {
-        return CONVERT_INPUT_PATH_FOLDER_ERROR;
+    }
+
+    const char delimiter_period = '.';
+    char *start_extract = NULL;
+    char filename_json[NAME_MAX] = "";
+    char filename_txt[NAME_MAX] = "";
+    char path_json[PATH_MAX] = "";
+    char path_txt[PATH_MAX] = "";
+    int count_json_files = 0;
+    int count_txt_files = 0;
+    int count_log_files = 0;
+
+    /* Searching for .json and .txt files in the folder containing
+    * the simulation results. */
+    struct dirent *path;
+    while ((path = readdir(p_directory_results)) != NULL) {
+        char *filename = path->d_name;
+
+        /* Start extracting characters after "." */
+        start_extract = strchr(filename, delimiter_period);
+
+        /* start_extract == NULL when a filename does not contain
+        * a file extension.*/
+        if (start_extract == NULL) {
+            continue;
+        }
+        if (!strcmp(start_extract, ".json")) {
+            strcpy(filename_json, filename);
+            count_json_files++;
+        } else if (!strcmp(start_extract, ".txt")) {
+            strcpy(filename_txt, filename);
+            count_txt_files++;
+        } else if (!strcmp(start_extract, ".log")) {
+            count_log_files++;
+            /* When the filename extension is not ".json" or ".txt" */
+        } else {
+            continue;
+        }
+    }
+    closedir(p_directory_results);
+
+    /* This function is only executed if path_results only contain
+     * one .json file, one .txt file and no .log file.
+     * This avoids overwriting over previous simulation results. */
+    if (count_txt_files != 1 || count_json_files != 1 || count_log_files != 0) {
+        return CONVERT_PATH_FILES_INCORRECT;
     } else {
-        const char delimiter_period = '.';
-        char *p_start_extract = NULL;
-        char filename_json[200] = "";
-        char filename_txt[200] = "";
-        char path_json[200] = "";
-        char path_txt[200] = "";
-        int count_json_files = 0;
-        int count_txt_files = 0;
-        int count_log_files = 0;
+        sprintf(path_json, "%s%s", input, filename_json);
+        sprintf(path_txt, "%s%s", input, filename_txt);
 
-        /* Opening the directory containing the results.
-        * directory_results is a pointer to manage the directory.*/
-        DIR *directory_results = opendir(path_results);
-        if (directory_results == NULL) {
-            /*printf("\n Could not open the directory containing");*/
-            /*printf("\n the simulation results.");*/
-            return CONVERT_INPUT_PATH_FOLDER_ERROR;
+
+        /* The function convert result files only if the path_results
+         * has one .txt file using the irregular Cadmium Cell-DEVS format.
+         * The third line of any .txt files using the irregular Cadmium Cell-DEVS
+         * format should always start as such:
+         * "[cadmium::celldevs::cell_ports_def<std::string"
+         * This text extract will be used for string comparison. */
+        FILE *f_input_txt = fopen(path_txt, "r");
+        char line[LENGTH_MAX] = "";
+        int count_lines = 0;
+
+        /* Loop to get the third line of the .txt file */
+        while (count_lines < 3) {
+            fgets(line, sizeof(line), f_input_txt);
+            count_lines++;
         }
 
-        /* Searching for .json and .txt files in the folder containing
-         * the simulation results. */
-        struct dirent *path;
-        while ((path = readdir(directory_results)) != NULL) {
+        /* Comparing the 46th first characters of the third line
+         * with "[cadmium::celldevs::cell_ports_def<std::string"*/
+        if (strncmp(line, VALID_FORMAT, strlen(VALID_FORMAT)) != 0) {
+            return CONVERT_FILE_FORMAT_INCORRECT;
+        }
+
+        fclose(f_input_txt);
+
+        /* Calling the function convert_json_file to convert
+         * the .json into the proper format for the simulation viewer. */
+        int res = convert_json_file(output, path_json, visualization);
+        if(res != 0){
+            return res;
+        }
+
+        /* Calling the function convert_txt_file to convert
+         * the .txt into the proper format for the simulation viewer. */
+        res = convert_txt_file(output, path_txt);
+        if(res != 0){
+            return res;
+        }
+
+        /* Verifying that the results folder now contains the
+         * converted results files.
+         * Results folder should now contain:
+         * 1) 2 x .json file,
+         * 2) 1 x .txt file, and
+         * 3) 1 x .log file. */
+
+        if (!file_exists(path_txt) || !file_exists(path_json)) {
+            res = CONVERSION_FAILED;
+        }
+
+        return res;
+
+        // TODO: I think just checking if the 2 files exist at the output location is sufficient.
+        /*
+        int count_json_files_after_conversion = 0;
+        int count_txt_files_after_conversion = 0;
+        int count_log_files_after_conversion = 0;
+
+        DIR *p_directory_results = opendir(output);
+        while ((path = readdir(p_directory_results)) != NULL) {
             char *filename = path->d_name;
 
-            /* Start extracting characters after "." */
-            p_start_extract = strchr(filename, delimiter_period);
+            // Start extracting characters after "."
+            start_extract = strchr(filename, delimiter_period);
 
-            /* p_start_extract == NULL when a filename does not contain
-             * a file extension.*/
-            if (p_start_extract == NULL) {
+            // start_extract == NULL when a filename does not
+            //contain an extension.
+            if (start_extract == NULL) {
                 continue;
             }
-            if (!strcmp(p_start_extract, ".json")) {
-                strcpy(filename_json, filename);
-                count_json_files++;
-            } else if (!strcmp(p_start_extract, ".txt")) {
-                strcpy(filename_txt, filename);
-                count_txt_files++;
-            } else if (!strcmp(p_start_extract, ".log")) {
-                count_log_files++;
-                /* When the filename extension is not ".json" or ".txt" */
+            if (!strcmp(start_extract, ".json")) {
+                count_json_files_after_conversion++;
+            } else if (!strcmp(start_extract, ".txt")) {
+                count_txt_files_after_conversion++;
+            } else if (!strcmp(start_extract, ".log")) {
+                count_log_files_after_conversion++;
+                // When the filename extension is not a
+                // ".json" or ".txt" or ".log".
             } else {
                 continue;
             }
         }
-        closedir(directory_results);
-
-        /* This function is only executed if path_results only contain
-         * one .json file, one .txt file and no .log file. */
-        if (count_txt_files != 1 || count_json_files != 1 || count_log_files != 0) {
-            /*printf("\n Please ensure that your simulation results folder");*/
-            /*printf("\n contains only one .json file, one .txt file and");*/
-            /*printf("\n no .log file.");*/
-            return CONVERT_PATH_FILES_INCORRECT;
+        closedir(p_directory_results);
+        if (count_json_files_after_conversion == 2 &&
+            count_txt_files_after_conversion == 1 &&
+            count_log_files_after_conversion == 1) {
+            return res;
         } else {
-            strcat(path_json, path_results);
-            strcat(path_json, filename_json);
-            strcat(path_txt, path_results);
-            strcat(path_txt, filename_txt);
-            /*printf("\n txt filename is: %s",path_txt);*/
-
-            /* The function convert result files only if the path_results
-             * has one .txt file using the Cadmium Cell-DEVS format.
-             * The third line of any .txt files using the Cadmium Cell-DEVS
-             * format should always start as such: [cadmium::celldevs
-             * This text extract will be used for string comparison. */
-            FILE *f_input_txt = fopen(path_txt, "r");
-            char line[200] = "";
-            int count_lines = 0;
-
-            /* Loop to get the third line of the .txt file */
-            while (count_lines < 3) {
-                fgets(line, sizeof(line), f_input_txt);
-                count_lines++;
-            }
-
-            /* Comparing the 18th first characters of the third line
-             * with "[cadmium::celldevs" */
-            if (strncmp(line, "[cadmium::celldevs", 18) != 0) {
-                /*printf("\n Please verify that your txt file contain");*/
-                /*printf("\n the Cadmium Cell-Devs format.");*/
-                return CONVERT_FILE_FORMAT_INCORRECT;
-            }
-
-            fclose(f_input_txt);
-
-            /* Calling the function convert_json_file(path_json) to convert
-             * the .json into the proper format for the simulation viewer. */
-            convert_json_file(path_results,path_json);
-
-            /* Calling the function convert_txt_file(path_txt) to convert
-             * the .txt into the proper format for the simulation viewer. */
-            convert_txt_file(path_results,path_txt);
-
-            /* Verifying that the results folder now contains the
-             * converted results files.
-             * Results folder should now contain:
-             * 1) 2 x .json file,
-             * 2) 1 x .txt file, and
-             * 3) 1 x .log file. */
-            int count_json_files_after_conversion = 0;
-            int count_txt_files_after_conversion = 0;
-            int count_log_files_after_conversion = 0;
-
-            DIR *directory_results = opendir(path_results);
-            while ((path = readdir(directory_results)) != NULL) {
-                char *filename = path->d_name;
-
-                /* Start extracting characters after "." */
-                p_start_extract = strchr(filename, delimiter_period);
-
-                /* p_start_extract == NULL when a filename does not
-                 * contain an extension.*/
-                if (p_start_extract == NULL) {
-                    continue;
-                }
-                if (!strcmp(p_start_extract, ".json")) {
-                    count_json_files_after_conversion++;
-                } else if (!strcmp(p_start_extract, ".txt")) {
-                    count_txt_files_after_conversion++;
-                } else if (!strcmp(p_start_extract, ".log")) {
-                    count_log_files_after_conversion++;
-                    /* When the filename extension is not a
-                     * ".json" or ".txt" or ".log". */
-                } else {
-                    continue;
-                }
-            }
-            closedir(directory_results);
-            if (count_json_files_after_conversion == 2 &&
-                count_txt_files_after_conversion == 1 &&
-                count_log_files_after_conversion == 1) {
-                /*printf("\n Converted results are now found");*/
-                /*printf("\n in the results folder.");*/
-                return SUCCESS;
-            } else {
-                /*printf("\n Something went wrong...");*/
-                /*printf("\n Expected files are not all in the results folder.");*/
-                return CONVERSION_FAILED;
-            }
+            return CONVERSION_FAILED;
         }
+        */
     }
 }
 
-int convert_json_file(char *path_results,char *json_filename) {
+int convert_json_file(char *path_results, char *json_filename, cJSON *visualization) {
 
     /* Open .json file and start extracting text */
-
-    /* Should use the following existing function: read_json_file */
     FILE *f_input_json = fopen(json_filename, "r");
 
     if (f_input_json == NULL) {
-        /*printf("\n File could not be opened.");*/
         return UNABLE_OPEN_FILE;
     }
 
@@ -195,95 +210,67 @@ int convert_json_file(char *path_results,char *json_filename) {
     free(string);
 
     if (input_json == NULL) {
-        /*printf("\n input_json is NULL.");*/
         return UNABLE_OPEN_FILE;
     }
 
-    cJSON *scenario_field = NULL;
-    cJSON *default_cell_type_field = NULL;
-    cJSON *shape_field = NULL;
-    cJSON *default_state_field = NULL;
-
-    scenario_field = cJSON_GetObjectItemCaseSensitive(input_json, "scenario");
-
-    /* default_cell_type (equivalent to getName) */
-    default_cell_type_field =
-            cJSON_GetObjectItemCaseSensitive(scenario_field, "default_cell_type");
-    char *default_cell_type_name = cJSON_GetStringValue(default_cell_type_field);
-
-    /* shape (equivalent to getSize) */
-    shape_field = cJSON_GetObjectItemCaseSensitive(scenario_field, "shape");
-    int size_shape_field = cJSON_GetArraySize(shape_field);
-    int shape_value[size_shape_field];
-    int *p_shape_value[size_shape_field];
-    for (int i = 0; i < size_shape_field; i++) {
-        shape_value[i] = cJSON_GetArrayItem(shape_field, i)->valueint;
-        p_shape_value[i] = &shape_value[i];
+    char *fields = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(visualization, VIZ_OBJECT));
+    if (fields == NULL || fields[0] == '\0') {
+        return CONVERT_VIZ_FIELDS_INVALID;
     }
 
-    /* default state (equivalent to getPorts) */
-    default_state_field =
-            cJSON_GetObjectItemCaseSensitive(scenario_field, "default_state");
-    int size_state_field = cJSON_GetArraySize(default_state_field);
-    char *state_value[size_state_field][100];
-    for (int i = 0; i < size_state_field; i++) {
-        state_value[i][100] = cJSON_GetArrayItem(default_state_field, i)->string;
+    /* Get "cells" sub object */
+    cJSON *cells_object = NULL;
+    cells_object = cJSON_GetObjectItem(input_json, RESULT_OBJECT);
+    int size_cell_object = cJSON_GetArraySize(cells_object);
+    char cell[size_cell_object][LENGTH_MAX];
+
+    int i = 0;
+    if (cells_object){
+        cJSON *cells_sub_object = cells_object->child;
+        while(cells_sub_object){
+            strcpy(cell[i],cells_sub_object->string);
+            cells_sub_object = cells_sub_object->next;
+            i++;
+        }
     }
 
-    /* Create new json structure and then write data to new json file */
+    /* Create new json structure. Then, write data to new json file. */
     char *out;
     cJSON *root;
     cJSON *info;
     cJSON *nodes;
     cJSON *node;
-    cJSON *ports;
-    cJSON *port;
 
     root = cJSON_CreateObject();
     info = cJSON_CreateObject();
     nodes = cJSON_CreateArray();
-    ports = cJSON_CreateArray();
 
-    /* Info */
     cJSON_AddItemToObject
             (root, "info", info);
     cJSON_AddItemToObject
             (info, "simulator", cJSON_CreateString("Cadmium"));
     cJSON_AddItemToObject
-            (info, "name", cJSON_CreateString("transport_output_messages"));
+            (info, "name", cJSON_CreateString("Messages"));
     cJSON_AddItemToObject
-            (info, "type", cJSON_CreateString("Cell-DEVS"));
+            (info, "type", cJSON_CreateString("Irregular Cell-DEVS"));
 
-    /* Nodes */
-    cJSON_AddItemToObject
-            (root, "nodes", nodes);
-    cJSON_AddItemToArray
-            (nodes, node = cJSON_CreateObject());
-    cJSON_AddItemToObject
-            (node, "name", cJSON_CreateString(default_cell_type_name));
-    cJSON_AddItemToObject
-            (node, "type", cJSON_CreateString("coupled"));
-    cJSON_AddItemToObject
-            (node, "size", cJSON_CreateIntArray(shape_value, size_shape_field));
 
-    /* Ports */
-    cJSON_AddItemToObject(root, "ports", ports);
-    for (int i = 0; i < size_state_field; i++) {
+    cJSON_AddItemToObject(root, "nodes", nodes);
+    for (int i = 1; i < size_cell_object; i++) {
         cJSON_AddItemToArray
-                (ports, port = cJSON_CreateObject());
+                (nodes, node = cJSON_CreateObject());
         cJSON_AddItemToObject
-                (port, "model", cJSON_CreateString(default_cell_type_name));
+                (node, "name", cJSON_CreateString(cell[i]));
         cJSON_AddItemToObject
-                (port, "name", cJSON_CreateString(state_value[i][100]));
+                (node, "type", cJSON_CreateString("atomic"));
         cJSON_AddItemToObject
-                (port, "type", cJSON_CreateString("output"));
+                (node, "template", cJSON_CreateStringReference(fields));
     }
 
     out = cJSON_Print(root);
 
-    /* Should use the write_data_to_file function */
     FILE *f_output_json;
-    char json_filename1[200] = "";
+    char json_filename1[NAME_MAX] = "";
     strcat(json_filename1, path_results);
     strcat(json_filename1, CONVERTED_RESULTS_JSON_FILENAME);
     f_output_json = fopen(json_filename1, "w");
@@ -300,46 +287,36 @@ int convert_txt_file(char *path_results, char *txt_filename) {
     /* Open .txt file to be converted into required format
      * for the simulation viewer. */
     FILE *f_input_txt = fopen(txt_filename, "r");
-
     if (f_input_txt == NULL) {
-        /*printf("\n File could not be opened.");*/
         return UNABLE_OPEN_FILE;
     }
 
     /* Creating and opening new .log file where the converted results
      * will be written. */
-    char log_filename[200] = "";
-    strcat(log_filename, path_results);
-    strcat(log_filename, CONVERTED_RESULTS_LOG_FILENAME);
+    char log_filename[NAME_MAX] = "";
+    sprintf(log_filename, "%s%s", path_results, CONVERTED_RESULTS_LOG_FILENAME);
 
     FILE *f_output_txt = fopen(log_filename, "w");
-
     if (f_output_txt == NULL) {
-        /*printf("\n File could not be opened.");*/
         return UNABLE_OPEN_FILE;
     }
 
     /* Cadmium results files always contain an extra "0\n" at the beginning.
-     * Starts the conversion after this extra "0\n" (equal to two characters). */
+     * Starts the conversion after this extra "0\n" which is equal to two characters. */
     fseek(f_input_txt, 2, SEEK_SET);
 
-    const char start_extract_character = '(';
-    const char start_extract_character_2 = '<';
-    const char end_extract_character = ')';
-    const char end_extract_character_2 = '>';
-    const char delimiter_space[] = " ";
-    int j = 0;
+    const char start_extract_character = '<';
+    const char end_extract_character = '>';
+    int line = 0;
+    int count = 0;
 
     /* Looping through each line of the .txt file. */
     while (!feof(f_input_txt)) {
-        char line_time[200] = "";
-        char line_text[200] = "";
-        char *p_start_extract = NULL;
-        char *p_end_extract = NULL;
-        char *p_start_extract_2 = NULL;
-        char *p_end_extract_2 = NULL;
-        char data[200] = "";
-        char data_2[200] = "";
+        char line_time[LENGTH_MAX] = "";
+        char line_text[LENGTH_MAX] = "";
+        char *start_extract = NULL;
+        char *end_extract = NULL;
+        char data[LENGTH_MAX] = "";
         int count_characters = 0;
         int line_length = 0;
 
@@ -347,106 +324,38 @@ int convert_txt_file(char *path_results, char *txt_filename) {
 
         /* Example of line:
          *
-         * [cadmium::celldevs::cell_ports_def<std::vector<int, std::allocator
-         * <int> >,co2>::cell_out: {(37,56) ; <-1,-10,2>}] generated by model
-         * CO2_model_(37,56)
+         * [cadmium::celldevs::cell_ports_def<std::string, sir>::cell_out:
+         * {Alta Vista ; <1,0.485,0.515,0,0.515,0,0>}] generated by model _Alta Vista
          *
          * */
         if (line_text[0] == '[') {
 
-            /* Get the coords:
-             * (i.e., in the example, the coords are 37 and 56). */
-            p_start_extract = strchr(line_text, start_extract_character);
-            p_end_extract = strchr(line_text, end_extract_character);
-            count_characters = p_end_extract - p_start_extract;
-            strncpy(data, p_start_extract + 1, count_characters - 1);
+            /* Get values:
+             * (i.e., in the example, the values are 1,0.485,0.515,0,0.515,0,0). */
+            start_extract = strrchr(line_text, start_extract_character);
+            end_extract = strrchr(line_text, end_extract_character);
+            count_characters = end_extract - start_extract;
+            strncpy(data, start_extract + 1, count_characters - 1);
+            fprintf(f_output_txt, ";%d,%s", count, data);
+            count++;
 
-            for (int k = 0; k <= strlen(data); k++) {
-                if (data[k] == '(' || data[k] == ',') {
-                    data[k] = ' ';
-                }
-            }
-
-            char *ptr = strtok(data, delimiter_space);
-            char **coords = NULL;
-            int n_spaces1 = 0;
-
-            while (ptr) {
-                coords = realloc(coords, sizeof(char *) * ++n_spaces1);
-                if (coords == NULL){
-                    exit(-1);
-                }
-                coords[n_spaces1 - 1] = ptr;
-                ptr = strtok(NULL, " ");
-            }
-
-            coords = realloc(coords, sizeof(char *) * (n_spaces1 + 1));
-            coords[n_spaces1] = 0;
-
-            if (n_spaces1 == 2) {
-                coords[2] = "0";
-            }
-
-            /* Get the values:
-             * (i.e., in the example, the values are -1,-10, and 2). */
-            p_start_extract_2 = strchr(p_end_extract, start_extract_character_2);
-            p_end_extract_2 = strchr(p_end_extract, end_extract_character_2);
-            count_characters = p_end_extract_2 - p_start_extract_2;
-            strncpy(data_2, p_start_extract_2 + 1, count_characters - 1);
-
-            for (int n = 0; n <= strlen(data_2); n++) {
-                if (data_2[n] == ',') {
-                    data_2[n] = ' ';
-                }
-            }
-
-            char *ptr2 = strtok(data_2, delimiter_space);
-            char **values = NULL;
-            int n_spaces = 0;
-
-            while (ptr2) {
-                values = realloc(values, sizeof(char *) * ++n_spaces);
-                if (values == NULL){
-                    exit(-1);
-                }
-                values[n_spaces - 1] = ptr2;
-                ptr2 = strtok(NULL, " ");
-            }
-
-            values = realloc(values, sizeof(char *) * (n_spaces + 1));
-            values[n_spaces] = 0;
-
-            for (int q = 0; q < n_spaces; q++) {
-                fputs(";", f_output_txt);
-                fputs(coords[0], f_output_txt);
-                fputs(",", f_output_txt);
-                fputs(coords[1], f_output_txt);
-                fputs(",", f_output_txt);
-                fputs(coords[2], f_output_txt);
-                fputs(",", f_output_txt);
-                fprintf(f_output_txt, "%d", q);
-                fputs(",", f_output_txt);
-                fputs(values[q], f_output_txt);
-            }
-
-            free(coords);
-            free(values);
-
-        } else if (j == 0) {
-            line_length = strlen(line_text);
-            line_text[line_length - 1] = '\0';
-            strcpy(line_time, line_text);
-            fputs(line_time, f_output_txt);
         } else {
+            count = 0;
             line_length = strlen(line_text);
             line_text[line_length - 1] = '\0';
             strcpy(line_time, line_text);
-            fputs("\n", f_output_txt);
-            fputs(line_time, f_output_txt);
+            if (line != 0) {
+                fputs("\r\n", f_output_txt);
+                fputs(line_time, f_output_txt);
+            } else {
+                fputs(line_time, f_output_txt);
+            }
         }
-        j++;
+        line++;
     }
+
     fclose(f_input_txt);
     fclose(f_output_txt);
+
     return SUCCESS;
 }

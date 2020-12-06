@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdio.h>
 #include "cJSON.h"
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/utils/file.h"
@@ -25,13 +26,19 @@ cJSON * read_spatial_analysis(const cJSON *const workflow){
     return  cJSON_GetObjectItem(workflow, "spatial_analysis");
 }
 
+cJSON * read_conversion(const cJSON *const workflow){
+    return  cJSON_GetObjectItem(workflow, "conversion");
+}
+
 cJSON * read_visualization(const cJSON *const workflow){
     return  cJSON_GetObjectItem(workflow, "visualization");
 }
 
 int validate_workflow(const cJSON *const workflow){
     //Check workflow
-    if (NULL == workflow) {  // when comparing variables with literals, follow the notation literal == variable
+    if (NULL == workflow) {
+        // TODO: In the code guidelines from cuLearn, it says : Constants on RHS in equality/inequality check. Example: value == 1
+        // when comparing variables with literals, follow the notation literal == variable
         return WORKFLOW_DOES_NOT_EXIST;
     }
 
@@ -83,13 +90,15 @@ int validate_workflow(const cJSON *const workflow){
     //Check spatial analysis
     cJSON * spatial_analysis = read_spatial_analysis(workflow);
     if (spatial_analysis == NULL) {
-        return NULL_SPATIAL_ANALYSIS;
+        fprintf(stderr, "No spatial analysis section. As it is not implemented, we skip this issue.\n");
+        // return NULL_SPATIAL_ANALYSIS; TODO enable when ready
     }
 
     //Check visualization
     cJSON * visualization = read_visualization(workflow);
     if (visualization == NULL) {
-        return NULL_VISUALIZATION;
+        fprintf(stderr, "No visualization section. As it is not implemented, we skip this issue.\n");
+        // return NULL_VISUALIZATION; TODO enable when ready
     }
 
     //Check simulation
@@ -115,6 +124,10 @@ int run_sim_required(const cJSON *const workflow) {
     return NULL != cJSON_GetObjectItemCaseSensitive(sim_config, "result_output_path");
 }
 
+int conversion_required(const cJSON *const workflow) {
+    return NULL != read_conversion(workflow);
+}
+
 int create_viz_required(const cJSON *const workflow) {
-    return 0; // TODO
+    return NULL != read_visualization(workflow);
 }
