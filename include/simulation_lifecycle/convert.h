@@ -11,6 +11,14 @@
  */
 char * get_output_path(cJSON * conv);
 
+/**
+ * @brief returns the output path as a string from the conversion json.
+ * @param[in] conv, a cJSON representation of the conversion section in the workflow.
+ * @return a string containing the output path
+ */
+char * get_input_path(cJSON * conv);
+
+/**
  * @brief convert irregular cell-DEVS simulation results .json file into the required
  * format for the simulation viewer.
  * @param[in] path_results string containing the path to the results folder.
