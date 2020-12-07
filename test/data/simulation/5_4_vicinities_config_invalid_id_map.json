@@ -1,0 +1,35 @@
+{
+  "model_id": "2_2_agent_sir_config",
+  "default_config": {
+    "cell_type": "sir",
+    "delay": "hybrid",
+    "state": {
+      "population": 100,
+      "susceptible": 1,
+      "infected": 0,
+      "recovered": 0
+    },
+    "config": {
+      "virulence": 0,
+      "recovery": 1
+    }
+  },
+  "cells": [
+    {
+      "source": "data",
+      "cell_id": "dbuid",
+      "state": {
+        "population": "id"
+      }
+    }
+  ],
+  "vicinities": {
+    "from": "invalid",
+    "to": "invalid",
+    "source": "vicinities",
+    "vicinity": {
+      "connectivity": "conn",
+      "mobility": "mob"
+    }
+  }
+}

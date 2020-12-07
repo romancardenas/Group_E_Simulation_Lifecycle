@@ -1,0 +1,291 @@
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <unistd.h>
+#include "cJSON.h"
+#include "simulation_lifecycle/error.h"
+#include "simulation_lifecycle/utils/linked_list.h"
+#include "simulation_lifecycle/utils/file.h"
+#include "simulation_lifecycle/utils/strings.h"
+#include "simulation_lifecycle/structures.h"
+#include "simulation_lifecycle/simulation.h"
+#include "simulation_lifecycle/models.h"
+
+#define SIM_MODEL_ID "model_id"
+#define SIM_MODEL_LIBRARY "../third_party/CellDEVS_models/tutorial/bin/"
+#define SIM_MODEL_DEFAULT_CONFIG "default_config"
+#define SIM_CONFIG_OUTPUT_PATH "config_output_path"
+#define SIM_RESULT_OUTPUT_PATH "result_output_path"
+#define SIM_RESULTS_DEFAULT_PATH "../third_party/CellDEVS_models/tutorial/logs/"
+#define SIM_RESULTS_END_FILENAME "_outputs.txt"
+#define MAX_LEN 255
+
+#define SIM_DATA_SOURCE "source"
+#define SIM_MODEL_CELLS "cells"
+#define SIM_MODEL_DEFAULT "default"
+#define SIM_MODEL_VICINITY "vicinity"
+#define SIM_MODEL_VICINITIES "vicinities"
+#define SIM_MODEL_VICINITIES_FROM "from"
+#define SIM_MODEL_VICINITIES_TO "to"
+#define SIM_MODEL_NEIGHBORHOOD "neighborhood"
+
+/**
+ * @brief reads simulation configuration and fills the default Cell-DEVS configuration of the simulation scenario.
+ * @param[in] simulation_config cJSON structure containing the simulation configuration defined by the user.
+ * @param[out] target cJSON object that will hold the default simulation configuration.
+ * @return 0 if the function ran successfully. Otherwise, it returns an error code.
+ */
+int parse_default_sim_config(const cJSON *simulation_config, cJSON *target);
+
+/**
+ * @brief reads simulation configuration and fills the Cell-DEVS configuration of all the cells in the scenario.
+ * @param[in] simulation_config cJSON structure containing the simulation configuration defined by the user.
+ * @param[in] data_sources pointer to linked list containing data sources.
+ * @param[out] target cJSON object that will hold the cells simulation configuration.
+ * @return 0 if the function ran successfully. Otherwise, it returns an error code.
+ */
+int parse_cells_config(const cJSON *simulation_config, node_t **data_sources, cJSON *target);
+
+/**
+ * @brief reads simulation configuration and fills the vicinity configuration between the cells in the scenario.
+ * @param[in] simulation_config cJSON structure containing the simulation configuration defined by the user.
+ * @param[in] data_sources pointer to linked list containing data sources.
+ * @param[out] target cJSON object that will hold the cells vicinities simulation configuration.
+ * @return 0 if the function ran successfully. Otherwise, it returns an error code.
+ */
+int parse_vicinities(const cJSON *simulation_config, node_t **data_sources, cJSON *target);
+
+/**
+ * @brief checks that all the cells of the model have at least one neighboring cell.
+ * @param[in] target cJSON struct with all the cells of the scenario that needs to be checked.
+ * @return 0 if the function ran successfully. Otherwiese, it returns an error code.
+ */
+int check_valid_vicinities(const cJSON *target);
+
+/**
+ * @brief writes JSON configuration to the desired output path.
+ * @param[in] simulation_config cJSON structure containing the simulation configuration defined by the user.
+ * @param[in] config_json string containing the content of the resulting simulation configuration file.
+ *            It cannot be a NULL pointer. Otherwise, the function will raise an exception.
+ * @return 0 if the function ran successfully. Otherwise, it returns an error code.
+ */
+int write_sim_config(const cJSON *simulation_config, char *config_json);
+
+int build_simulation_scenario(const cJSON *const simulation_config, node_t ** data_sources) {
+    if (simulation_config == NULL) {
+        return SIM_CONFIG_EMPTY;
+    }
+    int res;
+    /* 1. Parse default configuration */
+    cJSON *default_config = cJSON_CreateObject();
+    if ((res = parse_default_sim_config(simulation_config, default_config))) {
+        cJSON_Delete(default_config);
+        return res;
+    }
+    cJSON *cells_config = cJSON_CreateObject();
+    cJSON_AddItemToObject(cells_config, SIM_MODEL_DEFAULT, default_config); // default_config is now inside cells_config
+    /* 2. We only keep filling configuration parameters if result is SUCCESS */
+    res = parse_cells_config(simulation_config, data_sources, cells_config);
+    if (res || (res = parse_vicinities(simulation_config, data_sources, cells_config))) {
+        cJSON_Delete(cells_config);
+        return res;
+    }
+
+    /* 3. Try to write simulation config file, remove cJSON structures, and return the corresponding error code. */
+    cJSON *root = cJSON_CreateObject();
+    cJSON_AddItemToObject(root, SIM_MODEL_CELLS, cells_config);  // cells_config is now inside root_config
+    res = write_sim_config(simulation_config, cJSON_Print(root));
+    cJSON_Delete(root);
+    return res;
+}
+
+int parse_default_sim_config(const cJSON *const simulation_config, cJSON *target) {
+    /* 1. Check that model ID is provided using a valid format */
+    char *model = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_ID));
+    if (model == NULL) {
+        return SIM_MODEL_SELECTION_INVALID;
+    }
+    // Check that the model exists
+    char *model_path = concat(SIM_MODEL_LIBRARY, model);
+    int model_found = executable_exists(model_path);
+    free(model_path);
+    if (!model_found) {
+        return SIM_MODEL_SELECTION_INVALID;
+    }
+    /* 3. Parse default configuration of the model. Parsing functions may detect an error and return an error code */
+    cJSON *default_config = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_DEFAULT_CONFIG);
+    if (!cJSON_IsObject(default_config)) {
+        return SIM_MODEL_COMMON_CONFIG_INVALID;
+    }
+    return parse_common_default_fields(default_config, target);
+}
+
+int parse_cells_config(const cJSON *const simulation_config, node_t ** data_sources, cJSON *target) {
+    /* Get array that describes which data sources contain information regarding cell in the scenario */
+    cJSON *cells = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_CELLS);
+    if (!cJSON_IsArray(cells)) {
+        return SIM_MODEL_CELLS_CONFIG_INVALID;
+    }
+    /* Target already has the default cell config. We store this configuration in default_cell. */
+    cJSON *default_cell = cJSON_GetObjectItemCaseSensitive(target, SIM_MODEL_DEFAULT);
+
+    /* Iterate over each data-source-to-cells mapper (data may be scatter around more than one data source) */
+    int res;
+    cJSON *cells_mapper = NULL;
+    cJSON_ArrayForEach(cells_mapper, cells) {
+        /* Get corresponding data source ID */
+        char * data_source_id = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(cells_mapper, SIM_DATA_SOURCE));
+        if (data_source_id == NULL) {
+            return SIM_MODEL_CELLS_CONFIG_INVALID;
+        }
+        data_source_t *data_source = get_data_source(data_sources, data_source_id);
+        if (data_source == NULL) {
+            return SIM_MODEL_CELLS_CONFIG_INVALID;
+        }
+        if((res = parse_cells_from_data_source(cells_mapper, data_source, default_cell, target))) {
+            return res;
+        }
+    }
+    /* Check that there is at least one cell in the scenario (the default cell doesn't count) */
+    return (cJSON_GetArraySize(target) > 1)? SUCCESS : SIM_MODEL_CELLS_CONFIG_INVALID;
+}
+
+int parse_vicinities(const cJSON *const simulation_config,  node_t ** data_sources, cJSON *target) {
+    /* Get mandatory fields for vicinity mapping. Check that they have valid values. */
+    cJSON *vicinities = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_VICINITIES);
+    if (vicinities == NULL || !cJSON_IsObject(vicinities)) {
+        return SIM_MODEL_VICINITIES_CONFIG_INVALID;
+    }
+    char *from_map = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(vicinities, SIM_MODEL_VICINITIES_FROM));
+    char *to_map = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(vicinities, SIM_MODEL_VICINITIES_TO));
+    char * data_source_id = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(vicinities, SIM_DATA_SOURCE));
+    cJSON * vicinity_map = cJSON_GetObjectItemCaseSensitive(vicinities, SIM_MODEL_VICINITY);
+    if (from_map == NULL || to_map == NULL|| data_source_id == NULL || vicinity_map == NULL) {
+        return SIM_MODEL_VICINITIES_CONFIG_INVALID;
+    }
+    /* The data source for getting the vicinities of the scenario must exist. */
+    data_source_t *data_source = get_data_source(data_sources, data_source_id);
+    if (data_source == NULL) {
+        return SIM_MODEL_VICINITIES_CONFIG_INVALID;
+    }
+    /* Call auxiliary function to parse the cells one by one. Then, check that all the cells have at least one neighbor */
+    int res = parse_vicinities_from_data_source(data_source, from_map, to_map, vicinity_map, target);
+    return (res)? res : check_valid_vicinities(target);
+}
+
+int check_valid_vicinities(const cJSON *const target) {
+    cJSON *cell;
+    cJSON_ArrayForEach(cell, target) {
+        if (strcmp(cell->string, SIM_MODEL_DEFAULT) != 0) { /* the default cell may not have neighborhood. */
+            cJSON *neighborhood = cJSON_GetObjectItemCaseSensitive(cell, SIM_MODEL_NEIGHBORHOOD);
+            if (!cJSON_GetArraySize(neighborhood)) {  /* Cells must have at least one neighbor. */
+                return SIM_MODEL_VICINITY_MAPPING_INVALID;
+            }
+        }
+    }
+    return SUCCESS;
+}
+
+int write_sim_config(const cJSON *simulation_config, char *config_json) {
+    char *config_output_path = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_CONFIG_OUTPUT_PATH));
+    if (config_output_path == NULL) {
+        return SIM_CONFIG_OUTPUT_PATH_INVALID;
+    }
+    return write_data_to_file(config_output_path, config_json);
+}
+
+int run_sim(const cJSON *simulation_config){
+
+    /* Get model name - e.g. 2_2_agent_sir_config */
+    cJSON *model = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_ID);
+
+    /* Check that model ID is provided using a valid format. */
+    if (model == NULL || !cJSON_IsString(model)) {
+        return SIM_MODEL_SELECTION_INVALID;
+    }
+
+    /* Check that the model exists. */
+    char *model_path = concat(SIM_MODEL_LIBRARY, cJSON_GetStringValue(model));
+    int model_found = executable_exists(model_path);
+    free(model_path);  // NOTE: concat uses the heap for allocating memory -> we need to free it to avoid memory leakage!
+    if (!model_found) {
+        return SIM_MODEL_SELECTION_INVALID;
+    }
+
+    char *model_name = cJSON_GetStringValue(model);
+
+    /* Get current directory. */
+    char current_dir[MAX_LEN];
+    getcwd(current_dir, sizeof(current_dir));
+
+    /* Change to model executable files directory. */
+    chdir(SIM_MODEL_LIBRARY);
+
+    /* Get config output path which is relative to SIM_MODEL_LIBRARY. */
+    char *config_path = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_CONFIG_OUTPUT_PATH));
+
+    /* Check that config output path is provided using a valid format. */
+    if (config_path == NULL) {
+        chdir(current_dir);
+        return SIM_CONFIG_OUTPUT_PATH_INVALID;
+    }
+    char absolute_config_path[MAX_LEN] = "";
+    snprintf(absolute_config_path, sizeof(absolute_config_path), "%s/%s", current_dir, config_path);
+    if(!file_exists(absolute_config_path)) {
+        chdir(current_dir);
+        return SIM_CONFIG_OUTPUT_PATH_INVALID;
+    }
+
+    /* Defining a command to run the simulation.
+     * The command executes the model executable file with one argument
+     * which is the scenario config .json file.
+     * Example: ./2_2_agent_sir_config ../../../../test/data/run_simulation/config.json
+     */
+
+    /* TODO Issue: "./" works on Linux. On Windows, it will work with Windows PowerShell, but not CMD */
+    /* TODO Find a better solution than using a relative config output path from "../third_party/CellDEVS_models/tutorial/bin/" */
+
+    char command[MAX_LEN] = "";
+    snprintf(command, sizeof(command), "./%s %s", model_name, absolute_config_path);
+
+    int sim_status = system(command);
+
+    chdir(current_dir);
+
+    /* Check if simulation was properly ran. */
+    if (sim_status != 0){
+        return SIM_RUN_ERROR;
+    }
+    /* Define results filename. */
+    char *results_filename = concat(model_name, SIM_RESULTS_END_FILENAME);
+    char *results_filename_path = concat(SIM_RESULTS_DEFAULT_PATH, results_filename);
+    free(results_filename); // NOTE: concat uses the heap for allocating memory -> we need to free it to avoid memory leakage!
+
+    /* Check if results file exists. */
+    if (!file_exists(results_filename_path)) {
+        return SIM_RUN_NO_RESULTS;
+    }
+    /* Moving the results file to predefined result output path. */
+    /* Get result output path */
+    char *result_path = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_RESULT_OUTPUT_PATH));
+
+    /* Check that config output path is provided and valid. */
+    if (result_path == NULL){
+        return SIM_RESULT_OUTPUT_PATH_INVALID;
+    }
+
+    /* Check if config output path already exists. */
+    /* This check will avoid overwriting on previous simulation results. */
+    if (file_exists(result_path)){
+        return SIM_RESULT_OUTPUT_PATH_ALREADY_EXISTS ;
+    }
+
+    int sim_results_move_status = rename(results_filename_path,result_path);
+    free(results_filename_path);  // NOTE: concat uses the heap for allocating memory -> we need to free it to avoid memory leakage!
+
+    /* Check if rename function was successful and if the new file exists */
+    if (sim_results_move_status != 0 || !file_exists(result_path)) {
+        return SIM_RUN_RESULTS_MOVE_FAILED;
+    }
+    return SUCCESS;
+}
