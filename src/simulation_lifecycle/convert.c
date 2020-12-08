@@ -6,6 +6,7 @@
 #include <dirent.h>
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/convert.h"
+#include "simulation_lifecycle/utils/file.h"
 
 #define NAME_MAX 255
 #define PATH_MAX 4096
@@ -14,19 +15,32 @@
 #define VIZ_OBJECT "fields"
 #define RESULT_OBJECT "cells"
 
-int convert_results(char *path_results, cJSON *visualization) {
 
-    if (path_results == NULL) {
+char * get_output_path(cJSON * conv) {
+    cJSON * path = cJSON_GetObjectItem(conv, "output");
+
+    return (path == NULL) ? NULL : cJSON_GetStringValue(path);
+}
+
+char * get_input_path(cJSON * conv) {
+    cJSON * path = cJSON_GetObjectItem(conv, "input");
+
+    return (path == NULL) ? NULL : cJSON_GetStringValue(path);
+}
+
+int convert_results(char *input, char *output, cJSON *visualization) {
+    if (input == NULL || strlen(input) == 0) {
         return CONVERT_INPUT_PATH_INCORRECT;
     }
 
-    if (strlen(path_results) == 0) {
-        return CONVERT_INPUT_PATH_INCORRECT;
+    if (output == NULL || strlen(output) == 0) {
+        return CONVERT_OUTPUT_PATH_INCORRECT;
     }
 
     /* Opening the directory containing the results.
     * directory_results is a pointer to manage the directory.*/
-    DIR *p_directory_results = opendir(path_results);
+    DIR *p_directory_results = opendir(input);
+
     if (p_directory_results == NULL) {
         return CONVERT_INPUT_PATH_INCORRECT;
     }
@@ -75,10 +89,10 @@ int convert_results(char *path_results, cJSON *visualization) {
      * This avoids overwriting over previous simulation results. */
     if (count_txt_files != 1 || count_json_files != 1 || count_log_files != 0) {
         return CONVERT_PATH_FILES_INCORRECT;
-    } else {
-        sprintf(path_json, "%s%s", path_results, filename_json);
-        sprintf(path_txt, "%s%s", path_results, filename_txt);
-
+    } 
+    else {
+        sprintf(path_json, "%s%s", input, filename_json);
+        sprintf(path_txt, "%s%s", input, filename_txt);
 
         /* The function convert result files only if the path_results
          * has one .txt file using the irregular Cadmium Cell-DEVS format.
@@ -106,37 +120,47 @@ int convert_results(char *path_results, cJSON *visualization) {
 
         /* Calling the function convert_json_file to convert
          * the .json into the proper format for the simulation viewer. */
-        int res = convert_json_file(path_results, path_json, visualization);
+        int res = convert_json_file(output, path_json, visualization);
         if(res != 0){
             return res;
         }
 
         /* Calling the function convert_txt_file to convert
          * the .txt into the proper format for the simulation viewer. */
-        res = convert_txt_file(path_results, path_txt);
+        res = convert_txt_file(output, path_txt);
+
         if(res != 0){
             return res;
         }
 
+        // TODO: I think just checking if the 2 files exist at the output location is sufficient.
         /* Verifying that the results folder now contains the
          * converted results files.
          * Results folder should now contain:
          * 1) 2 x .json file,
          * 2) 1 x .txt file, and
          * 3) 1 x .log file. */
+        if (!file_exists(path_txt) || !file_exists(path_json)) {
+            res = CONVERSION_FAILED;
+        }
+
+        return res;
+
+        /*
         int count_json_files_after_conversion = 0;
         int count_txt_files_after_conversion = 0;
         int count_log_files_after_conversion = 0;
 
-        DIR *p_directory_results = opendir(path_results);
+        DIR *p_directory_results = opendir(output);
         while ((path = readdir(p_directory_results)) != NULL) {
             char *filename = path->d_name;
 
-            /* Start extracting characters after "." */
+            // Start extracting characters after "."
             start_extract = strchr(filename, delimiter_period);
 
-            /* start_extract == NULL when a filename does not
-             * contain an extension.*/
+            // start_extract == NULL when a filename does not
+            //contain an extension.
+
             if (start_extract == NULL) {
                 continue;
             }
@@ -146,8 +170,9 @@ int convert_results(char *path_results, cJSON *visualization) {
                 count_txt_files_after_conversion++;
             } else if (!strcmp(start_extract, ".log")) {
                 count_log_files_after_conversion++;
-                /* When the filename extension is not a
-                 * ".json" or ".txt" or ".log". */
+                // When the filename extension is not a
+                // ".json" or ".txt" or ".log".
+
             } else {
                 continue;
             }
@@ -160,6 +185,7 @@ int convert_results(char *path_results, cJSON *visualization) {
         } else {
             return CONVERSION_FAILED;
         }
+        */
     }
 }
 

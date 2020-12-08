@@ -30,7 +30,7 @@ void test_function_convert_results_null_path(void) {
     read_json_file(workflow_path,&workflow);
     cJSON *visualization = read_visualization(workflow);
 
-    int error_code = convert_results(results_folder_path,visualization);
+    int error_code = convert_results(results_folder_path,results_folder_path,visualization);
     TEST_ASSERT_EQUAL(CONVERT_INPUT_PATH_INCORRECT,error_code);
 }
 
@@ -43,7 +43,7 @@ void test_function_convert_results_empty_path(void) {
     read_json_file(workflow_path,&workflow);
     cJSON *visualization = read_visualization(workflow);
 
-    int error_code = convert_results(results_folder_path,visualization);
+    int error_code = convert_results(results_folder_path,results_folder_path,visualization);
     TEST_ASSERT_EQUAL(CONVERT_INPUT_PATH_INCORRECT,error_code);
 }
 
@@ -56,7 +56,7 @@ void test_function_convert_results_not_directory(void) {
     read_json_file(workflow_path,&workflow);
     cJSON *visualization = read_visualization(workflow);
 
-    int error_code = convert_results(results_folder_path,visualization);
+    int error_code = convert_results(results_folder_path,results_folder_path,visualization);
     TEST_ASSERT_EQUAL(CONVERT_INPUT_PATH_INCORRECT,error_code);
 }
 
@@ -69,7 +69,7 @@ void test_function_convert_results_nonexistent_path(void) {
     read_json_file(workflow_path,&workflow);
     cJSON *visualization = read_visualization(workflow);
 
-    int error_code = convert_results(results_folder_path,visualization);
+    int error_code = convert_results(results_folder_path,results_folder_path,visualization);
     TEST_ASSERT_EQUAL(CONVERT_INPUT_PATH_INCORRECT,error_code);
 }
 
@@ -83,7 +83,7 @@ void test_function_convert_results_incorrect_number_files(void) {
     read_json_file(workflow_path,&workflow);
     cJSON *visualization = read_visualization(workflow);
 
-    int error_code = convert_results(results_folder_path,visualization);
+    int error_code = convert_results(results_folder_path,results_folder_path,visualization);
     TEST_ASSERT_EQUAL(CONVERT_PATH_FILES_INCORRECT,error_code);
 }
 
@@ -98,7 +98,7 @@ void test_function_convert_results_invalid_format(void) {
     read_json_file(workflow_path,&workflow);
     cJSON *visualization = read_visualization(workflow);
 
-    int error_code = convert_results(results_folder_path,visualization);
+    int error_code = convert_results(results_folder_path,results_folder_path,visualization);
     TEST_ASSERT_EQUAL(CONVERT_FILE_FORMAT_INCORRECT,error_code);
 }
 
@@ -112,7 +112,7 @@ void test_function_convert_results_empty_viz_fields(void) {
     read_json_file(workflow_path,&workflow);
     cJSON *visualization = read_visualization(workflow);
 
-    int error_code = convert_results(results_folder_path,visualization);
+    int error_code = convert_results(results_folder_path,results_folder_path,visualization);
     TEST_ASSERT_EQUAL(CONVERT_VIZ_FIELDS_INVALID,error_code);
 }
 
@@ -126,7 +126,7 @@ void test_function_convert_results_missing_viz_fields(void) {
     read_json_file(workflow_path,&workflow);
     cJSON *visualization = read_visualization(workflow);
 
-    int error_code = convert_results(results_folder_path,visualization);
+    int error_code = convert_results(results_folder_path,results_folder_path,visualization);
     TEST_ASSERT_EQUAL(CONVERT_VIZ_FIELDS_INVALID,error_code);
 }
 
@@ -141,7 +141,7 @@ void test_function_convert_results_valid(void) {
     read_json_file(workflow_path,&workflow);
     cJSON *visualization = read_visualization(workflow);
 
-    int error_code = convert_results(results_folder_path,visualization);
+    int error_code = convert_results(results_folder_path,results_folder_path,visualization);
     TEST_ASSERT_EQUAL(SUCCESS,error_code);
 }
 

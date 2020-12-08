@@ -69,22 +69,22 @@ void test_read_data_in(void) {
 
     // Test that read_data_in receives proper errors from  read_json function used internally
     node_t * data_sources = NULL;
-    read_json_file(".\\test\\data\\workflow\\12_bad_path.json", &wf);
+    read_json_file("..\\test\\data\\workflow\\12_bad_path.json", &wf);
     int res = read_data_in(wf, &data_sources);
     TEST_ASSERT_TRUE(res == FILE_DOES_NOT_EXIST);
 
     data_sources = NULL;
-    read_json_file(".\\test\\data\\workflow\\13_missing_data_id.json", &wf);
+    read_json_file("..\\test\\data\\workflow\\13_missing_data_id.json", &wf);
     res = read_data_in(wf, &data_sources);
     TEST_ASSERT_TRUE(res == DATA_SOURCE_ID_NULL);
 
     data_sources = NULL;
-    read_json_file(".\\test\\data\\workflow\\14_missing_data_path.json", &wf);
+    read_json_file("..\\test\\data\\workflow\\14_missing_data_path.json", &wf);
     res = read_data_in(wf, &data_sources);
     TEST_ASSERT_TRUE(res == DATA_SOURCE_PATH_NULL);
 
     data_sources = NULL;
-    read_json_file(".\\test\\data\\workflow\\1_valid_workflow.json", &wf);
+    read_json_file("..\\test\\data\\workflow\\1_valid_workflow.json", &wf);
     res = read_data_in(wf, &data_sources);
     TEST_ASSERT_TRUE(res == SUCCESS);
 }
@@ -94,12 +94,12 @@ void test_execute_workflow(void) {
 
     // Test that execute_workflow receives proper errors from read_Data_in function used internally
     node_t * results = NULL;
-    read_json_file(".\\test\\data\\workflow\\14_missing_data_path.json", &wf);
+    read_json_file("..\\test\\data\\workflow\\14_missing_data_path.json", &wf);
     int res = execute_workflow(wf, &results);
     TEST_ASSERT_TRUE(res != SUCCESS);
 
     results = NULL;
-    read_json_file(".\\test\\data\\workflow\\1_valid_workflow.json", &wf);
+    read_json_file("..\\test\\data\\workflow\\1_valid_workflow.json", &wf);
     res = execute_workflow(wf, &results);
     TEST_ASSERT_TRUE(res == SUCCESS);
 

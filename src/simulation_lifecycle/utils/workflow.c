@@ -26,13 +26,19 @@ cJSON * read_spatial_analysis(const cJSON *const workflow){
     return  cJSON_GetObjectItem(workflow, "spatial_analysis");
 }
 
+cJSON * read_conversion(const cJSON *const workflow){
+    return  cJSON_GetObjectItem(workflow, "conversion");
+}
+
 cJSON * read_visualization(const cJSON *const workflow){
     return  cJSON_GetObjectItem(workflow, "visualization");
 }
 
 int validate_workflow(const cJSON *const workflow){
     //Check workflow
-    if (NULL == workflow) {  // when comparing variables with literals, follow the notation literal == variable
+    if (NULL == workflow) {
+        // TODO: In the code guidelines from cuLearn, it says : Constants on RHS in equality/inequality check. Example: value == 1
+        // when comparing variables with literals, follow the notation literal == variable
         return WORKFLOW_DOES_NOT_EXIST;
     }
 
@@ -81,7 +87,9 @@ int validate_workflow(const cJSON *const workflow){
     }
 
     // TODO careful, we may not want to simulate stuff, for instance.
+    // TODO: I don't think any of the 3 following checks should be there since a workflow cna stop before any of them.
     //Check spatial analysis
+    /*
     cJSON * spatial_analysis = read_spatial_analysis(workflow);
     if (spatial_analysis == NULL) {
         fprintf(stderr, "No spatial analysis section. As it is not implemented, we skip this issue.\n");
@@ -100,7 +108,7 @@ int validate_workflow(const cJSON *const workflow){
     if (simulation == NULL) {
         return NULL_SIMULATION;
     }
-
+    */
     return SUCCESS;
 }
 
@@ -118,6 +126,10 @@ int run_sim_required(const cJSON *const workflow) {
     return NULL != cJSON_GetObjectItemCaseSensitive(sim_config, "result_output_path");
 }
 
+int conversion_required(const cJSON *const workflow) {
+    return NULL != read_conversion(workflow);
+}
+
 int create_viz_required(const cJSON *const workflow) {
-    return 0; // TODO
+    return NULL != read_visualization(workflow);
 }
