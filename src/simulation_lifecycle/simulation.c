@@ -213,7 +213,7 @@ int run_sim(const cJSON *simulation_config){
     char *config_path = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_CONFIG_OUTPUT_PATH));
 
     /* Check that config output path is provided using a valid format. */
-    if (config_path == NULL) {
+    if (config_path == NULL || !file_exists(config_path)) {
         return SIM_CONFIG_OUTPUT_PATH_INVALID;
     }
 
