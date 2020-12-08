@@ -18,10 +18,12 @@ cd build || { echo "Failed to change directory to build folder"; exit; }
 cmake ..
 make
 
+cd ../../../..
+mkdir logs
+
 # Depending on the first argument, setup.sh may build the project.
 case "$1" in
   build|b|-b)
-    cd ../../../..
     bash build.sh
     ;;
 esac
