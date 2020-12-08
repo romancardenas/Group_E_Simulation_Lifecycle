@@ -59,7 +59,7 @@ void test_invalid_cells_config(void) {
     cJSON *data = NULL;
     read_json_file("../test/data/DB_Ottawa_Simple.geojson", &data);
 
-    data_source_t source = {"data", "../test/DB_Ottawa_Simple.geojson", cJSON_GetObjectItem(data, "features")};
+    data_source_t source = {"data", "../test/DB_Ottawa_Simple.geojson",  data};
     push_node_left(&data_sources, &source, sizeof(data_source_t));
 
     cJSON *json = NULL;
@@ -112,7 +112,7 @@ void test_invalid_vicinities_config(void) {
     read_json_file("../test/data/DB_Ottawa_Vicinities_IsolatedCell.geojson", &isolated_vicinities);
     read_json_file("../test/data/DB_Ottawa_Vicinities_IncorrectID.geojson", &incorrect_vicinities);
 
-    data_source_t d_source = {"data", "../test/DB_Ottawa_Simple.geojson", cJSON_GetObjectItem(data, "features")};
+    data_source_t d_source = {"data", "../test/DB_Ottawa_Simple.geojson", data};
     data_source_t v_source = {"vicinities", "../test/DB_Ottawa_Vicinities_Simple.geojson", vicinities};
     data_source_t iv_source = {"incomplete_vicinities", "../test/DB_Ottawa_Vicinities_Simple.geojson", isolated_vicinities};
     data_source_t nv_source = {"incorrect_vicinities", "../test/DB_Ottawa_Vicinities_Simple.geojson", incorrect_vicinities};
@@ -161,7 +161,7 @@ void test_invalid_output_config_path(void) {
     read_json_file("../test/data/DB_Ottawa_Simple.geojson", &data);
     read_json_file("../test/data/DB_Ottawa_Vicinities_Simple.geojson", &vicinities);
 
-    data_source_t d_source = {"data", "../test/DB_Ottawa_Simple.geojson", cJSON_GetObjectItem(data, "features")};
+    data_source_t d_source = {"data", "../test/DB_Ottawa_Simple.geojson", data};
     data_source_t v_source = {"vicinities", "../test/DB_Ottawa_Vicinities_Simple.geojson", vicinities};
     push_node_left(&data_sources, &d_source, sizeof(data_source_t));
     push_node_left(&data_sources, &v_source, sizeof(data_source_t));
