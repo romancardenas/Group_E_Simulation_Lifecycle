@@ -127,7 +127,7 @@ void test_execute_workflow(void) {
     cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), "non-existent");
     res = execute_workflow(wf, &results);
     TEST_ASSERT_TRUE(res == OPERATION_UNREGISTERED);
-    cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), name);
+    // cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), name); TODO weird bug in UNIX when sizes of operations are equal
 
     results = NULL;
     cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), "validate_fail");
