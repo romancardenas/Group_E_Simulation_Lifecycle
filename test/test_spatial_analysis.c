@@ -133,13 +133,13 @@ void test_execute_workflow(void) {
     cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), "validate_fail");
     res = execute_workflow(wf, &results);
     TEST_ASSERT_TRUE(res != SUCCESS);
-    cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), name);
+    //cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), name);
 
     results = NULL;
     cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), "execute_fail");
     res = execute_workflow(wf, &results);
     TEST_ASSERT_TRUE(res != SUCCESS);
-    cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), name);
+    //cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), name);
 }
 
 int main(void) {
