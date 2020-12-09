@@ -1,6 +1,6 @@
-#include "stdlib.h"
-#include "cJSON.h"
-#include "string.h"
+#include <stdlib.h>
+#include <cJSON.h>
+#include <string.h>
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/structures.h"
 #include "simulation_lifecycle/utils/file.h"
@@ -8,7 +8,6 @@
 #include "simulation_lifecycle/spatial_analysis_operations/centroids.h"
 #include "simulation_lifecycle/spatial_analysis_operations/select_by_atttributes.h"
 #include "simulation_lifecycle/spatial_analysis_operations/closest_distance.h"
-#include "simulation_lifecycle/error.h"
 
 node_t * registered_operations = NULL;
 

@@ -1,8 +1,6 @@
-
-#include "cJSON.h"
-#include "string.h"
-#include "stdio.h"
-#include "stdlib.h"
+#include <cJSON.h>
+#include <stdlib.h>
+#include <string.h>
 #include "simulation_lifecycle/utils/file.h"
 #include "simulation_lifecycle/error.h"
 

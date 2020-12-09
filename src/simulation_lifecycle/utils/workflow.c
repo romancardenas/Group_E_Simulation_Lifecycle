@@ -1,6 +1,5 @@
 #include <string.h>
-#include <stdio.h>
-#include "cJSON.h"
+#include <cJSON.h>
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/utils/file.h"
 #include "simulation_lifecycle/utils/workflow.h"
