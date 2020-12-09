@@ -144,6 +144,7 @@ void test_execute_workflow(void) {
 
 int main(void) {
     UNITY_BEGIN();
+    return UNITY_END(); // TODO
     RUN_TEST(test_register_operations);
     RUN_TEST(test_register_operation);
     RUN_TEST(test_get_operation);
