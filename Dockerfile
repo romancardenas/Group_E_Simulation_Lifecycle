@@ -9,6 +9,7 @@ RUN apt-get install -yq libboost-all-dev
 RUN mkdir /simulation_lifecycle
 
 COPY . /simulation_lifecycle/
-RUN cd /simulation_lifecycle && ./setup.sh -b
+RUN rm -rf /simulation_lifecycle/third_party
+RUN cd /simulation_lifecycle && ./setup_docker.sh && ./build.sh
 
-ENTRYPOINT ls /simulation_lifecycle/bin && cd /simulation_lifecycle/build && make test
+ENTRYPOINT ls /simulation_lifecycle/bin && cd /simulation_lifecycle && ./run_tests.sh
