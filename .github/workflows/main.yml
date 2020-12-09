@@ -5,9 +5,7 @@ name: CI
 # Controls when the action will run. 
 on:
   push:
-    branches: [ main, devel ]
-  pull_request:
-    branches: [ main, devel ]
+    branches: [ main, roman-actions ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -23,4 +21,4 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: romancardenas/Group_E_Simulation_Lifecycle@v1.1.4
+      - uses: romancardenas/Group_E_Simulation_Lifecycle@roman-actions
