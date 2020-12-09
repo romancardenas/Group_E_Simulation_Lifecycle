@@ -9,8 +9,8 @@ cJSON * geojson_error = NULL;
 cJSON * feature_good = NULL;
 
 void setUp(void) {
-    char * path_good = "..\\test\\data\\DB_Ottawa_Simple.geojson";
-    char * path_error = "..\\test\\data\\geojson-error.geojson";
+    char * path_good = "../test/data/DB_Ottawa_Simple.geojson";
+    char * path_error = "../test/data/geojson-error.geojson";
 
     char * data_feature_good = "{\"type\":\"Feature\",\"properties\":{\"integer\":1,\"string\":\"potato\",\"double\":1.1},\"geometry\":{\"type\":\"MultiPolygon\",\"coordinates\":[[[[0,0],[0,10],[10,10],[10,0],[0,0]],[[2,2],[2,8],[8,8],[8,2],[2,2]]],[[[20,20],[25,20],[25,25],[20,25],[20,20]]]]}}";
 
@@ -263,6 +263,8 @@ void test_json_ring_to_points(void) {
 
 int main(void) {
     setUp();
+
+    UNITY_BEGIN();
 
     if (geojson_good == NULL) return 1;
     if (geojson_error == NULL) return 1;
