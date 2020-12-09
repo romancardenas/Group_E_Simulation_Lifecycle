@@ -17,12 +17,16 @@ jobs:
   run_test:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    name: Runs tests
+    name: Run tests
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - name: Checkout submodules
+        run: git submodule update --init --recursive
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: romancardenas/Group_E_Simulation_Lifecycle@v1.1.1
+
+
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
