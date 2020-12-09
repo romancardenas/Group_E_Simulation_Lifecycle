@@ -1,11 +1,11 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI-main
+name: CI-devel
 
 # Controls when the action will run. 
 on:
   push:
-    branches: [ main ]
+    branches: [ devel ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -21,4 +21,4 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: romancardenas/Group_E_Simulation_Lifecycle@main
+      - uses: romancardenas/Group_E_Simulation_Lifecycle@devel
