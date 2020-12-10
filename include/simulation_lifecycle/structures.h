@@ -52,6 +52,13 @@ typedef struct operation {
  */
 data_source_t * get_data_source(node_t **data_sources, char *id);
 
+/**
+ * @brief Creates a data source struct containing a cJSON representation of a geojson file from a cJSON
+ * representation of a list of geospatial features.
+ * @param[in] id a string containing the id of the data_source_t to create
+ * @param[in] features, a cJSON representation of a list of geospatial features
+ * @return a data_source_t object with a cJSON representation of a geojson file
+ */
 data_source_t * create_data_source(char * id, cJSON * features);
 
 #endif //__SIMULATION_LIFECYCLE_STRUCTURES_H__
