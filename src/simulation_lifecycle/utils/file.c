@@ -1,7 +1,6 @@
 #include <stdio.h>
-#include <stdarg.h>
 #include <stdlib.h>
-#include "cJSON.h"
+#include <cJSON.h>
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/utils/file.h"
 
@@ -22,25 +21,6 @@ int write_data_to_file(char * file_path, char *data) {
             res = UNABLE_CLOSE_FILE;
         }
     }
-    return res;
-}
-
-int copy_json_values(cJSON_bool (*value_type_checker)(const cJSON *), const cJSON *from, cJSON *to, ...) {
-    char *var = NULL;
-    int res = SUCCESS;
-
-    va_list args;
-    va_start(args, to);
-    while((var = va_arg(args, char *)) != NULL) {
-        cJSON *val = cJSON_GetObjectItemCaseSensitive(from, var);
-        if (val == NULL || !value_type_checker(val)) {
-            res = JSON_VALUE_INVALID;
-            break;
-        }
-        cJSON_AddItemToObject(to, var, cJSON_Parse(cJSON_Print(val)));
-    }
-
-    va_end(args);
     return res;
 }
 

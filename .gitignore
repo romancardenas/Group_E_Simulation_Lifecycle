@@ -74,6 +74,9 @@ dkms.conf
 # MacOS stuff
 .DS_Store
 
+# Cadmium log files
+logs/
+
 # CLion stuff
 .idea/
 cmake-build-debug/
