@@ -114,7 +114,7 @@ void test_execute_workflow(void) {
     results = NULL;
     cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), "execute_fail");
     res = execute_workflow(wf, &results);
-    // TEST_ASSERT_EQUAL(SUCCESS, res);  // TODO this fails in MacOS and Ubuntu
+    TEST_ASSERT_EQUAL(SUCCESS, res);  // TODO (Román) this assertion fails
 }
 
 int main(void) {
