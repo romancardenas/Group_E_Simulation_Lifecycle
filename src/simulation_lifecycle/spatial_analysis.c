@@ -37,9 +37,6 @@ int read_data_in(cJSON * workflow, node_t ** data_sources) {
 
         if (res != SUCCESS) return res;
 
-        // Question: Don't understand why we need to send size, I know it's because the
-        // push_node function copies the data object but I wonder if that's really necessary.
-        // In the case where we really need a copy, why not let the caller provide a copy?
         push_node(data_sources, data_source, sizeof(data_source_t));
     }
 
@@ -60,31 +57,22 @@ operation_t * get_operation(char * name) {
     return NULL;
 }
 
-// TODO incompatible pointer types!!!!
-void register_operation(char * name, int (* validate)(cJSON * parameters), int (* execute)(node_t ** data, cJSON * parameters)) {
+void register_operation(char * name, int (* execute)(char * id, node_t ** data, cJSON * parameters)) {
     operation_t * operation = (operation_t *)malloc(sizeof(operation_t));
 
     operation->name = name;
-    operation->validate = validate;
     operation->execute = execute;
 
     push_node(&registered_operations, operation, sizeof(operation_t));
 }
 
-// TODO incompatible pointer types!!!!
 void register_operations(void) {
-    register_operation("centroids", centroids_validate, centroids_execute);
-    register_operation("select_by_attributes", select_by_attributes_validate, select_by_attributes_execute);
-    register_operation("closest_distance", closest_distance_validate, closest_distance_execute);
+    register_operation("centroids", centroids_execute);
+    register_operation("select_by_attributes", select_by_attributes_execute);
+    register_operation("closest_distance", closest_distance_execute);
 }
 
 int execute_workflow(cJSON * workflow, node_t ** data_sources) {
-    node_t * data = NULL;
-
-    int res = read_data_in(workflow, &data);
-
-    if (res != SUCCESS) return res;
-
     cJSON * operations = read_spatial_analysis(workflow);
 
     if (cJSON_GetArraySize(operations) == 0) return WORKFLOW_NO_OPERATIONS;
@@ -105,11 +93,7 @@ int execute_workflow(cJSON * workflow, node_t ** data_sources) {
 
         if (!op) return OPERATION_UNREGISTERED;
 
-        res = op->validate(parameters);
-
-        if (res != SUCCESS) return res;
-
-        res = op->execute(id, &data, parameters);
+        int res = op->execute(id, data_sources, parameters);
 
         if (res != SUCCESS) return res;
     }

@@ -30,11 +30,10 @@ int execute_workflow(cJSON * workflow, node_t **data_sources);
 /**
  * Registers an operation to a global list of available operations to be used by the execute_workflow function
  * @param name a string containing the name of the operation to register
- * @param validate a function that validates the registered operation
  * @param execute a function that executes the registered operation
  * @return nothing
  */
-void register_operation(char * name, int (* validate)(cJSON * parameters), int (* execute)(char * id, node_t * data_sources, cJSON * parameters, node_t ** results));
+void register_operation(char * name, int (* execute)(char * id, node_t * data_sources, cJSON * parameters, node_t ** results));
 
 /**
  * Registers all available operations to a global list of available operations to be used by the execute_workflow function

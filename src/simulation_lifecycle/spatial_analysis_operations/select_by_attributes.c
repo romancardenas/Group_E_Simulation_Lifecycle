@@ -1,13 +1,8 @@
 #include <cJSON.h>
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/utils/linked_list.h"
-#include "simulation_lifecycle/structures.h"
-#include "simulation_lifecycle/utils/feature.h"
 
-int select_by_attributes_validate(cJSON * parameters) {
-    return SUCCESS;
-}
-
-int select_by_attributes_execute(node_t ** data, cJSON * parameters) {
+// TODO: Since there's no validate anymore, we could put all this in spatial_analysis.c
+int select_by_attributes_execute(char * id, node_t ** data_sources, cJSON * parameters) {
     return SUCCESS;
 }
