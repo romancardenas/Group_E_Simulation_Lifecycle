@@ -18,6 +18,6 @@ int centroids_validate(cJSON * parameters);
  * @param parameters a cJSON object containing the parameters for the operation
  * @return 0 if the operation was successful, an error code otherwise
  */
-int centroids_execute(node_t ** data, cJSON * parameters);
+int centroids_execute(char * id, node_t ** data_sources, cJSON * parameters);
 
 #endif //__SIMULATION_LIFECYCLE_CENTROIDS_H__

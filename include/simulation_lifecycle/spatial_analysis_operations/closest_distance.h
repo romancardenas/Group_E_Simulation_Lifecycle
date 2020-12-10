@@ -18,6 +18,6 @@ int closest_distance_validate(cJSON * parameters);
  * @param parameters a cJSON object containing the parameters for the operation
  * @return 0 if the operation was successful, an error code otherwise
  */
-int closest_distance_execute(node_t ** data, cJSON * parameters);
+int closest_distance_execute(char * id, node_t ** data, cJSON * parameters);
 
 #endif //__SIMULATION_LIFECYCLE_CLOSEST_DISTANCE_H__

@@ -10,7 +10,7 @@
 
 #define NAME_MAX 255
 #define PATH_MAX 4096
-#define LENGTH_MAX 500
+#define LENGTH_MAX 200
 #define VALID_FORMAT "[cadmium::celldevs::cell_ports_def<std::string"
 #define VIZ_OBJECT "fields"
 #define RESULT_OBJECT "cells"

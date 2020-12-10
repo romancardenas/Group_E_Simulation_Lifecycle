@@ -113,7 +113,7 @@ int validate_workflow(const cJSON *const workflow){
 }
 
 int spatial_analysis_required(const cJSON *const workflow) {
-    return 0; // TODO
+    return NULL != read_spatial_analysis(workflow);
 }
 
 int build_sim_scenario_required(const cJSON *const workflow ) {

@@ -18,6 +18,6 @@ int select_by_attributes_validate(cJSON * parameters);
  * @param parameters a cJSON object containing the parameters for the operation
  * @return 0 if the operation was successful, an error code otherwise
  */
-int select_by_attributes_execute(node_t ** data, cJSON * parameters);
+int select_by_attributes_execute(char * id, node_t ** data, cJSON * parameters);
 
 #endif //__SIMULATION_LIFECYCLE_SELECT_BY_ATTTRIBUTES_H__

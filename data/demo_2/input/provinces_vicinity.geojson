@@ -18,10 +18,50 @@
         }, {
             "type": "Feature",
             "properties": {
+                "from": "10",
+                "to": "11",
+                "conn": 0.5,
+                "mob": 0.7
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "10",
+                "to": "12",
+                "conn": 0.3,
+                "mob": 0.3
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "10",
+                "to": "24",
+                "conn": 0.3,
+                "mob": 0.1
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
                 "from": "11",
                 "to": "11",
                 "conn": 1,
                 "mob": 1
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "11",
+                "to": "10",
+                "conn": 0.3,
+                "mob": 0.8
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "11",
+                "to": "12",
+                "conn": 0.5,
+                "mob": 0.5
             }
         }, {
             "type": "Feature",
@@ -34,10 +74,42 @@
         }, {
             "type": "Feature",
             "properties": {
+                "from": "12",
+                "to": "13",
+                "conn": 0.5,
+                "mob": 0.5
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "12",
+                "to": "10",
+                "conn": 0.7,
+                "mob": 0.4
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
                 "from": "13",
                 "to": "13",
                 "conn": 1,
                 "mob": 1
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "13",
+                "to": "24",
+                "conn": 0.9,
+                "mob": 0.5
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "13",
+                "to": "12",
+                "conn": 0.2,
+                "mob": 0.5
             }
         }, {
             "type": "Feature",
@@ -58,10 +130,42 @@
         }, {
             "type": "Feature",
             "properties": {
+                "from": "24",
+                "to": "46",
+                "conn": 0.8,
+                "mob": 0.4
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "24",
+                "to": "47",
+                "conn": 0.3,
+                "mob": 0.6
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
                 "from": "35",
                 "to": "35",
                 "conn": 1,
                 "mob": 1
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "35",
+                "to": "24",
+                "conn": 0.9,
+                "mob": 0.9
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "35",
+                "to": "46",
+                "conn": 0.6,
+                "mob": 0.4
             }
         }, {
             "type": "Feature",
@@ -76,6 +180,14 @@
             "properties": {
                 "from": "46",
                 "to": "47",
+                "conn": 0.7,
+                "mob": 0.4
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "46",
+                "to": "48",
                 "conn": 0.7,
                 "mob": 0.4
             }
@@ -98,10 +210,34 @@
         }, {
             "type": "Feature",
             "properties": {
+                "from": "47",
+                "to": "24",
+                "conn": 0.6,
+                "mob": 0.3
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "47",
+                "to": "35",
+                "conn": 0.6,
+                "mob": 0.3
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
                 "from": "48",
                 "to": "48",
                 "conn": 1,
                 "mob": 1
+            }
+        }, {
+            "type": "Feature",
+            "properties": {
+                "from": "48",
+                "to": "59",
+                "conn": 0.8,
+                "mob": 0.6
             }
         }, {
             "type": "Feature",

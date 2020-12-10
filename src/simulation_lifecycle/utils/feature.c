@@ -4,6 +4,34 @@
 #include "string.h"
 #include "simulation_lifecycle/structures.h"
 
+cJSON * feature_create(cJSON * properties, cJSON * geometry) {
+    cJSON * feature = cJSON_CreateObject();
+
+    cJSON_AddStringToObject(feature, "type", "Feature");
+    cJSON_AddItemReferenceToObject(feature, "properties", properties);
+    cJSON_AddItemReferenceToObject(feature, "geometry", geometry);
+
+    return feature;
+}
+
+cJSON * feature_create_geometry(char * type, cJSON * coordinates) {
+    cJSON * geometry = cJSON_CreateObject();
+
+    cJSON_AddStringToObject(geometry, "type",  type);
+    cJSON_AddItemReferenceToObject(geometry, "coordinates", coordinates);
+
+    return geometry;
+}
+
+cJSON * feature_create_point_geometry(double lat, double lon) {
+    cJSON * point = cJSON_CreateArray();
+
+    cJSON_AddItemToArray(point, cJSON_CreateNumber(lon));
+    cJSON_AddItemToArray(point, cJSON_CreateNumber(lat));
+
+    return feature_create_geometry("Point", point);
+}
+
 cJSON * geojson_get_features(cJSON * geo_json) {
     return  cJSON_GetObjectItem(geo_json, "features");
 }

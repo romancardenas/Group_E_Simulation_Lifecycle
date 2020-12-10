@@ -6,6 +6,12 @@
 #include "string.h"
 #include "simulation_lifecycle/structures.h"
 
+cJSON * feature_create(cJSON * properties, cJSON * geometry);
+
+cJSON * feature_create_geometry(char * type, cJSON * coordinates);
+
+cJSON * feature_create_point_geometry(double lat, double lon);
+
 /**
  * @brief Extracts a JSON representation of the features from a JSON representation of a geojson file.
  * @param geo_json, a cJSON containing the JSON representation of a geojson file.

@@ -25,7 +25,7 @@ int read_data_in(cJSON * workflow, node_t **data_sources);
  * @return 0 if the operation was successful, an error code otherwise
  * @effect the results list contains result_t objects with the results of each spatial analysis operation
  */
-int execute_workflow(cJSON * workflow, node_t **results);
+int execute_workflow(cJSON * workflow, node_t **data_sources);
 
 /**
  * Registers an operation to a global list of available operations to be used by the execute_workflow function
@@ -34,7 +34,7 @@ int execute_workflow(cJSON * workflow, node_t **results);
  * @param execute a function that executes the registered operation
  * @return nothing
  */
-void register_operation(char * name, int (* validate)(cJSON * parameters), int (* execute)(node_t * data_sources, cJSON * parameters, node_t ** results));
+void register_operation(char * name, int (* validate)(cJSON * parameters), int (* execute)(char * id, node_t * data_sources, cJSON * parameters, node_t ** results));
 
 /**
  * Registers all available operations to a global list of available operations to be used by the execute_workflow function

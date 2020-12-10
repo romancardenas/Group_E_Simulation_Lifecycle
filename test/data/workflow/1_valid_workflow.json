@@ -1,11 +1,11 @@
 {
     "data_sources": [{
             "id": "hospitals",
-            "path": "../data/DA_Ottawa.geojson"
+            "path": "../data/Hospitals.geojson"
           }, {
             "id": "db_ottawa",
-            "path": "../data/Hospitals.geojson"
-          }
+            "path": "../data/DA_Ottawa.geojson"
+    }
     ],
     "spatial_analysis": [{
             "id": "db_centroids",
