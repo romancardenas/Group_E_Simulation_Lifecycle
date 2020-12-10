@@ -18,16 +18,16 @@ void tearDown(void) {
 
 void test_validate_visualization(void) {
     int res = validate_visualization(viz_data);
-    TEST_ASSERT_TRUE(res == SUCCESS);
+    TEST_ASSERT_EQUAL(res, SUCCESS);
 
     cJSON_DeleteItemFromObject(viz_data, "output");
     res = validate_visualization(viz_data);
-    TEST_ASSERT_TRUE(res == VIZ_NO_OUTPUT_PATH);
+    TEST_ASSERT_EQUAL(res, VIZ_NO_OUTPUT_PATH);
     cJSON_AddStringToObject(viz_data, "output", "../data/demo_2/output/");
 
     cJSON_DeleteItemFromObject(viz_data, "basemap");
     res = validate_visualization(viz_data);
-    TEST_ASSERT_TRUE(res == VIZ_BAD_BASEMAP);
+    TEST_ASSERT_EQUAL(res, VIZ_BAD_BASEMAP);
     cJSON_AddStringToObject(viz_data, "basemap", "openstreetmap");
 }
 
@@ -36,12 +36,12 @@ void test_validate_view(void) {
 
     cJSON_DeleteItemFromObject(view, "center");
     int res = validate_visualization(viz_data);
-    TEST_ASSERT_TRUE(res == VIZ_LAYER_VIEW_BAD_CENTER);
+    TEST_ASSERT_EQUAL(res, VIZ_LAYER_VIEW_BAD_CENTER);
     cJSON_AddItemReferenceToObject(view, "center", cJSON_Parse("[-89, 57]"));
 
     cJSON_DeleteItemFromObject(view, "zoom");
     res = validate_visualization(viz_data);
-    TEST_ASSERT_TRUE(res == VIZ_LAYER_VIEW_BAD_ZOOM);
+    TEST_ASSERT_EQUAL(res, VIZ_LAYER_VIEW_BAD_ZOOM);
     cJSON_AddNumberToObject(view, "zoom", 5);
 }
 
@@ -50,42 +50,42 @@ void test_validate_layers(void) {
 
     cJSON_SetValuestring(cJSON_GetObjectItem(layer, "type"), "non-existent");
     int res = validate_visualization(viz_data);
-    TEST_ASSERT_TRUE(res == VIZ_LAYER_BAD_TYPE);
+    TEST_ASSERT_EQUAL(res, VIZ_LAYER_BAD_TYPE);
     cJSON_SetValuestring(cJSON_GetObjectItem(layer, "type"), "polygon");
 
     cJSON_SetValuestring(cJSON_GetObjectItem(layer, "file"), "non-existent");
     res = validate_visualization(viz_data);
-    TEST_ASSERT_TRUE(res == VIZ_LAYER_BAD_FILE);
+    TEST_ASSERT_EQUAL(res, VIZ_LAYER_BAD_FILE);
     cJSON_SetValuestring(cJSON_GetObjectItem(layer, "file"), "../test/data/visualization/input/provinces.geojson");
 
     cJSON_DeleteItemFromObject(layer, "label");
     res = validate_visualization(viz_data);
-    TEST_ASSERT_TRUE(res == VIZ_LAYER_BAD_LABEL);
+    TEST_ASSERT_EQUAL(res, VIZ_LAYER_BAD_LABEL);
     cJSON_AddStringToObject(layer, "label", "Provinces");
 
     cJSON_DeleteItemFromObject(layer, "style");
     res = validate_visualization(viz_data);
-    TEST_ASSERT_TRUE(res == VIZ_LAYER_BAD_STYLE);
+    TEST_ASSERT_EQUAL(res, VIZ_LAYER_BAD_STYLE);
     cJSON_AddStringToObject(layer, "style", "default");
 
     cJSON_DeleteItemFromObject(layer, "model");
     res = validate_visualization(viz_data);
-    TEST_ASSERT_TRUE(res == SUCCESS);
+    TEST_ASSERT_EQUAL(res, SUCCESS);
 
     cJSON_AddNumberToObject(layer, "model", 1);
     res = validate_visualization(viz_data);
-    TEST_ASSERT_TRUE(res == VIZ_LAYER_BAD_MODEL);
+    TEST_ASSERT_EQUAL(res, VIZ_LAYER_BAD_MODEL);
 
     cJSON_DeleteItemFromObject(layer, "model");
     cJSON_AddStringToObject(layer, "model", "pandemic");
 
     cJSON_DeleteItemFromObject(layer, "join");
     res = validate_visualization(viz_data);
-    TEST_ASSERT_TRUE(res == SUCCESS);
+    TEST_ASSERT_EQUAL(res, SUCCESS);
 
     cJSON_AddNumberToObject(layer, "join", 1);
     res = validate_visualization(viz_data);
-    TEST_ASSERT_TRUE(res == VIZ_LAYER_BAD_JOIN);
+    TEST_ASSERT_EQUAL(res, VIZ_LAYER_BAD_JOIN);
 
     cJSON_DeleteItemFromObject(layer, "join");
     cJSON_AddStringToObject(layer, "join", "pruid");
@@ -96,12 +96,12 @@ void test_validate_styles(void) {
 
     cJSON_DeleteItemFromObject(style, "layer");
     int res = validate_visualization(viz_data);
-    TEST_ASSERT_TRUE(res == VIZ_SIMULATION_BAD_LAYER);
+    TEST_ASSERT_EQUAL(res, VIZ_SIMULATION_BAD_LAYER);
     cJSON_AddStringToObject(style, "layer", "provinces");
 
     cJSON_DeleteItemFromObject(style, "name");
     res = validate_visualization(viz_data);
-    TEST_ASSERT_TRUE(res == VIZ_SIMULATION_BAD_NAME);
+    TEST_ASSERT_EQUAL(res, VIZ_SIMULATION_BAD_NAME);
     cJSON_AddStringToObject(style, "name", "recovered");
 }
 

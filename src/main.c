@@ -59,13 +59,6 @@ int main(int argc, char *argv[]) {
 
     fprintf(stdout, "Building simulation scenario... ");
     if (build_sim_scenario_required(workflow)) {
-        res = read_data_in(workflow, &data_sources);
-
-        if (res) {
-            fprintf(stderr, "Build simulation scenario failed. Error code: %d\n", res);
-            goto main_end;
-        }
-
         if ((res = build_simulation_scenario(read_simulation(workflow), &data_sources))) {
             fprintf(stderr, "Build simulation scenario failed. Error code: %d\n", res);
             fprintf(stderr, "Hint: did you remove the output file of a previous scenario building?\n");
