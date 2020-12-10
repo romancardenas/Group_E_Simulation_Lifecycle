@@ -20,7 +20,7 @@ int execute_success(char * id, node_t * data_sources, cJSON * parameters, node_t
 }
 
 int execute_fail(char * id, node_t * data_sources, cJSON * parameters, node_t ** results) {
-    return 1;
+    return -99;
 }
 
 void test_register_operations(void) {
@@ -114,7 +114,7 @@ void test_execute_workflow(void) {
     results = NULL;
     cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), "execute_fail");
     res = execute_workflow(wf, &results);
-    TEST_ASSERT_EQUAL(SUCCESS, res);  // TODO (Román) this assertion fails
+    TEST_ASSERT_EQUAL(-99, res);
 }
 
 int main(void) {
