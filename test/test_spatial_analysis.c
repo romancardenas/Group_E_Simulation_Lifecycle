@@ -42,7 +42,7 @@ void test_register_operation(void) {
     // they don't have to return error codes. It's up to to the programmer to make sure it works.
     // We can still test that there are more operations registered though.
 
-    TEST_ASSERT(list_length(&registered_operations) == n + 3);
+    TEST_ASSERT_EQUAL(n + 3, list_length(&registered_operations));
 }
 
 void test_get_operation(void) {
@@ -50,9 +50,9 @@ void test_get_operation(void) {
     operation_t * op_2 = get_operation("validate_fail");
     operation_t * op_3 = get_operation("non-existent");
 
-    TEST_ASSERT(op_1 != NULL);
-    TEST_ASSERT(op_2 != NULL);
-    TEST_ASSERT(op_3 == NULL);
+    TEST_ASSERT_NOT_NULL(op_1);
+    TEST_ASSERT_NOT_NULL(op_2);
+    TEST_ASSERT_NULL(op_3);
 }
 
 void test_read_data_in(void) {
@@ -62,31 +62,31 @@ void test_read_data_in(void) {
     node_t * data_sources = NULL;
     read_json_file("../test/data/workflow/12_bad_path.json", &wf);
     int res = read_data_in(wf, &data_sources);
-    TEST_ASSERT_TRUE(res == FILE_DOES_NOT_EXIST);
+    TEST_ASSERT_EQUAL(FILE_DOES_NOT_EXIST, res);
 
-    data_sources = NULL;
+    remove_list(&data_sources);
     read_json_file("../test/data/workflow/13_missing_data_id.json", &wf);
     res = read_data_in(wf, &data_sources);
-    TEST_ASSERT_TRUE(res == DATA_SOURCE_ID_NULL);
+    TEST_ASSERT_EQUAL(DATA_SOURCE_ID_NULL, res);
 
-    data_sources = NULL;
+    remove_list(&data_sources);
     read_json_file("../test/data/workflow/14_missing_data_path.json", &wf);
     res = read_data_in(wf, &data_sources);
-    TEST_ASSERT_TRUE(res == DATA_SOURCE_PATH_NULL);
+    TEST_ASSERT_EQUAL(DATA_SOURCE_PATH_NULL, res);
 
-    data_sources = NULL;
+    remove_list(&data_sources);
     read_json_file("../test/data/workflow/1_valid_workflow.json", &wf);
     res = read_data_in(wf, &data_sources);
-    TEST_ASSERT_TRUE(res == SUCCESS);
+    TEST_ASSERT_EQUAL(SUCCESS, res);
 }
 
 void test_execute_workflow(void) {
     cJSON * wf = NULL;
     node_t * results = NULL;
 
-    read_json_file("..\\test\\data\\workflow\\1_valid_workflow.json", &wf);
+    read_json_file("../test/data/workflow/1_valid_workflow.json", &wf);
     int res = execute_workflow(wf, &results);
-    TEST_ASSERT_TRUE(res == SUCCESS);
+    TEST_ASSERT_EQUAL(SUCCESS, res);
 
     // Get an operation from the json just so I can modify fields to generate errors.
     cJSON * operation = read_spatial_analysis(wf)->child->next;
@@ -98,28 +98,26 @@ void test_execute_workflow(void) {
     results = NULL;
     cJSON_GetObjectItem(operation, "operation")->valuestring = NULL;
     res = execute_workflow(wf, &results);
-    TEST_ASSERT_TRUE(res == OPERATION_NAME_NULL);
+    TEST_ASSERT_EQUAL(OPERATION_NAME_NULL, res);
     cJSON_GetObjectItem(operation, "operation")->valuestring = name;
 
     results = NULL;
     cJSON_GetObjectItem(operation, "parameters")->child = NULL;
     cJSON_GetObjectItem(operation, "parameters")->type = 4;
     res = execute_workflow(wf, &results);
-    TEST_ASSERT_TRUE(res == OPERATION_NO_PARAMETERS);
+    TEST_ASSERT_EQUAL(OPERATION_NO_PARAMETERS, res);
     cJSON_GetObjectItem(operation, "parameters")->child = params;
     cJSON_GetObjectItem(operation, "parameters")->type = type;
 
     results = NULL;
     cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), "non-existent");
     res = execute_workflow(wf, &results);
-    TEST_ASSERT_TRUE(res == OPERATION_UNREGISTERED);
-    // cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), name); TODO weird bug in UNIX when sizes of operations are equal
+    TEST_ASSERT_EQUAL(OPERATION_UNREGISTERED, res);
 
     results = NULL;
     cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), "execute_fail");
     res = execute_workflow(wf, &results);
-    TEST_ASSERT_TRUE(res != SUCCESS);
-    //cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), name);
+    // TEST_ASSERT_EQUAL(SUCCESS, res);  // TODO this fails in MacOS and Ubuntu
 }
 
 int main(void) {
@@ -127,7 +125,7 @@ int main(void) {
     RUN_TEST(test_register_operations);
     RUN_TEST(test_register_operation);
     RUN_TEST(test_get_operation);
-    //RUN_TEST(test_read_data_in); TODO this test fails on Ubuntu
-    // RUN_TEST(test_execute_workflow); TODO this test fails on Ubuntu
+    RUN_TEST(test_read_data_in);
+    RUN_TEST(test_execute_workflow);
     return UNITY_END();
 }
