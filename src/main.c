@@ -23,7 +23,6 @@ int main(int argc, char *argv[]) {
     fprintf(stdout, "Ok.\n");
 
     fprintf(stdout, "Reading workflow file... ");
-    node_t *data_sources = NULL;
     cJSON *workflow = read_workflow_file(argv[1]);
     fprintf(stdout, "Ok.\n");
 
@@ -36,9 +35,25 @@ int main(int argc, char *argv[]) {
     }
     fprintf(stdout, "Ok.\n");
 
+    node_t *data_sources = NULL;
+
+    fprintf(stdout, "Reading in data sources... ");
+    if (data_sources_required(workflow)) {
+        res = read_data_in(workflow, &data_sources);
+
+        if (res != SUCCESS) {
+            fprintf(stderr, "Build simulation scenario failed. Error code: %d\n", res);
+            goto main_end;
+        }
+    }
+    fprintf(stdout, "Ok.\n");
+
     fprintf(stdout, "Executing spatial analysis operations... ");
     if (spatial_analysis_required(workflow)) {
-        fprintf(stderr, "Spatial analysis is not currently available. Skipping this part.\n"); // TODO
+        // fprintf(stderr, "Spatial analysis is not currently available. Skipping this part.\n"); // TODO
+        register_operations();
+
+        execute_workflow(workflow, &data_sources);
     }
     fprintf(stdout, "Ok.\n");
 
@@ -106,6 +121,4 @@ main_end:  /* We use label to return error code and clean the workflow object TO
     fprintf(stdout, "All done.");
 
     return res;
-
-    // remove_list(&data_sources);
 }

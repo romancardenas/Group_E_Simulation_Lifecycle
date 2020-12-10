@@ -40,7 +40,6 @@ typedef struct data_source {
 
 typedef struct operation {
     char * name;
-    int (* validate)(cJSON * parameters);
     int (* execute)(char * id, node_t ** data_sources, cJSON * parameters);
 } operation_t;
 

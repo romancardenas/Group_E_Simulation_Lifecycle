@@ -54,6 +54,12 @@ cJSON * read_visualization(const cJSON *workflow);
 int validate_workflow(const cJSON *workflow);
 
 /**
+ * @brief checks if workflow provided by the user uses any data sources.
+ * @return 1 if data sources are needed, 0 otherwise.
+ */
+int data_sources_required(const cJSON *const workflow);
+
+/**
  * @brief checks if workflow provided by the user uses any spatial analysis function.
  * @return 1 if spatial analysis is needed, 0 otherwise.
  */
