@@ -41,7 +41,7 @@ typedef struct data_source {
 typedef struct operation {
     char * name;
     int (* validate)(cJSON * parameters);
-    int (* execute)(node_t ** data_sources, cJSON * parameters);
+    int (* execute)(char * id, node_t ** data_sources, cJSON * parameters);
 } operation_t;
 
 /**
@@ -52,5 +52,7 @@ typedef struct operation {
  * @return pointer to data source with matching ID. If no data source is found, it returns a NULL pointer.
  */
 data_source_t * get_data_source(node_t **data_sources, char *id);
+
+data_source_t * create_data_source(char * id, cJSON * features);
 
 #endif //__SIMULATION_LIFECYCLE_STRUCTURES_H__

@@ -77,7 +77,7 @@ void register_operations(void) {
     register_operation("closest_distance", closest_distance_validate, closest_distance_execute);
 }
 
-int execute_workflow(cJSON * workflow, node_t ** results) {
+int execute_workflow(cJSON * workflow, node_t ** data_sources) {
     node_t * data = NULL;
 
     int res = read_data_in(workflow, &data);
@@ -92,8 +92,9 @@ int execute_workflow(cJSON * workflow, node_t ** results) {
 
     cJSON_ArrayForEach(operation, operations) {
         char * name = json_string_value(operation, "operation");
+        char * id = json_string_value(operation, "id");
 
-        if (!name) return OPERATION_NAME_NULL;
+        if (!id || !name) return OPERATION_NAME_NULL;
 
         cJSON * parameters = cJSON_GetObjectItem(operation, "parameters");
 
@@ -107,7 +108,7 @@ int execute_workflow(cJSON * workflow, node_t ** results) {
 
         if (res != SUCCESS) return res;
 
-        res = op->execute(&data, parameters);
+        res = op->execute(id, &data, parameters);
 
         if (res != SUCCESS) return res;
     }
