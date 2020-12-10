@@ -60,6 +60,7 @@ operation_t * get_operation(char * name) {
     return NULL;
 }
 
+// TODO incompatible pointer types!!!!
 void register_operation(char * name, int (* validate)(cJSON * parameters), int (* execute)(node_t ** data, cJSON * parameters)) {
     operation_t * operation = (operation_t *)malloc(sizeof(operation_t));
 
@@ -70,6 +71,7 @@ void register_operation(char * name, int (* validate)(cJSON * parameters), int (
     push_node(&registered_operations, operation, sizeof(operation_t));
 }
 
+// TODO incompatible pointer types!!!!
 void register_operations(void) {
     register_operation("centroids", centroids_validate, centroids_execute);
     register_operation("select_by_attributes", select_by_attributes_validate, select_by_attributes_execute);

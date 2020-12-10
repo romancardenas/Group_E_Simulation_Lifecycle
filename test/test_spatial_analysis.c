@@ -19,7 +19,7 @@ int validate_success(cJSON * parameters) {
     return SUCCESS;
 }
 
-int execute_success(node_t * data_sources, cJSON * parameters, node_t ** results) {
+int execute_success(char * id, node_t * data_sources, cJSON * parameters, node_t ** results) {
     return SUCCESS;
 }
 
@@ -27,7 +27,7 @@ int validate_fail(cJSON * parameters) {
     return 1;
 }
 
-int execute_fail(node_t * data_sources, cJSON * parameters, node_t ** results) {
+int execute_fail(char * id, node_t * data_sources, cJSON * parameters, node_t ** results) {
     return 1;
 }
 
