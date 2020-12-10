@@ -109,7 +109,7 @@ void test_validate_styles(void) {
 
 void test_package_visualization(void) {
     int res = package_visualization(viz_data);
-    TEST_ASSERT_TRUE(res);  // TODO (Román) this assertion fails (and therefore, all the others)
+    TEST_ASSERT_EQUAL(SUCCESS, res);  // TODO (Román) this assertion fails (and therefore, all the others)
 
     res = file_exists("../test/data/visualization/output/provinces.geojson");
     TEST_ASSERT_TRUE(res);
