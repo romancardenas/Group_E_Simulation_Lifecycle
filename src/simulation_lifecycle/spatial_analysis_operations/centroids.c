@@ -1,5 +1,4 @@
-
-#include "cJSON.h"
+#include <cJSON.h>
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/utils/linked_list.h"
 

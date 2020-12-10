@@ -1,35 +1,19 @@
-cmake_minimum_required(VERSION 3.5)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 
 # Definitions
-set(PROJECT_NAME simulation_lifecycle)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
-project(${PROJECT_NAME})
-set(CMAKE_C_STANDARD 11)
+SET(PROJECT_NAME simulation_lifecycle)
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
+PROJECT(${PROJECT_NAME})
+SET(CMAKE_C_STANDARD 11)
 
-# Include paths
-set(INCLUDE_DIRS ${INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include)
-set(CJSON_INCLUDE ${CJSON_INCLUDE} ${PROJECT_SOURCE_DIR}/third_party/cJSON)
-set (UNITY_INCLUDE ${UNITY_INCLUDE} ${PROJECT_SOURCE_DIR}/third_party/Unity/src)
+# Create third-party libraries
+ADD_LIBRARY(cjson ${PROJECT_SOURCE_DIR}/third_party/cJSON/cJSON.c)
+ADD_LIBRARY(unity ${PROJECT_SOURCE_DIR}/third_party/Unity/src/unity.c)
 
-# Assign the include directories
-include_directories(${INCLUDE_DIRS} ${CJSON_INCLUDE} ${UNITY_INCLUDE})
-
-# Collect source files
-AUX_SOURCE_DIRECTORY(src/simulation_lifecycle SOURCE_FILES)
-AUX_SOURCE_DIRECTORY(src/simulation_lifecycle/utils UTILS_SOURCES)
-AUX_SOURCE_DIRECTORY(src/simulation_lifecycle/spatial_analysis_operations SPATIAL_ANALYSIS_OPERATIONS)
-
-set (CJSON_SRC ${CJSON_SRC} ${PROJECT_SOURCE_DIR}/third_party/cJSON/cJSON.c)
-set (UNITY_SRC ${UNITY_SRC} ${PROJECT_SOURCE_DIR}/third_party/Unity/src/unity.c)
-
-# Add executable from src/main.c file
-add_executable(simulation_lifecycle src/main.c ${SOURCE_FILES} ${UTILS_SOURCES} ${SPATIAL_ANALYSIS_OPERATIONS} ${CJSON_SRC})
+# Simulation Lifecycle library and main routine
+ADD_SUBDIRECTORY(src)
 
 # Unit tests
-FILE(GLOB TestSources RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} test/test_*.c)
-foreach (testSrc ${TestSources})
-    get_filename_component(testName ${testSrc} NAME_WE)
-    add_executable(${testName} ${testSrc}  ${SOURCE_FILES} ${UTILS_SOURCES} ${SPATIAL_ANALYSIS_OPERATIONS} ${CJSON_SRC} ${UNITY_SRC})
-endforeach (testSrc)
+include(CTest)
+ENABLE_TESTING()
+ADD_SUBDIRECTORY(test)

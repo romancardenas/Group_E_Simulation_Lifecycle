@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "cJSON.h"
+#include <cJSON.h>
 #include "simulation_lifecycle/utils/linked_list.h"
 #include "simulation_lifecycle/utils/workflow.h"
 #include "simulation_lifecycle/spatial_analysis.h"

@@ -1,8 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <unistd.h>
-#include "cJSON.h"
+#include <cJSON.h>
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/utils/linked_list.h"
 #include "simulation_lifecycle/utils/file.h"
@@ -16,7 +15,7 @@
 #define SIM_MODEL_DEFAULT_CONFIG "default_config"
 #define SIM_CONFIG_OUTPUT_PATH "config_output_path"
 #define SIM_RESULT_OUTPUT_PATH "result_output_path"
-#define SIM_RESULTS_DEFAULT_PATH "../third_party/CellDEVS_models/tutorial/logs/"
+#define SIM_RESULTS_DEFAULT_PATH "../logs/"
 #define SIM_RESULTS_END_FILENAME "_outputs.txt"
 #define MAX_LEN 255
 
@@ -197,92 +196,60 @@ int write_sim_config(const cJSON *simulation_config, char *config_json) {
 int run_sim(const cJSON *simulation_config){
 
     /* Get model name - e.g. 2_2_agent_sir_config */
-    cJSON *model = cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_ID);
+    char *model_name = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_ID));
 
     /* Check that model ID is provided using a valid format. */
-    if (model == NULL || !cJSON_IsString(model)) {
+    if (model_name == NULL) {
         return SIM_MODEL_SELECTION_INVALID;
     }
 
     /* Check that the model exists. */
-    char *model_path = concat(SIM_MODEL_LIBRARY, cJSON_GetStringValue(model));
-    int model_found = executable_exists(model_path);
-    free(model_path);  // NOTE: concat uses the heap for allocating memory -> we need to free it to avoid memory leakage!
-    if (!model_found) {
+    char *model_path = concat(SIM_MODEL_LIBRARY, model_name);
+    if (!executable_exists(model_path)) {
         return SIM_MODEL_SELECTION_INVALID;
     }
-
-    char *model_name = cJSON_GetStringValue(model);
-
-    /* Get current directory. */
-    char current_dir[MAX_LEN];
-    getcwd(current_dir, sizeof(current_dir));
-
-    /* Change to model executable files directory. */
-    chdir(SIM_MODEL_LIBRARY);
 
     /* Get config output path which is relative to SIM_MODEL_LIBRARY. */
     char *config_path = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_CONFIG_OUTPUT_PATH));
 
     /* Check that config output path is provided using a valid format. */
-    if (config_path == NULL) {
-        chdir(current_dir);
+    if (config_path == NULL || !file_exists(config_path)) {
         return SIM_CONFIG_OUTPUT_PATH_INVALID;
     }
-    char absolute_config_path[MAX_LEN] = "";
-    snprintf(absolute_config_path, sizeof(absolute_config_path), "%s/%s", current_dir, config_path);
-    if(!file_exists(absolute_config_path)) {
-        chdir(current_dir);
-        return SIM_CONFIG_OUTPUT_PATH_INVALID;
-    }
-
-    /* Defining a command to run the simulation.
-     * The command executes the model executable file with one argument
-     * which is the scenario config .json file.
-     * Example: ./2_2_agent_sir_config ../../../../test/data/run_simulation/config.json
-     */
 
     /* TODO Issue: "./" works on Linux. On Windows, it will work with Windows PowerShell, but not CMD */
-    /* TODO Find a better solution than using a relative config output path from "../third_party/CellDEVS_models/tutorial/bin/" */
 
     char command[MAX_LEN] = "";
-    snprintf(command, sizeof(command), "./%s %s", model_name, absolute_config_path);
-
-    int sim_status = system(command);
-
-    chdir(current_dir);
+    snprintf(command, sizeof(command), "%s %s", model_path, config_path);
+    free(model_path);
 
     /* Check if simulation was properly ran. */
-    if (sim_status != 0){
+    if (system(command) != 0){
         return SIM_RUN_ERROR;
     }
     /* Define results filename. */
     char *results_filename = concat(model_name, SIM_RESULTS_END_FILENAME);
     char *results_filename_path = concat(SIM_RESULTS_DEFAULT_PATH, results_filename);
-    free(results_filename); // NOTE: concat uses the heap for allocating memory -> we need to free it to avoid memory leakage!
+    free(results_filename);
 
     /* Check if results file exists. */
     if (!file_exists(results_filename_path)) {
         return SIM_RUN_NO_RESULTS;
     }
-    /* Moving the results file to predefined result output path. */
-    /* Get result output path */
+    /* Moving the results file to predefined result output path. Get result output path */
     char *result_path = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_RESULT_OUTPUT_PATH));
 
     /* Check that config output path is provided and valid. */
     if (result_path == NULL){
         return SIM_RESULT_OUTPUT_PATH_INVALID;
     }
-
-    /* Check if config output path already exists. */
-    /* This check will avoid overwriting on previous simulation results. */
+    /* Check if config output path already exists. This check will avoid overwriting on previous simulation results. */
     if (file_exists(result_path)){
         return SIM_RESULT_OUTPUT_PATH_ALREADY_EXISTS ;
     }
 
-    int sim_results_move_status = rename(results_filename_path,result_path);
-    free(results_filename_path);  // NOTE: concat uses the heap for allocating memory -> we need to free it to avoid memory leakage!
-
+    int sim_results_move_status = rename(results_filename_path, result_path);
+    free(results_filename_path);
     /* Check if rename function was successful and if the new file exists */
     if (sim_results_move_status != 0 || !file_exists(result_path)) {
         return SIM_RUN_RESULTS_MOVE_FAILED;

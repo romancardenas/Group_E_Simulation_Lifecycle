@@ -1,8 +1,7 @@
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include "cJSON.h"
+#include <cJSON.h>
 #include <dirent.h>
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/convert.h"
