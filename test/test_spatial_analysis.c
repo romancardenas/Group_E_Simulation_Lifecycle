@@ -35,24 +35,21 @@ void test_register_operation(void) {
     int n = list_length(&registered_operations);
 
     register_operation("success", execute_success);
-    register_operation("validate_fail", execute_success);
     register_operation("execute_fail", execute_fail);
 
     // Nothing much to test, these functions aren't meant to be called using user provided info so
     // they don't have to return error codes. It's up to to the programmer to make sure it works.
     // We can still test that there are more operations registered though.
 
-    TEST_ASSERT(list_length(&registered_operations) == n + 3);
+    TEST_ASSERT(list_length(&registered_operations) == n + 2);
 }
 
 void test_get_operation(void) {
     operation_t * op_1 = get_operation("success");
-    operation_t * op_2 = get_operation("validate_fail");
-    operation_t * op_3 = get_operation("non-existent");
+    operation_t * op_2 = get_operation("non-existent");
 
     TEST_ASSERT(op_1 != NULL);
-    TEST_ASSERT(op_2 != NULL);
-    TEST_ASSERT(op_3 == NULL);
+    TEST_ASSERT(op_2 == NULL);
 }
 
 void test_read_data_in(void) {
@@ -105,6 +102,7 @@ void test_execute_workflow(void) {
     cJSON_GetObjectItem(operation, "parameters")->child = NULL;
     cJSON_GetObjectItem(operation, "parameters")->type = 4;
     res = execute_workflow(wf, &results);
+
     TEST_ASSERT_TRUE(res == OPERATION_NO_PARAMETERS);
     cJSON_GetObjectItem(operation, "parameters")->child = params;
     cJSON_GetObjectItem(operation, "parameters")->type = type;
@@ -113,13 +111,11 @@ void test_execute_workflow(void) {
     cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), "non-existent");
     res = execute_workflow(wf, &results);
     TEST_ASSERT_TRUE(res == OPERATION_UNREGISTERED);
-    // cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), name); TODO weird bug in UNIX when sizes of operations are equal
 
     results = NULL;
     cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), "execute_fail");
     res = execute_workflow(wf, &results);
     TEST_ASSERT_TRUE(res != SUCCESS);
-    //cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), name);
 }
 
 int main(void) {
@@ -127,7 +123,7 @@ int main(void) {
     RUN_TEST(test_register_operations);
     RUN_TEST(test_register_operation);
     RUN_TEST(test_get_operation);
-    //RUN_TEST(test_read_data_in); TODO this test fails on Ubuntu
-    // RUN_TEST(test_execute_workflow); TODO this test fails on Ubuntu
+    RUN_TEST(test_read_data_in); // TODO this test fails on Ubuntu
+    RUN_TEST(test_execute_workflow); // TODO this test fails on Ubuntu
     return UNITY_END();
 }
