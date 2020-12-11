@@ -5,8 +5,7 @@
 #include "simulation_lifecycle/utils/feature.h"
 
 int centroids_execute(char *id, node_t **data_sources, cJSON *parameters) {
-    cJSON *json_data = cJSON_GetObjectItemCaseSensitive(parameters, "data");
-    char *source_data = cJSON_GetStringValue(cJSON_GetObjectItem(json_data, "source"));
+    char *source_data = cJSON_GetStringValue(cJSON_GetObjectItem(parameters, "data"));
     data_source_t *data_source = get_data_source(data_sources, source_data);
     if (data_source == NULL){
         return DATA_SOURCE_ID_NULL;

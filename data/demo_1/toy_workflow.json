@@ -12,23 +12,14 @@
     "id": "db_centroids",
     "operation": "centroids",
     "parameters": {
-      "data": {
-        "type": "data",
-        "source": "db_ottawa"
-      }
+      "data": "db_ottawa"
     }
   }, {
     "id": "db_distance",
     "operation": "closest_distance",
     "parameters": {
-      "origin": {
-        "type": "result",
-        "source": "db_centroids"
-      },
-      "destination": {
-        "type": "result",
-        "source": "db_centroids"
-      },
+      "origin": "db_centroids",
+      "destination": "db_centroids",
       "number_of_neighbors" : 2
     }
   }
