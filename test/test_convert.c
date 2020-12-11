@@ -18,7 +18,15 @@ void setUp(void) {
 }
 
 void tearDown(void) {
+    char *log_filename = CONVERTED_RESULTS_LOG_FILENAME;
+    char *json_filename = CONVERTED_RESULTS_JSON_FILENAME;
+    char *path = "../test/data/convert_tests/case_3/";
 
+    log_filename = concat(path,log_filename);
+    json_filename = concat(path,json_filename);
+
+    remove(log_filename);
+    remove(json_filename);
 }
 
 /* Test description: Call the function with path being null. */
