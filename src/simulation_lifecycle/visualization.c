@@ -209,7 +209,11 @@ int package_visualization(cJSON * data) {
 
     // Copy copy visualization.json to output folder
     char * output_file = join_strings(o_dir, "visualization.json");
-    write_data_to_file(output_file, cJSON_Print(data));
+
+    if ((res = write_data_to_file(output_file, cJSON_Print(data)) != SUCCESS)) {
+        return res;
+    }
+
     free(output_file);
 
     // Remove output field, shouldn't be in visualization.json

@@ -8,6 +8,28 @@
         }
     ],
     "spatial_analysis": [{
+        "id": "db_centroids",
+        "operation": "centroids",
+        "parameters": {
+            "data": {
+                "type": "data",
+                "source": "provinces"
+            }
+        }
+    }, {
+        "id": "db_distance",
+        "operation": "closest_distance",
+        "parameters": {
+            "origin": {
+                "type": "result",
+                "source": "db_centroids"
+            },
+            "destination": {
+                "type": "result",
+                "source": "db_centroids"
+            }
+        }
+    },{
         "id": "hospitals_selected",
         "operation": "select_by_attributes",
         "parameters": {
@@ -17,28 +39,6 @@
             },
             "field": "odhf_facil",
             "value": "Hospitals"
-        }
-    }, {
-        "id": "db_centroids",
-        "operation": "centroids",
-        "parameters": {
-            "data": {
-                "type": "data",
-                "source": "db_ottawa"
-            }
-        }
-    }, {
-        "id": "hospital_db_distance",
-        "operation": "closest_distance",
-        "parameters": {
-            "origin": {
-                "type": "data",
-                "source": "hospitals_selected"
-            },
-            "destination": {
-                "type": "result",
-                "source": "db_centroids"
-            }
         }
     }
     ],
