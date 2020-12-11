@@ -10,18 +10,6 @@
 #define NAME_MAX 255
 #define PATH_MAX 4096
 #define LENGTH_MAX 200
-// #define VALID_FORMAT "[cadmium::celldevs::cell_ports_def<std::string"
-/*
- * This is compiler-dependant. For example, we should do this (and this is not 100% true, as you can use different compilers):
-#if defined __APPLE__
-    #define VALID_FORMAT "[cadmium::celldevs::cell_ports_def<std::__1::basic_string<char"
-#elif defined __linux__
-    #define VALID_FORMAT "[cadmium::celldevs::cell_ports_def<std::__cxx11::basic_string<char"
-#else
-    #define VALID_FORMAT "[cadmium::celldevs::cell_ports_def<std::string"
-#endif
-*/
-
 #define VIZ_OBJECT "fields"
 #define RESULT_OBJECT "cells"
 
@@ -120,14 +108,6 @@ int convert_results(char *input, char *output, cJSON *visualization) {
             count_lines++;
         }
 
-        /* Comparing the 46th first characters of the third line
-         * with "[cadmium::celldevs::cell_ports_def<std::string"*/
-        // TODO (Román) Careful with this!!! It is highly dependent on the compiler (see the macro definitions)
-        // TODO (Román) Can we just remove this comparison? it is too narrow, in my opinion
-        // if (strncmp(line, VALID_FORMAT, strlen(VALID_FORMAT)) != 0) {
-        //    return CONVERT_FILE_FORMAT_INCORRECT;
-        //}
-
         fclose(f_input_txt);
 
         /* Calling the function convert_json_file to convert
@@ -157,46 +137,6 @@ int convert_results(char *input, char *output, cJSON *visualization) {
 
         return res;
 
-        /*
-        int count_json_files_after_conversion = 0;
-        int count_txt_files_after_conversion = 0;
-        int count_log_files_after_conversion = 0;
-
-        DIR *p_directory_results = opendir(output);
-        while ((path = readdir(p_directory_results)) != NULL) {
-            char *filename = path->d_name;
-
-            // Start extracting characters after "."
-            start_extract = strchr(filename, delimiter_period);
-
-            // start_extract == NULL when a filename does not
-            //contain an extension.
-
-            if (start_extract == NULL) {
-                continue;
-            }
-            if (!strcmp(start_extract, ".json")) {
-                count_json_files_after_conversion++;
-            } else if (!strcmp(start_extract, ".txt")) {
-                count_txt_files_after_conversion++;
-            } else if (!strcmp(start_extract, ".log")) {
-                count_log_files_after_conversion++;
-                // When the filename extension is not a
-                // ".json" or ".txt" or ".log".
-
-            } else {
-                continue;
-            }
-        }
-        closedir(p_directory_results);
-        if (count_json_files_after_conversion == 2 &&
-            count_txt_files_after_conversion == 1 &&
-            count_log_files_after_conversion == 1) {
-            return res;
-        } else {
-            return CONVERSION_FAILED;
-        }
-        */
     }
 }
 
