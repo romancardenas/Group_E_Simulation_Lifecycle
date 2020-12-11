@@ -25,7 +25,7 @@ void test_validate_visualization(void) {
     cJSON_DeleteItemFromObject(viz_data, "output");
     res = validate_visualization(viz_data);
     TEST_ASSERT_EQUAL(VIZ_NO_OUTPUT_PATH, res);
-    cJSON_AddStringToObject(viz_data, "output", "../data/demo_2/output/");
+    cJSON_AddStringToObject(viz_data, "output", "../test/data/visualization/output/");
 
     cJSON_DeleteItemFromObject(viz_data, "basemap");
     res = validate_visualization(viz_data);
