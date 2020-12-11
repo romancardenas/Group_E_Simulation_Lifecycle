@@ -212,9 +212,11 @@ int package_visualization(cJSON * data) {
     // Copy copy visualization.json to output folder
     char * output_file = join_strings(o_dir, "visualization.json");
 
-    if ((res = write_data_to_file(output_file, cJSON_Print(data)) != SUCCESS)) {
+    res = write_data_to_file(output_file, cJSON_Print(data));
+
+    if (res != SUCCESS) {
         return res;
-    }
+    };
 
     free(output_file);
 
