@@ -8,6 +8,31 @@
       "path": "../data/demo_1/input/DB_Ottawa_Vicinities_Simple.geojson"
     }
   ],
+  "spatial_analysis": [{
+    "id": "db_centroids",
+    "operation": "centroids",
+    "parameters": {
+      "data": {
+        "type": "data",
+        "source": "db_ottawa"
+      }
+    }
+  }, {
+    "id": "db_distance",
+    "operation": "closest_distance",
+    "parameters": {
+      "origin": {
+        "type": "result",
+        "source": "db_centroids"
+      },
+      "destination": {
+        "type": "result",
+        "source": "db_centroids"
+      },
+      "number_of_neighbors" : 2
+    }
+  }
+  ],
   "simulation": {
     "model_id": "2_2_agent_sir_config",
     "default_config": {

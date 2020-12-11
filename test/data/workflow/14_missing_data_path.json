@@ -3,7 +3,7 @@
             "id": "hospitals"
           }, {
             "id": "db_ottawa",
-            "path": "../data/Hospitals.geojson"
+            "path": "../test/data/Hospitals.geojson"
           }
     ],
     "spatial_analysis": [{

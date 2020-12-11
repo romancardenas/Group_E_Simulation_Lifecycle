@@ -80,3 +80,12 @@ logs/
 # CLion stuff
 .idea/
 cmake-build-debug/
+/data/demo_3/csd_workflow.json
+/data/demo_3/csd_workflow.partial.json
+/data/demo_3/input/csd.geojson
+/data/demo_3/input/csd_vicinities.geojson
+/data/demo_3/output/csd.geojson
+/data/demo_3/output/structure.json
+/data/demo_3/output/visualization.json
+/data/demo_3/scratch/build_simulation_output.json
+/data/demo_3/scratch/run_simulation_output.txt

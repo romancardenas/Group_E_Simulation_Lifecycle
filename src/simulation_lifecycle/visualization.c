@@ -57,6 +57,7 @@ int validate_array(cJSON * data, char * field, int (* validate)(cJSON * item), i
 int validate_view(cJSON * viz) {
     cJSON * view = cJSON_GetObjectItem(viz, "view");
 
+    // TODO: Should check that center is an array of numbers too
     if (cJSON_HasObjectItem(view, "center") == 0) {
         return VIZ_LAYER_VIEW_BAD_CENTER;
     }
@@ -89,10 +90,6 @@ int validate_layer(cJSON * layer) {
 
     if (res == SUCCESS) {
         res = validate_mandatory_string(layer, "label", VIZ_LAYER_BAD_LABEL);
-    }
-
-    if (res == SUCCESS) {
-        res = validate_mandatory_string(layer, "file", VIZ_LAYER_MISSING_STYLE);
     }
 
     // TODO : This should validate against the styles array
@@ -199,7 +196,13 @@ int package_visualization(cJSON * data) {
 
         // Copy geojson file from input folder to output folder
         char * output_file = join_strings(o_dir, s_file);
-        write_data_to_file(output_file, cJSON_Print(geojson));
+
+        res = write_data_to_file(output_file, cJSON_Print(geojson));
+
+        if (res != SUCCESS) {
+            return res;
+        };
+
         free(output_file);
 
         // Remove folder from file path so users can load from client-side
@@ -208,7 +211,13 @@ int package_visualization(cJSON * data) {
 
     // Copy copy visualization.json to output folder
     char * output_file = join_strings(o_dir, "visualization.json");
-    write_data_to_file(output_file, cJSON_Print(data));
+
+    res = write_data_to_file(output_file, cJSON_Print(data));
+
+    if (res != SUCCESS) {
+        return res;
+    };
+
     free(output_file);
 
     // Remove output field, shouldn't be in visualization.json
