@@ -6,14 +6,9 @@
 #include "simulation_lifecycle/utils/feature.h"
 
 int select_by_attributes_execute(char * id, node_t ** data_sources, cJSON * parameters) {
-    // Find target data source *json_data
-    cJSON * json_data = cJSON_GetObjectItemCaseSensitive(parameters, "data");
-    if(NULL == json_data){
-        return SBA_DATA_MISSING;
-    }
-
     // Find Source data name
-    char * source_data = cJSON_GetStringValue(cJSON_GetObjectItem(json_data, "source"));
+    char *source_data = cJSON_GetStringValue(cJSON_GetObjectItem(parameters, "data"));
+
     if(NULL == source_data){
         return SBA_MISSING_DATA_SOURCE;
     }

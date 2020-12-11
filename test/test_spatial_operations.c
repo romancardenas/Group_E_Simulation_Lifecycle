@@ -52,7 +52,7 @@ void test_SBA_missing_data(void) {
     cJSON * operation = read_spatial_analysis(workflow)->child;
     cJSON * params = cJSON_GetObjectItem(operation, "parameters");
 
-    TEST_ASSERT_EQUAL(SBA_DATA_MISSING, select_by_attributes_execute("odhf_facil", &data_sources, params));
+    TEST_ASSERT_EQUAL(SBA_MISSING_DATA_SOURCE, select_by_attributes_execute("odhf_facil", &data_sources, params));
 }
 
 void test_SBA_missing_data_source(void) {
