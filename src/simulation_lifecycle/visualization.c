@@ -197,7 +197,9 @@ int package_visualization(cJSON * data) {
         // Copy geojson file from input folder to output folder
         char * output_file = join_strings(o_dir, s_file);
 
-        if ((res = write_data_to_file(output_file, cJSON_Print(geojson)) != SUCCESS)) {
+        res = write_data_to_file(output_file, cJSON_Print(geojson));
+
+        if (res != SUCCESS) {
             return res;
         };
 
