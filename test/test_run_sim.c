@@ -9,7 +9,7 @@ void setUp(void) {
 }
 
 void tearDown(void) {
-
+    remove("../test/data/run_simulation/simulation_output_messages.txt");
 }
 
 void test_invalid_model_selection(void) {
