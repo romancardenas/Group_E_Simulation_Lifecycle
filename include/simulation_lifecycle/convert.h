@@ -42,14 +42,12 @@ int convert_txt_file(char *path_results, char *txt_filename);
 /**
  * @brief convert irregular cell-DEVS simulation results files into the required
  * format for the simulation viewer.
- * @param[in] input string containing the path to the folder with the input simulation
- * results to convert.
  * @param[in] output string containing the path to the folder where converted results will
  * be saved.
  * @param[in] visualization JSON structure containing the visualization part of the workflow.
  * @return 0 if the function ran successfully. Otherwise, it returns an error
  * code.
  */
-int convert_results(char *input, char *output, cJSON *visualization);
+int convert_results(char *output_folder, cJSON *visualization);
 
 #endif //__SIMULATION_LIFECYCLE_CONVERT_H__

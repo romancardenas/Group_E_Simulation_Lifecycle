@@ -1,4 +1,5 @@
 {
+  "output" : "..somewhere/out/there",
   "data_sources": [{
     "id": "hospitals",
     "path": "../test/data/Hospitals.geojson"
@@ -99,8 +100,6 @@
         "connectivity": "conn",
         "mobility": "mob"
       }
-    },
-    "config_output_path": "../test/data/simulation/output_config.json",
-    "result_output_path": "../test/data/run_simulation/simulation_output_messages.txt"
+    }
   }
 }

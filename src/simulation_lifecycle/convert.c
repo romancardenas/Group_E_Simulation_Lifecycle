@@ -12,6 +12,8 @@
 #define LENGTH_MAX 200
 #define VIZ_OBJECT "fields"
 #define RESULT_OBJECT "cells"
+#define INPUT_PATH "simulation/"
+#define OUTPUT_PATH "conversion/"
 
 
 char * get_output_path(cJSON * conv) {
@@ -26,14 +28,16 @@ char * get_input_path(cJSON * conv) {
     return (path == NULL) ? NULL : cJSON_GetStringValue(path);
 }
 
-int convert_results(char *input, char *output, cJSON *visualization) {
-    if (input == NULL || strlen(input) == 0) {
-        return CONVERT_INPUT_PATH_INCORRECT;
-    }
-
-    if (output == NULL || strlen(output) == 0) {
+int convert_results(char *output_folder, cJSON *visualization) {
+    if (output_folder == NULL || strlen(output_folder) == 0) {
         return CONVERT_OUTPUT_PATH_INCORRECT;
     }
+
+    char input[NAME_MAX] = "";
+    join_paths(input, output_folder, INPUT_PATH);
+
+    char output[NAME_MAX] = "";
+    join_paths(output, output_folder, OUTPUT_PATH);
 
     /* Opening the directory containing the results.
     * directory_results is a pointer to manage the directory.*/

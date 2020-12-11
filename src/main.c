@@ -14,7 +14,6 @@
  * @return 0 if flow ran successfully.  TODO better documentation
  */
 int main(int argc, char *argv[]) {
-
     fprintf(stdout, "Reading input parameters... ");
     if (argc != 2) {
         fprintf(stderr, "Wrong number of arguments.\n");
@@ -28,12 +27,14 @@ int main(int argc, char *argv[]) {
 
     fprintf(stdout, "Validating workflow file... ");
     int res = validate_workflow(workflow);
-    
+
     if (res) {
         fprintf(stderr, "Workflow is invalid.\n");
         goto main_end;
     }
     fprintf(stdout, "Ok.\n");
+
+    char * output = read_output_folder(workflow);
 
     node_t *data_sources = NULL;
 
@@ -59,7 +60,7 @@ int main(int argc, char *argv[]) {
 
     fprintf(stdout, "Building simulation scenario... ");
     if (build_sim_scenario_required(workflow)) {
-        if ((res = build_simulation_scenario(read_simulation(workflow), &data_sources))) {
+        if ((res = build_simulation_scenario(read_simulation(workflow), &data_sources, output))) {
             fprintf(stderr, "Build simulation scenario failed. Error code: %d\n", res);
             fprintf(stderr, "Hint: did you remove the output file of a previous scenario building?\n");
             goto main_end;
@@ -69,7 +70,7 @@ int main(int argc, char *argv[]) {
 
     fprintf(stdout, "Running Cadmium Irregular Cell-DEVS simulation... ");
     if (run_sim_required(workflow)) {
-        if ((res = run_sim(read_simulation(workflow)))) {
+        if ((res = run_sim(read_simulation(workflow), output))) {
             fprintf(stderr, "Run simulation failed. Error code: %d\n", res);
             fprintf(stderr, "Hint: did you remove the output file of a previous simulation?\n");
             goto main_end;
@@ -81,9 +82,8 @@ int main(int argc, char *argv[]) {
     if (conversion_required(workflow)) {
         cJSON * conv = read_conversion(workflow);
         char * input = get_input_path(conv);
-        char * output = get_output_path(conv);
 
-        if ((res = convert_results(input, output, conv))) {
+        if ((res = convert_results(output, conv))) {
             fprintf(stderr, "Unable to convert results. Error code: %d\n", res);
             goto main_end;
         }
@@ -91,6 +91,7 @@ int main(int argc, char *argv[]) {
     fprintf(stdout, "Ok.\n");
 
     fprintf(stdout, "Preparing visualization for WebViewer... ");
+    // if (create_viz_required(workflow, output)) {
     if (create_viz_required(workflow)) {
         cJSON * viz = read_visualization(workflow);
 
@@ -99,7 +100,7 @@ int main(int argc, char *argv[]) {
             goto main_end;
         }
 
-        if ((res = package_visualization(viz))) {
+        if ((res = package_visualization(viz, output))) {
             fprintf(stderr, "Unable to convert results. Error code: %d\n", res);
             goto main_end;
         }

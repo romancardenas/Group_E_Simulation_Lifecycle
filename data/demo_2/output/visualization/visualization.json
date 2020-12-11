@@ -1,5 +1,4 @@
 {
-	"output":	"../test/data/visualization/",
 	"basemap":	"openstreetmap",
 	"view":	{
 		"center":	[-89, 57],

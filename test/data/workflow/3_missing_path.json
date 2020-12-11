@@ -1,4 +1,5 @@
 {
+    "output" : "..somewhere/out/there",
     "data_sources": [{
             "id": "hospitals"
         }, {

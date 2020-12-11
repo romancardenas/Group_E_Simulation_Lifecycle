@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cJSON.h>
+#include <string.h>
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/utils/file.h"
+
+#define MAX_LEN 255
 
 int write_data_to_file(char * file_path, char *data) {
     FILE *f_out;
@@ -65,4 +68,37 @@ int read_json_file(char * path_to_file, cJSON ** pp_data) {
     }
 
     return res;
+}
+
+void join_paths(char * out, char * a, char * b) {
+    size_t n = strlen(a);
+    char last = a[n-1];
+
+    if (last == '/' || last == '\\') {
+        a[n-1] = '\0';
+    }
+
+    snprintf(out, strlen(a) + strlen(b) + 2, "%s/%s", a, b);
+}
+
+int copy_file(char * source, char * target) {
+    int ch;
+
+    FILE * f_source = fopen(source, "r");
+
+    if (f_source == NULL) {
+        return UNABLE_OPEN_FILE;
+    }
+
+    FILE * f_target = fopen(target, "w");
+
+    if (f_target == NULL) {
+        return UNABLE_OPEN_FILE;
+    }
+
+    while ((ch = fgetc(f_source)) != EOF) {
+        fputc(ch, f_target);
+    }
+
+    return SUCCESS;
 }

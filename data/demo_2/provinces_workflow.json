@@ -1,4 +1,5 @@
 {
+	"output" : "../data/demo_2/output",
     "data_sources": [{
             "id": "provinces",
             "path": "../data/demo_2/input/provinces.geojson"
@@ -62,17 +63,12 @@
                 "connectivity": "conn",
                 "mobility": "mob"
             }
-        },
-        "config_output_path": "../data/demo_2/scratch/build_simulation_output.json",
-        "result_output_path": "../data/demo_2/scratch/run_simulation_output.txt"
+        }
     },
     "conversion": {
-        "fields": "[\"population\",\"susceptible\",\"infected\",\"recovered\"]",
-        "input": "../data/demo_2/scratch/",
-        "output": "../data/demo_2/output/"
+        "fields": "[\"population\",\"susceptible\",\"infected\",\"recovered\"]"
     },
     "visualization": {
-        "output": "../data/demo_2/output/",
         "basemap": "openstreetmap",
 		"view":	{
 			"center":	[-89, 57],

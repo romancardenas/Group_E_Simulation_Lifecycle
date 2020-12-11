@@ -13,6 +13,12 @@ cJSON * read_workflow_file(char *path_to_file) {
 
 // TODO ROMAN: I think we must add a header file with macros corresponding to JSON labels (I don't like magic values)
 
+char * read_output_folder(const cJSON *const workflow) {
+    cJSON * output = cJSON_GetObjectItem(workflow, "output");
+
+    return (output == NULL) ? NULL : cJSON_GetStringValue(output);
+}
+
 cJSON * read_data_sources(const cJSON *const workflow) {
     return  cJSON_GetObjectItem(workflow, "data_sources");
 }
@@ -44,6 +50,13 @@ int validate_workflow(const cJSON *const workflow){
     if (NULL == workflow->child) {
         return WORKFLOW_CONTAINS_EMPTY_JSON_OBJ;
     }
+
+    // Check output folder
+    char * output = read_output_folder(workflow);
+    if (NULL == output) {
+        return NULL_OUTPUT_FOLDER;
+    }
+
     //Check data_sources
     cJSON * data_sources = read_data_sources(workflow);
     if (NULL == data_sources) {
@@ -97,14 +110,11 @@ int spatial_analysis_required(const cJSON *const workflow) {
 }
 
 int build_sim_scenario_required(const cJSON *const workflow ) {
-    cJSON *sim_config = read_simulation(workflow);
-    return NULL != cJSON_GetObjectItemCaseSensitive(sim_config, "config_output_path");
+    return NULL != read_simulation(workflow);
 }
 
 int run_sim_required(const cJSON *const workflow) {
-    cJSON *sim_config = read_simulation(workflow);
-
-    return NULL != cJSON_GetObjectItemCaseSensitive(sim_config, "result_output_path");
+    return NULL != read_simulation(workflow);
 }
 
 int conversion_required(const cJSON *const workflow) {

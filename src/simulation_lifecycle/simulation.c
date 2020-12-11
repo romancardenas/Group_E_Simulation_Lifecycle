@@ -13,11 +13,12 @@
 #define SIM_MODEL_ID "model_id"
 #define SIM_MODEL_LIBRARY "../third_party/CellDEVS_models/tutorial/bin/"
 #define SIM_MODEL_DEFAULT_CONFIG "default_config"
-#define SIM_CONFIG_OUTPUT_PATH "config_output_path"
-#define SIM_RESULT_OUTPUT_PATH "result_output_path"
 #define SIM_RESULTS_DEFAULT_PATH "../logs/"
 #define SIM_RESULTS_END_FILENAME "_outputs.txt"
 #define MAX_LEN 255
+#define OUTPUT_PATH "simulation/"
+#define OUTPUT_SCENARIO "build_simulation_output.json"
+#define OUTPUT_RESULT "simulation_output_result.txt"
 
 #define SIM_DATA_SOURCE "source"
 #define SIM_MODEL_CELLS "cells"
@@ -63,14 +64,14 @@ int check_valid_vicinities(const cJSON *target);
 
 /**
  * @brief writes JSON configuration to the desired output path.
- * @param[in] simulation_config cJSON structure containing the simulation configuration defined by the user.
+ * @param[in] output_folder a string containing the path to the output folder.
  * @param[in] config_json string containing the content of the resulting simulation configuration file.
  *            It cannot be a NULL pointer. Otherwise, the function will raise an exception.
  * @return 0 if the function ran successfully. Otherwise, it returns an error code.
  */
-int write_sim_config(const cJSON *simulation_config, char *config_json);
+int write_sim_config(char *output_folder, char *config_json);
 
-int build_simulation_scenario(const cJSON *const simulation_config, node_t ** data_sources) {
+int build_simulation_scenario(const cJSON *const simulation_config, node_t ** data_sources, char * output_folder) {
     if (simulation_config == NULL) {
         return SIM_CONFIG_EMPTY;
     }
@@ -93,7 +94,7 @@ int build_simulation_scenario(const cJSON *const simulation_config, node_t ** da
     /* 3. Try to write simulation config file, remove cJSON structures, and return the corresponding error code. */
     cJSON *root = cJSON_CreateObject();
     cJSON_AddItemToObject(root, SIM_MODEL_CELLS, cells_config);  // cells_config is now inside root_config
-    res = write_sim_config(simulation_config, cJSON_Print(root));
+    res = write_sim_config(output_folder, cJSON_Print(root));
     cJSON_Delete(root);
     return res;
 }
@@ -185,15 +186,23 @@ int check_valid_vicinities(const cJSON *const target) {
     return SUCCESS;
 }
 
-int write_sim_config(const cJSON *simulation_config, char *config_json) {
-    char *config_output_path = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_CONFIG_OUTPUT_PATH));
-    if (config_output_path == NULL) {
+int write_sim_config(char *output_folder, char *config_json) {
+    if (output_folder == NULL) {
         return SIM_CONFIG_OUTPUT_PATH_INVALID;
     }
-    return write_data_to_file(config_output_path, config_json);
+
+    char full_path[MAX_LEN] = "";
+    join_paths(full_path, output_folder, OUTPUT_PATH OUTPUT_SCENARIO);
+
+    return write_data_to_file(full_path, config_json);
 }
 
-int run_sim(const cJSON *simulation_config){
+int run_sim(const cJSON *simulation_config, char * output_folder){
+    // TODO: I added this so the test can go throuh, don't know if it's really required.
+    /* Check that model ID is provided using a valid format. */
+    if (output_folder == NULL) {
+        return SIM_RESULT_OUTPUT_PATH_INVALID;
+    }
 
     /* Get model name - e.g. 2_2_agent_sir_config */
     char *model_name = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_MODEL_ID));
@@ -210,10 +219,11 @@ int run_sim(const cJSON *simulation_config){
     }
 
     /* Get config output path which is relative to SIM_MODEL_LIBRARY. */
-    char *config_path = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_CONFIG_OUTPUT_PATH));
+    char config_path[MAX_LEN] = "";
+    join_paths(config_path, output_folder, OUTPUT_PATH OUTPUT_SCENARIO);
 
     /* Check that config output path is provided using a valid format. */
-    if (config_path == NULL || !file_exists(config_path)) {
+    if (output_folder == NULL || !file_exists(config_path)) {
         return SIM_CONFIG_OUTPUT_PATH_INVALID;
     }
 
@@ -236,13 +246,10 @@ int run_sim(const cJSON *simulation_config){
     if (!file_exists(results_filename_path)) {
         return SIM_RUN_NO_RESULTS;
     }
-    /* Moving the results file to predefined result output path. Get result output path */
-    char *result_path = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(simulation_config, SIM_RESULT_OUTPUT_PATH));
 
-    /* Check that config output path is provided and valid. */
-    if (result_path == NULL){
-        return SIM_RESULT_OUTPUT_PATH_INVALID;
-    }
+    char result_path[MAX_LEN] = "";
+    join_paths(result_path, output_folder, OUTPUT_PATH OUTPUT_RESULT);
+
     /* Check if config output path already exists. This check will avoid overwriting on previous simulation results. */
     if (file_exists(result_path)){
         return SIM_RESULT_OUTPUT_PATH_ALREADY_EXISTS ;
