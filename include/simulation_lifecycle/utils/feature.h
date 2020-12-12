@@ -6,10 +6,28 @@
 #include "string.h"
 #include "simulation_lifecycle/structures.h"
 
+/**
+ * @brief Creates a JSON representation of a feature
+ * @param properties, a cJSON representation of the feature properties (similar to a hashmap)
+ * @param geometry, a cJSON representation of the feature geometry
+ * @return a cJSON containing a feature
+ */
 cJSON * feature_create(cJSON * properties, cJSON * geometry);
 
+/**
+ * @brief Creates a JSON representation of a geometry
+ * @param type, a string containing the type of the geometry (Point, Line, Polygon, MultiPoint,...)
+ * @param coordinates, a JSON representation of the geometry coordinates
+ * @return a cJSON containing a feature
+ */
 cJSON * feature_create_geometry(char * type, cJSON * coordinates);
 
+/**
+ * @brief Creates a JSON representation of a point geometry
+ * @param lat, a double containing the latitude of the point
+ * @param lon, a double containing the longitude of the point
+ * @return a cJSON containing a point geometry.
+ */
 cJSON * feature_create_point_geometry(double lat, double lon);
 
 /**
