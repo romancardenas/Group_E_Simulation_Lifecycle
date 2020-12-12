@@ -5,6 +5,7 @@
 /* Common errors 0-49 */
 #define SUCCESS 0
 #define GENERIC_ERROR 1
+
 /* File-related errors 50-74 */
 #define FILE_EXISTS_ERROR 50
 #define FILE_DOES_NOT_EXIST 51

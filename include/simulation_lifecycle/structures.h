@@ -1,8 +1,8 @@
 #ifndef __SIMULATION_LIFECYCLE_STRUCTURES_H__
 #define __SIMULATION_LIFECYCLE_STRUCTURES_H__
 
+#include <cJSON.h>
 #include "simulation_lifecycle/utils/linked_list.h"
-#include "cJSON.h"
 
 #define DATA_SOURCE_FEATURES "features"
 
@@ -44,10 +44,9 @@ typedef struct operation {
 } operation_t;
 
 /**
- * @brief from a list of data sources, it returns a pointer to the data source with the desired ID.
- *        It returns a NULL pointer if the data source is not found.
- * @param[in] data_sources pointer to list of data sources.
- * @param[in] id ID of the desired data source.
+ * @brief Get a data source from a list of data sources.
+ * @param[in] data_sources pointer to a list of data sources.
+ * @param[in] id a string containing the id of the desired data source.
  * @return pointer to data source with matching ID. If no data source is found, it returns a NULL pointer.
  */
 data_source_t * get_data_source(node_t **data_sources, char *id);
@@ -55,9 +54,9 @@ data_source_t * get_data_source(node_t **data_sources, char *id);
 /**
  * @brief Creates a data source struct containing a cJSON representation of a geojson file from a cJSON
  * representation of a list of geospatial features.
- * @param[in] id a string containing the id of the data_source_t to create
- * @param[in] features, a cJSON representation of a list of geospatial features
- * @return a data_source_t object with a cJSON representation of a geojson file
+ * @param[in] id a string containing the id of the data_source_t to create.
+ * @param[in] features a cJSON representation of a list of geospatial features.
+ * @return a data_source_t object with a cJSON representation of a geojson file.
  */
 data_source_t * create_data_source(char * id, cJSON * features);
 
