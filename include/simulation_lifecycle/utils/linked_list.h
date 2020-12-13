@@ -3,6 +3,12 @@
 
 #include<stdlib.h>
 
+/**
+ * @brief a data structure to hold a node for a double chained list
+ * @field data, a generic pointer that holds the reference to a data object for the node
+ * @field prev, a pointer to the previous node of the list
+ * @field next, a pointer to the next node of the list
+ */
 typedef struct node {
     void  *data;        /**< Pointer to linked list value. It can store any data type. */
     struct node *prev;  /**< Pointer to previous element of the linked list. */

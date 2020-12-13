@@ -1,4 +1,5 @@
 {
+	"output" : "../data/demo_2/output",
     "data_sources": [{
             "id": "provinces",
             "path": "../data/demo_2/input/provinces.geojson"
@@ -11,32 +12,20 @@
         "id": "db_centroids",
         "operation": "centroids",
         "parameters": {
-            "data": {
-                "type": "data",
-                "source": "provinces"
-            }
+            "data": "provinces"
         }
     }, {
         "id": "db_distance",
         "operation": "closest_distance",
         "parameters": {
-            "origin": {
-                "type": "result",
-                "source": "db_centroids"
-            },
-            "destination": {
-                "type": "result",
-                "source": "db_centroids"
-            }
+            "origin": "db_centroids",
+            "destination": "db_centroids"
         }
     },{
         "id": "hospitals_selected",
         "operation": "select_by_attributes",
         "parameters": {
-            "data": {
-                "type": "data",
-                "source": "hospitals"
-            },
+            "data": "hospitals",
             "field": "odhf_facil",
             "value": "Hospitals"
         }
@@ -74,17 +63,12 @@
                 "connectivity": "conn",
                 "mobility": "mob"
             }
-        },
-        "config_output_path": "../data/demo_2/scratch/build_simulation_output.json",
-        "result_output_path": "../data/demo_2/scratch/run_simulation_output.txt"
+        }
     },
     "conversion": {
-        "fields": "[\"population\",\"susceptible\",\"infected\",\"recovered\"]",
-        "input": "../data/demo_2/scratch/",
-        "output": "../data/demo_2/output/"
+        "fields": "[\"population\",\"susceptible\",\"infected\",\"recovered\"]"
     },
     "visualization": {
-        "output": "../data/demo_2/output/",
         "basemap": "openstreetmap",
 		"view":	{
 			"center":	[-89, 57],

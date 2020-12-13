@@ -1,0 +1,60 @@
+{
+	"info":	{
+		"simulator":	"Cadmium",
+		"name":	"Messages",
+		"type":	"Irregular Cell-DEVS"
+	},
+	"nodes":	[{
+			"name":	"10",
+			"type":	"atomic",
+			"template":	"[\"population\",\"susceptible\",\"infected\",\"recovered\"]"
+		}, {
+			"name":	"11",
+			"type":	"atomic",
+			"template":	"[\"population\",\"susceptible\",\"infected\",\"recovered\"]"
+		}, {
+			"name":	"12",
+			"type":	"atomic",
+			"template":	"[\"population\",\"susceptible\",\"infected\",\"recovered\"]"
+		}, {
+			"name":	"13",
+			"type":	"atomic",
+			"template":	"[\"population\",\"susceptible\",\"infected\",\"recovered\"]"
+		}, {
+			"name":	"24",
+			"type":	"atomic",
+			"template":	"[\"population\",\"susceptible\",\"infected\",\"recovered\"]"
+		}, {
+			"name":	"35",
+			"type":	"atomic",
+			"template":	"[\"population\",\"susceptible\",\"infected\",\"recovered\"]"
+		}, {
+			"name":	"46",
+			"type":	"atomic",
+			"template":	"[\"population\",\"susceptible\",\"infected\",\"recovered\"]"
+		}, {
+			"name":	"47",
+			"type":	"atomic",
+			"template":	"[\"population\",\"susceptible\",\"infected\",\"recovered\"]"
+		}, {
+			"name":	"48",
+			"type":	"atomic",
+			"template":	"[\"population\",\"susceptible\",\"infected\",\"recovered\"]"
+		}, {
+			"name":	"59",
+			"type":	"atomic",
+			"template":	"[\"population\",\"susceptible\",\"infected\",\"recovered\"]"
+		}, {
+			"name":	"60",
+			"type":	"atomic",
+			"template":	"[\"population\",\"susceptible\",\"infected\",\"recovered\"]"
+		}, {
+			"name":	"61",
+			"type":	"atomic",
+			"template":	"[\"population\",\"susceptible\",\"infected\",\"recovered\"]"
+		}, {
+			"name":	"62",
+			"type":	"atomic",
+			"template":	"[\"population\",\"susceptible\",\"infected\",\"recovered\"]"
+		}]
+}

@@ -6,20 +6,17 @@
 #include "simulation_lifecycle/utils/feature.h"
 
 int select_by_attributes_execute(char * id, node_t ** data_sources, cJSON * parameters) {
-    // Find target data source *json_data
-    cJSON * json_data = cJSON_GetObjectItemCaseSensitive(parameters, "data");
-    if(NULL == json_data){
-        return SBA_DATA_MISSING;
-    }
-
     // Find Source data name
-    char * source_data = cJSON_GetStringValue(cJSON_GetObjectItem(json_data, "source"));
-    if(NULL == source_data){
+    char * data_source_id = cJSON_GetStringValue(cJSON_GetObjectItem(parameters, "data"));
+    data_source_t *data_source = get_data_source(data_sources, data_source_id);
+
+    if (data_source == NULL){
         return SBA_MISSING_DATA_SOURCE;
     }
 
     // Find Field attribute
     char * field = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(parameters, "field"));
+
     if(NULL == field){
         return SBA_MISSING_FIELD;
     }
@@ -29,7 +26,7 @@ int select_by_attributes_execute(char * id, node_t ** data_sources, cJSON * para
     if(NULL == value){
         return SBA_MISSING_VALUE;
     }
-    data_source_t * data_source = get_data_source(data_sources, source_data);
+
     cJSON * result = cJSON_CreateObject();
     cJSON * result_features = cJSON_CreateArray();
     cJSON_AddItemToObject(result, "features", result_features);
