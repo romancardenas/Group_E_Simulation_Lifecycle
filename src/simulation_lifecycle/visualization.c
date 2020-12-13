@@ -1,9 +1,9 @@
 #include <cJSON.h>
 #include <string.h>
+#include <limits.h>
+#include <sys/stat.h>
 #include "simulation_lifecycle/utils/file.h"
 #include "simulation_lifecycle/error.h"
-
-#define MAX_LEN 255
 
 #define CONVERT_PATH "conversion/"
 #define STRUCTURE_PATH "structure.json"
@@ -164,8 +164,8 @@ int validate_visualization(cJSON * data) {
 
 int copy(char * output_folder, char * input_file, char * output_file) {
     // Copy structure.json and messages.log from conversion folder
-    char source[MAX_LEN] = "";
-    char target[MAX_LEN] = "";
+    char source[PATH_MAX] = "";
+    char target[PATH_MAX] = "";
 
     join_paths(source, output_folder, input_file);
     join_paths(target, output_folder, output_file);
@@ -174,8 +174,9 @@ int copy(char * output_folder, char * input_file, char * output_file) {
 }
 
 int package_visualization(cJSON * data, char * output_folder) {
-    char full_path[MAX_LEN] = "";
+    char full_path[PATH_MAX] = "";
     join_paths(full_path, output_folder, OUTPUT_PATH);
+    mkdir(full_path, 0777);
 
     cJSON * copy_data = cJSON_Parse(cJSON_Print(data));
 
@@ -195,7 +196,7 @@ int package_visualization(cJSON * data, char * output_folder) {
         s_file = (!s_file) ? strdup(s_file) : strdup(s_file + 1);
 
         // Copy geojson file to visualization folder
-        char target[MAX_LEN] = "";
+        char target[PATH_MAX] = "";
         join_paths(target, output_folder, OUTPUT_PATH);
         join_paths(target, target, s_file);
 

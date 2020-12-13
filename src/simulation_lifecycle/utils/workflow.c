@@ -14,9 +14,7 @@ cJSON * read_workflow_file(char *path_to_file) {
 // TODO ROMAN: I think we must add a header file with macros corresponding to JSON labels (I don't like magic values)
 
 char * read_output_folder(const cJSON *const workflow) {
-    cJSON * output = cJSON_GetObjectItem(workflow, "output");
-
-    return (output == NULL) ? NULL : cJSON_GetStringValue(output);
+    return cJSON_GetStringValue(cJSON_GetObjectItem(workflow, "output"));
 }
 
 cJSON * read_data_sources(const cJSON *const workflow) {

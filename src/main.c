@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <cJSON.h>
+#include <sys/stat.h>
 #include "simulation_lifecycle/utils/linked_list.h"
 #include "simulation_lifecycle/utils/workflow.h"
 #include "simulation_lifecycle/spatial_analysis.h"
@@ -35,6 +36,7 @@ int main(int argc, char *argv[]) {
     fprintf(stdout, "Ok.\n");
 
     char * output = read_output_folder(workflow);
+    mkdir(output, 0777);
 
     node_t *data_sources = NULL;
 
@@ -81,8 +83,6 @@ int main(int argc, char *argv[]) {
     fprintf(stdout, "Converting simulation results to WebViewer format... ");
     if (conversion_required(workflow)) {
         cJSON * conv = read_conversion(workflow);
-        char * input = get_input_path(conv);
-
         if ((res = convert_results(output, conv))) {
             fprintf(stderr, "Unable to convert results. Error code: %d\n", res);
             goto main_end;

@@ -1,15 +1,14 @@
 #include <stdio.h>
+#include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
 #include <cJSON.h>
 #include <dirent.h>
+#include <limits.h>
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/convert.h"
 #include "simulation_lifecycle/utils/file.h"
 
-#define NAME_MAX 255
-#define PATH_MAX 4096
-#define LENGTH_MAX 200
 #define VIZ_OBJECT "fields"
 #define RESULT_OBJECT "cells"
 #define INPUT_PATH "simulation/"
@@ -33,11 +32,12 @@ int convert_results(char *output_folder, cJSON *visualization) {
         return CONVERT_OUTPUT_PATH_INCORRECT;
     }
 
-    char input[NAME_MAX] = "";
+    char input[PATH_MAX] = "";
     join_paths(input, output_folder, INPUT_PATH);
 
-    char output[NAME_MAX] = "";
+    char output[PATH_MAX] = "";
     join_paths(output, output_folder, OUTPUT_PATH);
+    mkdir(output, 0777);
 
     /* Opening the directory containing the results.
     * directory_results is a pointer to manage the directory.*/
@@ -103,7 +103,7 @@ int convert_results(char *output_folder, cJSON *visualization) {
          * "[cadmium::celldevs::cell_ports_def<std::string"
          * This text extract will be used for string comparison. */
         FILE *f_input_txt = fopen(path_txt, "r");
-        char line[LENGTH_MAX] = "";
+        char line[LINE_MAX] = "";
         int count_lines = 0;
 
         /* Loop to get the third line of the .txt file */
@@ -178,7 +178,7 @@ int convert_json_file(char *path_results, char *json_filename, cJSON *visualizat
     cJSON *cells_object = NULL;
     cells_object = cJSON_GetObjectItem(input_json, RESULT_OBJECT);
     int size_cell_object = cJSON_GetArraySize(cells_object);
-    char cell[size_cell_object][LENGTH_MAX];
+    char cell[size_cell_object][LINE_MAX];
 
     int i = 0;
     if (cells_object){
@@ -268,11 +268,11 @@ int convert_txt_file(char *path_results, char *txt_filename) {
 
     /* Looping through each line of the .txt file. */
     while (!feof(f_input_txt)) {
-        char line_time[LENGTH_MAX] = "";
-        char line_text[LENGTH_MAX] = "";
+        char line_time[LINE_MAX] = "";
+        char line_text[LINE_MAX] = "";
         char *start_extract = NULL;
         char *end_extract = NULL;
-        char data[LENGTH_MAX] = "";
+        char data[LINE_MAX] = "";
         int count_characters = 0;
         int line_length = 0;
 

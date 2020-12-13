@@ -1,7 +1,9 @@
 #include <stdlib.h>
+#include <sys/stat.h>
 #include <string.h>
 #include <stdio.h>
 #include <cJSON.h>
+#include <limits.h>
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/utils/linked_list.h"
 #include "simulation_lifecycle/utils/file.h"
@@ -15,7 +17,6 @@
 #define SIM_MODEL_DEFAULT_CONFIG "default_config"
 #define SIM_RESULTS_DEFAULT_PATH "../logs/"
 #define SIM_RESULTS_END_FILENAME "_outputs.txt"
-#define MAX_LEN 255
 #define OUTPUT_PATH "simulation/"
 #define OUTPUT_SCENARIO "build_simulation_output.json"
 #define OUTPUT_RESULT "simulation_output_result.txt"
@@ -191,9 +192,12 @@ int write_sim_config(char *output_folder, char *config_json) {
         return SIM_CONFIG_OUTPUT_PATH_INVALID;
     }
 
-    char full_path[MAX_LEN] = "";
-    join_paths(full_path, output_folder, OUTPUT_PATH OUTPUT_SCENARIO);
+    char full_path[PATH_MAX] = "";
+    /* First, we create the output_folder/OUTPUT_PATH directory if it does not exist */
+    join_paths(full_path, output_folder, OUTPUT_PATH);
+    mkdir(full_path, 0777);
 
+    join_paths(full_path, output_folder, OUTPUT_PATH OUTPUT_SCENARIO);
     return write_data_to_file(full_path, config_json);
 }
 
@@ -219,7 +223,7 @@ int run_sim(const cJSON *simulation_config, char * output_folder){
     }
 
     /* Get config output path which is relative to SIM_MODEL_LIBRARY. */
-    char config_path[MAX_LEN] = "";
+    char config_path[PATH_MAX] = "";
     join_paths(config_path, output_folder, OUTPUT_PATH OUTPUT_SCENARIO);
 
     /* Check that config output path is provided using a valid format. */
@@ -229,7 +233,7 @@ int run_sim(const cJSON *simulation_config, char * output_folder){
 
     /* TODO Issue: "./" works on Linux. On Windows, it will work with Windows PowerShell, but not CMD */
 
-    char command[MAX_LEN] = "";
+    char command[PATH_MAX] = "";
     snprintf(command, sizeof(command), "%s %s", model_path, config_path);
     free(model_path);
 
@@ -247,7 +251,7 @@ int run_sim(const cJSON *simulation_config, char * output_folder){
         return SIM_RUN_NO_RESULTS;
     }
 
-    char result_path[MAX_LEN] = "";
+    char result_path[PATH_MAX] = "";
     join_paths(result_path, output_folder, OUTPUT_PATH OUTPUT_RESULT);
 
     /* Check if config output path already exists. This check will avoid overwriting on previous simulation results. */

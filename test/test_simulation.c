@@ -9,7 +9,9 @@ void setUp(void) {
     remove("../test/data/simulation/output/simulation/build_simulation_output.json");
 }
 
-void tearDown(void) {}
+void tearDown(void) {
+    remove("../test/data/simulation/output/simulation/build_simulation_output.json");
+}
 
 void test_null_cjson(void) {
     int res = build_simulation_scenario(NULL, NULL, NULL);
