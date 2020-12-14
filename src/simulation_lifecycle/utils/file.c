@@ -57,7 +57,9 @@ int read_json_file(char * path_to_file, cJSON ** pp_data) {
 
     int res = read_file(path_to_file, &content);
 
-    if (res != SUCCESS) return res;
+    if (res != SUCCESS) {
+        return res;
+    }
 
     *pp_data = cJSON_Parse(content);
 
