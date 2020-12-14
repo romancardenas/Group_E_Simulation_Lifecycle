@@ -28,14 +28,21 @@ int read_data_in(cJSON * workflow, node_t ** data_sources) {
         data_source->id = json_string_value(json_data_source, "id");
         data_source->path = json_string_value(json_data_source, "path");
 
-        if (data_source->id == NULL) return DATA_SOURCE_ID_NULL;
-        if (data_source->path == NULL) return DATA_SOURCE_PATH_NULL;
+        if (data_source->id == NULL) {
+            return DATA_SOURCE_ID_NULL;
+        }
+
+        if (data_source->path == NULL) {
+            return DATA_SOURCE_PATH_NULL;
+        }
 
         data_source->data = NULL;
 
         int res = read_json_file(data_source->path, &data_source->data);
 
-        if (res != SUCCESS) return res;
+        if (res != SUCCESS) {
+            return res;
+        }
 
         push_node(data_sources, data_source, sizeof(data_source_t));
     }
@@ -49,7 +56,9 @@ operation_t * get_operation(char * name) {
     while (current != NULL) {
         operation_t * op = (operation_t *)current->data;
 
-        if (strcmp(op->name, name) == 0) return op;
+        if (strcmp(op->name, name) == 0) {
+            return op;
+        }
 
         current = current->next;
     }
@@ -75,7 +84,9 @@ void register_operations(void) {
 int execute_workflow(cJSON * workflow, node_t ** data_sources) {
     cJSON * operations = read_spatial_analysis(workflow);
 
-    if (cJSON_GetArraySize(operations) == 0) return WORKFLOW_NO_OPERATIONS;
+    if (cJSON_GetArraySize(operations) == 0) {
+        return WORKFLOW_NO_OPERATIONS;
+    }
 
     cJSON * operation = NULL;
 
@@ -83,19 +94,27 @@ int execute_workflow(cJSON * workflow, node_t ** data_sources) {
         char * name = json_string_value(operation, "operation");
         char * id = json_string_value(operation, "id");
 
-        if (!id || !name) return OPERATION_NAME_NULL;
+        if (!id || !name) {
+            return OPERATION_NAME_NULL;
+        }
 
         cJSON * parameters = cJSON_GetObjectItem(operation, "parameters");
 
-        if (cJSON_IsNull(parameters)) return OPERATION_NO_PARAMETERS;
+        if (cJSON_IsNull(parameters)) {
+            return OPERATION_NO_PARAMETERS;
+        }
 
         operation_t * op = get_operation(name);
 
-        if (!op) return OPERATION_UNREGISTERED;
+        if (!op) {
+            return OPERATION_UNREGISTERED;
+        }
 
         int res = op->execute(id, data_sources, parameters);
 
-        if (res != SUCCESS) return res;
+        if (res != SUCCESS) {
+            return res;
+        }
     }
 
     return SUCCESS;
