@@ -15,7 +15,7 @@ cJSON * read_workflow_file(char *path_to_file);
 /**
  * @brief Reads the output folder from a workflow.json file.
  * @param[in] workflow cJSON workflow from read_workflow_file().
- * @return a string containing the output folder path
+ * @return a string containing the output folder path.
  */
 char * read_output_folder(const cJSON *const workflow);
 

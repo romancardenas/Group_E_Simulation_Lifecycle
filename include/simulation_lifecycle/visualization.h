@@ -17,7 +17,7 @@ int validate_visualization(cJSON * visualization);
  * Also copies any geojson file required for layers in the visualization.
  * @param[in] visualization a cJSON object containing all the parameters for DEVS WebViewer visualization.
  * @param[in] output_folder a string to the output folder where to store the visualization files.
- * @return 0 if the operation was successful, an error code otherwise
+ * @return 0 if the operation was successful, an error code otherwise.
  */
 int package_visualization(cJSON * visualization, char * output_folder);
 

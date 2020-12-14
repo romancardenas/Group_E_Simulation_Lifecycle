@@ -4,10 +4,10 @@
 #include <stdlib.h>
 
 /**
- * @brief a data structure to hold a node for a double chained list
- * @field data, a generic pointer that holds the reference to a data object for the node
- * @field prev, a pointer to the previous node of the list
- * @field next, a pointer to the next node of the list
+ * @brief A data structure to hold a node for a double chained list.
+ * @field data a generic pointer that holds the reference to a data object for the node.
+ * @field prev a pointer to the previous node of the list.
+ * @field next a pointer to the next node of the list.
  */
 typedef struct node {
     void  *data;        /**< Pointer to linked list value. It can store any data type. */
@@ -26,7 +26,7 @@ typedef struct node {
 node_t * create_node(void *p_data, size_t data_size, node_t *p_prev, node_t *p_next);
 
 /**
- * @brief Removes list node. NOTE: it frees memory of the heap.
+ * @brief Removes list node. NOTE: It frees memory of the heap.
  * @param[in] p_node pointer to list node.
  */
 void remove_node(node_t *p_node);

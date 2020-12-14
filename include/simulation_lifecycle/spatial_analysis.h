@@ -15,7 +15,6 @@
  * @param[in] workflow a cJSON object containing the complete workflow content.
  * @param[out] data_sources a pointer to a NULL list of node_t objects.
  * @return 0 if the operation was successful, an error code otherwise.
- * @effect the data_sources list contains data_source_t objects with the content of the data specified in the workflow.
  */
 int read_data_in(cJSON * workflow, node_t **data_sources);
 
@@ -24,7 +23,6 @@ int read_data_in(cJSON * workflow, node_t **data_sources);
  * @param[in] workflow a cJSON object containing the complete workflow content.
  * @param[in,out] data_sources a pointer to a NULL list of result_t objects.
  * @return 0 if the operation was successful, an error code otherwise.
- * @effect the results list contains result_t objects with the results of each spatial analysis operation.
  */
 int execute_workflow(cJSON * workflow, node_t **data_sources);
 
@@ -32,14 +30,12 @@ int execute_workflow(cJSON * workflow, node_t **data_sources);
  * @brief Registers an operation to a global list of available operations to be used by the execute_workflow function.
  * @param[in] name a string containing the name of the operation to register.
  * @param[in] execute a function that executes the registered operation.
- * @return nothing.
  */
 void register_operation(char * name, int (* execute)(char * id, node_t * data_sources, cJSON * parameters, node_t ** results));
 
 /**
  * @brief Registers all available operations to a global list of available operations to be used by the
  * execute_workflow function.
- * @return nothing.
  */
 void register_operations(void);
 

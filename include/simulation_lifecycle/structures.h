@@ -7,9 +7,9 @@
 #define DATA_SOURCE_FEATURES "features"
 
 /**
- * @brief a data structure to hold the coordinates of a point geometry
- * @field lat, a double containing the latitude of the point
- * @field lon, a double containing the longitude of the point
+ * @brief A data structure to hold the coordinates of a point geometry.
+ * @field lat a double containing the latitude of the point.
+ * @field lon a double containing the longitude of the point.
  */
 typedef struct point {
     double lat;
@@ -17,10 +17,10 @@ typedef struct point {
 } point_t;
 
 /**
- * @brief a data structure to hold a workflow data source
- * @field id, a string containing the id of the data_source
- * @field path, an optional string containing the path to the data source
- * @field data, a cJSON object containing a JSON representation of the data contents
+ * @brief A data structure to hold a workflow data source.
+ * @field id a string containing the id of the data_source.
+ * @field path an optional string containing the path to the data source.
+ * @field data a cJSON object containing a JSON representation of the data contents.
  */
 typedef struct data_source {
     char * id;
@@ -29,9 +29,9 @@ typedef struct data_source {
 } data_source_t;
 
 /**
- * @brief a data structure to hold a spatial analysis operation
- * @field name, a string containing the name of the spatial analysis operation
- * @field execute, a function that runs the spatial analysis operation
+ * @brief A data structure to hold a spatial analysis operation.
+ * @field name a string containing the name of the spatial analysis operation.
+ * @field execute a function that runs the spatial analysis operation.
  */
 typedef struct operation {
     char * name;
