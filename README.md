@@ -136,4 +136,4 @@ The simulation output of this workflow example will be stored in the `data/resul
 
 ## Documentation
 All documentation regarding this application can be found in the project's GitHub repository.
-Please refer to the [user documentation](htps://github.com/romancardenas/Group_E_Simulation_Lifecycle/wiki/User-Documentation) and [developer documentation](https://github.com/romancardenas/Group_E_Simulation_Lifecycle/wiki/Developer-Documentation).
+Please refer to the [user documentation](https://github.com/romancardenas/Group_E_Simulation_Lifecycle/wiki/User-Documentation) and [developer documentation](https://github.com/romancardenas/Group_E_Simulation_Lifecycle/wiki/Developer-Documentation).
