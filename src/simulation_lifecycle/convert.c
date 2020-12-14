@@ -93,8 +93,8 @@ int convert_results(char *output_folder, cJSON *visualization) {
         return CONVERT_PATH_FILES_INCORRECT;
     } 
     else {
-        sprintf(path_json, "%s%s", input, filename_json);
-        sprintf(path_txt, "%s%s", input, filename_txt);
+        snprintf(path_json, sizeof(path_json), "%s%s", input, filename_json);
+        snprintf(path_txt, sizeof(path_json), "%s%s", input, filename_txt);
 
         /* The function convert result files only if the path_results
          * has one .txt file using the irregular Cadmium Cell-DEVS format.

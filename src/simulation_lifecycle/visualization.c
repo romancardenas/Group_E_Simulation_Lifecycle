@@ -11,24 +11,24 @@
 #define OUTPUT_PATH "visualization/"
 
 char * get_string(cJSON * json, char * field) {
-    cJSON * item = cJSON_GetObjectItem(json, field);
-
-    return (item == NULL) ? NULL : cJSON_GetStringValue(item);
+    return cJSON_GetStringValue(cJSON_GetObjectItem(json, field));  // TODO this function is repeated in workflow
 }
 
 int validate_string(cJSON * data, char * field, int optional, int error) {
     cJSON * section = cJSON_GetObjectItem(data, field);
 
-    if (optional == 1 && section == NULL) return SUCCESS;
-
+    if (optional == 1 && section == NULL) {
+        return SUCCESS;
+    }
     return cJSON_IsString(section) ? SUCCESS : error;
 }
 
 int validate_int(cJSON * data, char * field, int optional, int error) {
     cJSON * section = cJSON_GetObjectItem(data, field);
 
-    if (optional == 1 && section == NULL) return SUCCESS;
-
+    if (optional == 1 && section == NULL) {
+        return SUCCESS;
+    }
     return cJSON_IsNumber(section) ? SUCCESS : error;
 }
 
@@ -64,14 +64,13 @@ int validate_view(cJSON * viz) {
     cJSON * view = cJSON_GetObjectItem(viz, "view");
 
     // TODO: Should check that center is an array of numbers too
-    if (cJSON_HasObjectItem(view, "center") == 0) {
+    if (!cJSON_HasObjectItem(view, "center")) {
         return VIZ_LAYER_VIEW_BAD_CENTER;
     }
 
-    if (cJSON_HasObjectItem(view, "zoom") == 0) {
+    if (!cJSON_HasObjectItem(view, "zoom")) {
         return VIZ_LAYER_VIEW_BAD_ZOOM;
     }
-
     return SUCCESS;
 }
 
@@ -197,8 +196,7 @@ int package_visualization(cJSON * data, char * output_folder) {
 
         // Copy geojson file to visualization folder
         char target[PATH_MAX] = "";
-        join_paths(target, output_folder, OUTPUT_PATH);
-        join_paths(target, target, s_file);
+        join_paths(target, full_path, s_file);
 
         if ((res = copy_file(s_path, target)) != SUCCESS) {
             return res;

@@ -5,8 +5,6 @@
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/utils/file.h"
 
-#define MAX_LEN 255
-
 int write_data_to_file(char * file_path, char *data) {
     FILE *f_out;
 
@@ -99,6 +97,9 @@ int copy_file(char * source, char * target) {
     while ((ch = fgetc(f_source)) != EOF) {
         fputc(ch, f_target);
     }
+
+    fclose(f_source);
+    fclose(f_target);
 
     return SUCCESS;
 }
