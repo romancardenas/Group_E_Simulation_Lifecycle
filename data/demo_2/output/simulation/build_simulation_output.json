@@ -1,0 +1,286 @@
+{
+	"cells":	{
+		"default":	{
+			"cell_type":	"sir",
+			"delay":	"hybrid",
+			"state":	{
+				"population":	100,
+				"susceptible":	0.99,
+				"infected":	0.01,
+				"recovered":	0
+			},
+			"config":	{
+				"virulence":	0.4,
+				"recovery":	0.6
+			},
+			"neighborhood":	{
+			}
+		},
+		"10":	{
+			"state":	{
+				"population":	519716,
+				"susceptible":	0.99,
+				"infected":	0.01,
+				"recovered":	0
+			},
+			"neighborhood":	{
+				"10":	{
+					"connectivity":	1,
+					"mobility":	1
+				},
+				"11":	{
+					"connectivity":	0.3,
+					"mobility":	0.8
+				},
+				"12":	{
+					"connectivity":	0.7,
+					"mobility":	0.4
+				}
+			}
+		},
+		"11":	{
+			"state":	{
+				"population":	142907,
+				"susceptible":	0.99,
+				"infected":	0.01,
+				"recovered":	0
+			},
+			"neighborhood":	{
+				"10":	{
+					"connectivity":	0.5,
+					"mobility":	0.7
+				},
+				"11":	{
+					"connectivity":	1,
+					"mobility":	1
+				}
+			}
+		},
+		"12":	{
+			"state":	{
+				"population":	923598,
+				"susceptible":	0.99,
+				"infected":	0.01,
+				"recovered":	0
+			},
+			"neighborhood":	{
+				"10":	{
+					"connectivity":	0.3,
+					"mobility":	0.3
+				},
+				"11":	{
+					"connectivity":	0.5,
+					"mobility":	0.5
+				},
+				"12":	{
+					"connectivity":	1,
+					"mobility":	1
+				},
+				"13":	{
+					"connectivity":	0.2,
+					"mobility":	0.5
+				}
+			}
+		},
+		"13":	{
+			"state":	{
+				"population":	747101,
+				"susceptible":	0.99,
+				"infected":	0.01,
+				"recovered":	0
+			},
+			"neighborhood":	{
+				"12":	{
+					"connectivity":	0.5,
+					"mobility":	0.5
+				},
+				"13":	{
+					"connectivity":	1,
+					"mobility":	1
+				}
+			}
+		},
+		"24":	{
+			"state":	{
+				"population":	8164361,
+				"susceptible":	0.99,
+				"infected":	0.01,
+				"recovered":	0
+			},
+			"neighborhood":	{
+				"10":	{
+					"connectivity":	0.3,
+					"mobility":	0.1
+				},
+				"13":	{
+					"connectivity":	0.9,
+					"mobility":	0.5
+				},
+				"24":	{
+					"connectivity":	1,
+					"mobility":	1
+				},
+				"35":	{
+					"connectivity":	0.9,
+					"mobility":	0.9
+				},
+				"47":	{
+					"connectivity":	0.6,
+					"mobility":	0.3
+				}
+			}
+		},
+		"35":	{
+			"state":	{
+				"population":	13448494,
+				"susceptible":	0.99,
+				"infected":	0.01,
+				"recovered":	0
+			},
+			"neighborhood":	{
+				"24":	{
+					"connectivity":	0.8,
+					"mobility":	0.4
+				},
+				"35":	{
+					"connectivity":	1,
+					"mobility":	1
+				},
+				"47":	{
+					"connectivity":	0.6,
+					"mobility":	0.3
+				}
+			}
+		},
+		"46":	{
+			"state":	{
+				"population":	1278365,
+				"susceptible":	0.99,
+				"infected":	0.01,
+				"recovered":	0
+			},
+			"neighborhood":	{
+				"24":	{
+					"connectivity":	0.8,
+					"mobility":	0.4
+				},
+				"35":	{
+					"connectivity":	0.6,
+					"mobility":	0.4
+				},
+				"46":	{
+					"connectivity":	1,
+					"mobility":	1
+				}
+			}
+		},
+		"47":	{
+			"state":	{
+				"population":	1098352,
+				"susceptible":	0.99,
+				"infected":	0.01,
+				"recovered":	0
+			},
+			"neighborhood":	{
+				"24":	{
+					"connectivity":	0.3,
+					"mobility":	0.6
+				},
+				"46":	{
+					"connectivity":	0.7,
+					"mobility":	0.4
+				},
+				"47":	{
+					"connectivity":	1,
+					"mobility":	1
+				}
+			}
+		},
+		"48":	{
+			"state":	{
+				"population":	4067175,
+				"susceptible":	0.99,
+				"infected":	0.01,
+				"recovered":	0
+			},
+			"neighborhood":	{
+				"46":	{
+					"connectivity":	0.7,
+					"mobility":	0.4
+				},
+				"47":	{
+					"connectivity":	0.6,
+					"mobility":	0.3
+				},
+				"48":	{
+					"connectivity":	1,
+					"mobility":	1
+				}
+			}
+		},
+		"59":	{
+			"state":	{
+				"population":	4648055,
+				"susceptible":	0.99,
+				"infected":	0.01,
+				"recovered":	0
+			},
+			"neighborhood":	{
+				"48":	{
+					"connectivity":	0.8,
+					"mobility":	0.6
+				},
+				"59":	{
+					"connectivity":	1,
+					"mobility":	1
+				}
+			}
+		},
+		"60":	{
+			"state":	{
+				"population":	35874,
+				"susceptible":	0.99,
+				"infected":	0.01,
+				"recovered":	0
+			},
+			"neighborhood":	{
+				"59":	{
+					"connectivity":	0.7,
+					"mobility":	0.2
+				},
+				"60":	{
+					"connectivity":	1,
+					"mobility":	1
+				}
+			}
+		},
+		"61":	{
+			"state":	{
+				"population":	41786,
+				"susceptible":	0.99,
+				"infected":	0.01,
+				"recovered":	0
+			},
+			"neighborhood":	{
+				"61":	{
+					"connectivity":	1,
+					"mobility":	1
+				}
+			}
+		},
+		"62":	{
+			"state":	{
+				"population":	35944,
+				"susceptible":	0.99,
+				"infected":	0.01,
+				"recovered":	0
+			},
+			"neighborhood":	{
+				"62":	{
+					"connectivity":	1,
+					"mobility":	1
+				}
+			}
+		}
+	}
+}

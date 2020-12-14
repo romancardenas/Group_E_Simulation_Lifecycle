@@ -6,38 +6,33 @@
 
 #define DATA_SOURCE_FEATURES "features"
 
-typedef struct workflow {
-    // TODO are we ever gonna use this?
-} workflow_t;
-
+/**
+ * @brief a data structure to hold the coordinates of a point geometry
+ * @field lat, a double containing the latitude of the point
+ * @field lon, a double containing the longitude of the point
+ */
 typedef struct point {
     double lat;
     double lon;
 } point_t;
 
-typedef struct feature_set {
-    // TODO are we ever gonna use this?
-} feature_set_t;
-
-typedef struct relation_set {
-    // TODO are we ever gonna use this?
-} relation_set_t;
-
-typedef struct cell_config_set {
-    char *config_name;  // TODO are we ever gonna use this?
-    cJSON *config_params;
-} cell_config_t;
-
-typedef struct viz_options {
-    // TODO are we ever gonna use this?
-} viz_options_t;
-
+/**
+ * @brief a data structure to hold a workflow data source
+ * @field id, a string containing the id of the data_source
+ * @field path, an optional string containing the path to the data source
+ * @field data, a cJSON object containing a JSON representation of the data contents
+ */
 typedef struct data_source {
     char * id;
     char * path;
     cJSON * data;
 } data_source_t;
 
+/**
+ * @brief a data structure to hold a spatial analysis operation
+ * @field name, a string containing the name of the spatial analysis operation
+ * @field execute, a function that runs the spatial analysis operation
+ */
 typedef struct operation {
     char * name;
     int (* execute)(char * id, node_t ** data_sources, cJSON * parameters);

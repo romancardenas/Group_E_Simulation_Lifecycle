@@ -18,23 +18,14 @@
     "id": "db_centroids",
     "operation": "centroids",
     "parameters": {
-      "data": {
-        "type": "data",
-        "source": "db_ottawa"
-      }
+      "data": "db_ottawa"
     }
   }, {
     "id": "hospital_db_distance",
     "operation": "closest_distance",
     "parameters": {
-      "origin": {
-        "type": "data",
-        "source": "hospitals_selected"
-      },
-      "destination": {
-        "type": "result",
-        "source": "db_centroids"
-      }
+      "origin": "hospitals_selected",
+      "destination": "db_centroids"
     }
   }
   ],

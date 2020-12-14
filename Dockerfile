@@ -12,4 +12,4 @@ COPY . /simulation_lifecycle/
 RUN rm -rf /simulation_lifecycle/third_party
 RUN cd /simulation_lifecycle && ./setup_docker.sh && ./build.sh
 
-ENTRYPOINT ls /simulation_lifecycle/bin && cd /simulation_lifecycle && ./run_tests.sh
+ENTRYPOINT cd /simulation_lifecycle && ./run_tests.sh
