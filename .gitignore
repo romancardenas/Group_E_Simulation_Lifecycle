@@ -81,6 +81,9 @@ logs/
 .idea/
 cmake-build-debug/
 
+# Visual Studio stuff
+.vs/
+
 # Output of example workflows
 data/demo_1/output
 data/demo_2/output
