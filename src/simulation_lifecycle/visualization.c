@@ -49,7 +49,9 @@ int validate_array(cJSON * data, char * field, int (* validate)(cJSON * item), i
     cJSON * items = cJSON_GetObjectItem(data, field);
     cJSON * item = NULL;
 
-    if (!cJSON_IsArray(items)) return error;
+    if (!cJSON_IsArray(items)) {
+        return error;
+    }
 
     cJSON_ArrayForEach(item, items) {
         if ((res = validate(item)) != SUCCESS) {
@@ -162,7 +164,7 @@ int validate_visualization(cJSON * data) {
 }
 
 int copy(char * output_folder, char * input_file, char * output_file) {
-    // Copy structure.json and messages.log from conversion folder
+    /* Copy structure.json and messages.log from conversion folder */
     char source[PATH_MAX] = "";
     char target[PATH_MAX] = "";
 
@@ -184,17 +186,17 @@ int package_visualization(cJSON * data, char * output_folder) {
 
     int res = SUCCESS;
 
-    // Replace path to geojson by filename
+    /* Replace path to geojson by filename */
     cJSON_ArrayForEach(layer, layers) {
         cJSON * file = cJSON_GetObjectItem(layer, "file");
 
-        // Get filename without folder path
+        /* Get filename without folder path */
         char * s_path = cJSON_GetStringValue(file);
         char * s_file = strrchr(s_path, '/');
 
         s_file = (!s_file) ? strdup(s_file) : strdup(s_file + 1);
 
-        // Copy geojson file to visualization folder
+        /* Copy geojson file to visualization folder */
         char target[PATH_MAX] = "";
         join_paths(target, full_path, s_file);
 
@@ -202,11 +204,11 @@ int package_visualization(cJSON * data, char * output_folder) {
             return res;
         }
 
-        // Remove folder from file path so users can load from client-side
+        /* Remove folder from file path so users can load from client-side */
         cJSON_SetValuestring(file, s_file);
     }
 
-    // Copy structure.json and messages.log from conversion folder
+    /* Copy structure.json and messages.log from conversion folder */
     if ((res = copy(output_folder, CONVERT_PATH STRUCTURE_PATH, OUTPUT_PATH STRUCTURE_PATH)) != SUCCESS) {
         return res;
     }
@@ -215,7 +217,7 @@ int package_visualization(cJSON * data, char * output_folder) {
         return res;
     }
 
-    // Copy visualization.json to output folder
+    /* Copy visualization.json to output folder */
     join_paths(full_path, output_folder, "visualization/visualization.json");
 
     cJSON_DeleteItemFromObject(copy_data, "output");

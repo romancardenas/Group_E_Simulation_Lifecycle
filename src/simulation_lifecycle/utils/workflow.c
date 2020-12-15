@@ -38,10 +38,8 @@ cJSON * read_visualization(const cJSON *const workflow){
 }
 
 int validate_workflow(const cJSON *const workflow){
-    //Check workflow
+    /* Check workflow */
     if (NULL == workflow) {
-        // TODO: In the code guidelines from cuLearn, it says : Constants on RHS in equality/inequality check. Example: value == 1
-        // when comparing variables with literals, follow the notation literal == variable
         return WORKFLOW_DOES_NOT_EXIST;
     }
 
@@ -49,13 +47,13 @@ int validate_workflow(const cJSON *const workflow){
         return WORKFLOW_CONTAINS_EMPTY_JSON_OBJ;
     }
 
-    // Check output folder
+    /* Check output folder */
     char * output = read_output_folder(workflow);
     if (NULL == output) {
         return NULL_OUTPUT_FOLDER;
     }
 
-    //Check data_sources
+    /* Check data_sources */
     cJSON * data_sources = read_data_sources(workflow);
     if (NULL == data_sources) {
         return NULL_DATA_SOURCES;
@@ -83,7 +81,7 @@ int validate_workflow(const cJSON *const workflow){
             }
         }
 
-        // Check if both id and path were accounted for
+        /* Check if both id and path were accounted for */
         if (id < 1) {
             return DATA_SOURCE_ID_MISSING;
         } else if (id > 1) {

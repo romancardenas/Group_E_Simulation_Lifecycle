@@ -1,12 +1,12 @@
-#include "string.h"
-#include "cJSON.h"
+#include <string.h>
+#include <cJSON.h>
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/utils/linked_list.h"
 #include "simulation_lifecycle/structures.h"
 #include "simulation_lifecycle/utils/feature.h"
 
 int select_by_attributes_execute(char * id, node_t ** data_sources, cJSON * parameters) {
-    // Find Source data name
+    /* Find Source data name */
     char * data_source_id = cJSON_GetStringValue(cJSON_GetObjectItem(parameters, "data"));
     data_source_t *data_source = get_data_source(data_sources, data_source_id);
 
@@ -14,14 +14,14 @@ int select_by_attributes_execute(char * id, node_t ** data_sources, cJSON * para
         return SBA_MISSING_DATA_SOURCE;
     }
 
-    // Find Field attribute
+    /* Find Field attribute */
     char * field = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(parameters, "field"));
 
     if(NULL == field){
         return SBA_MISSING_FIELD;
     }
 
-    // Find Value attribute
+    /* Find Value attribute */
     char * value = cJSON_GetStringValue(cJSON_GetObjectItemCaseSensitive(parameters, "value"));
     if(NULL == value){
         return SBA_MISSING_VALUE;
