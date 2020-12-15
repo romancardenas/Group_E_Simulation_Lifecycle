@@ -88,13 +88,13 @@ Detailed instructions about the installation of these dependencies are provided 
 ### 2. Building the Software
 Once you have installed all the dependencies, building the application should be straightforward, as we provide a set of shell scripts for automating the process.
 
-1. Open a terminal (Windows users should use a Cygwin terminal) 
-2. Download this repository in your home directory and move inside the repository: 
+1. Open a terminal (Windows users should use a Cygwin terminal)
+2. Download this repository in your home directory and move inside the repository:
 ```
 cd
 git clone https://github.com/romancardenas/Group_E_Simulation_Lifecycle.git
 cd Group_E_Simulation_Lifecycle
-``` 
+```
 3. Run the `setup.sh` shell script to download third-party repositories and build the software. Use the `-b` flag to make a complete build:
 ```
 ./setup.sh -b
@@ -105,7 +105,7 @@ Once the process is finished, you should be able to see:
 2. a `/bin` directory with all the binaries (main function and tests) generated.
 
 ### 3. Testing the Software
-After building everything, you may want to run some tests to make sure that everything works as expected. You have two options:
+We use [GitHub Actions](https://github.com/romancardenas/Group_E_Simulation_Lifecycle/actions), a tool for Continuous Integration (CI), to ensure that the `devel` and `main` branches pass all the tests. You can check there whether the code is stable or not. However, after building everything on your machine, you may want to run some tests to make sure that everything works as expected. You have two options:
 1. Use `make` to run the tests:
 ```
 cd build
@@ -125,7 +125,7 @@ To run the application, type the following commands
 
 ```
 cd bin
-sim_lifecycle RELATIVE_PATH_TO_WORKFLOW_JSON_FILE
+./sim_lifecycle RELATIVE_PATH_TO_WORKFLOW_JSON_FILE
 ```
 
 Where `RELATIVE_PATH_TO_WORKFLOW_JSON_FILE` corresponds to the relative path from the `bin/` folder to the JSON file containing all the simulation workflow fields.
@@ -136,11 +136,19 @@ We provide a set of valid workflow JSON files in the `data/` folder. For example
 
 ```
 cd bin
-sim_lifecycle ../data/toy_workflow.json
+./sim_lifecycle ../data/demo_1/toy_workflow.json
 ```
 
-The simulation output of this workflow example will be stored in the `data/results/` folder.
+The simulation output of this workflow example will be stored in the `data/demo_1/output` folder.
 
+You can run more complex scenario as follows:
+
+```
+cd bin
+./sim_lifecycle ../data/demo_2/provinces_workflow.json
+```
+
+The simulation output of this workflow example will be stored in the `data/demo_2/output` folder.
 
 ## Documentation
 All documentation regarding this application can be found in the project's GitHub repository.
