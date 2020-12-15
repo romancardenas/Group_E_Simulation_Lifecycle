@@ -3,8 +3,8 @@
 ## Table of Contents
 * [Team Members](#team-members)
 * [Application Overview](#application-overview)
-* [File Organization](#file_organization)
-* [Getting Started](#getting_started)
+* [File Organization](#file-organization)
+* [Getting Started](#getting-started)
     * [1. Dependencies](#1-dependencies)
     * [2. Building the Software](#2-building-the-software)
     * [3. Testing the Software](#3-testing-the-software)
@@ -35,7 +35,7 @@ This application is meant to support its users through the entire simulation lif
 * prepare a visualization of the simulation results; and
 * visualize the simulation results in the DEVS WebViewer, also developed at the ARS Lab.
 
-A flow chart explaining the flow of the program is presented [here](https://github.com/romancardenas/Group_E_Simulation_Lifecycle/wiki/1.-Software-Dependencies).
+Detailed information about the application can be found [here](https://github.com/romancardenas/Group_E_Simulation_Lifecycle/wiki).
 
 ## File Organization
 The application file organization is as follows:
@@ -136,4 +136,4 @@ The simulation output of this workflow example will be stored in the `data/resul
 
 ## Documentation
 All documentation regarding this application can be found in the project's GitHub repository.
-Please refer to the [user documentation](https://github.com/romancardenas/Group_E_Simulation_Lifecycle/wiki/User-Documentation) and [developer documentation](https://github.com/romancardenas/Group_E_Simulation_Lifecycle/wiki/Developer-Documentation).
+Please refer to the [user documentation](https://github.com/romancardenas/Group_E_Simulation_Lifecycle/wiki/3.-User-Documentation:-How-to-Use) and [developer documentation](https://github.com/romancardenas/Group_E_Simulation_Lifecycle/wiki/4.-Developer-Documentation).
