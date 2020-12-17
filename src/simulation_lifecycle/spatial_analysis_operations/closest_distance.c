@@ -79,8 +79,25 @@ int closest_distance_execute(char * id, node_t ** data_sources, cJSON * paramete
     cJSON *result_features = cJSON_CreateArray();
     cJSON_AddItemToObject(result, "features", result_features);
 
+    // Verify that all destination features are actually 'point' type geometries. Origins will be tested in next loop
+    cJSON_ArrayForEach(destination_iterator, destination_features) {
+        // Get geometry type, check that it's a point, return error if not.
+        char * type = feature_get_geometry_type(destination_iterator);
+
+        if (strcmp(type, "Point") != 0) {
+            return CD_INVALID_GEOMETRY;
+        }
+    }
+
     // This is a double loop that evaluates each origin feature against each destination feature
     cJSON_ArrayForEach(origin_iterator, origin_features) {
+        // Get geometry type, check that it's a point, return error if not.
+        char * type = feature_get_geometry_type(origin_iterator);
+
+        if (strcmp(type, "Point") != 0) {
+            return CD_INVALID_GEOMETRY;
+        }
+
         // Declare a structure of distance_t array, each distance_t is a composition of a double distance and a
         // cJSON geospatial feature. This is done for convenience, so that we can easily sort the features based
         // on their calculated distances. Manipulating two different arrays would've been messy.
