@@ -27,7 +27,10 @@
     "operation": "closest_distance",
     "parameters": {
       "origin": "hospitals_selected",
-      "destination": "db_centroids"
+      "destination": "db_centroids",
+      "number_of_neighbors": 2,
+      "origin_id": "id",
+      "destination_id": "dbuid"
     }
   }
   ],

@@ -178,7 +178,7 @@ int convert_json_file(char *path_results, char *json_filename, cJSON *visualizat
     cJSON *cells_object = NULL;
     cells_object = cJSON_GetObjectItem(input_json, RESULT_OBJECT);
     int size_cell_object = cJSON_GetArraySize(cells_object);
-    char cell[size_cell_object][LINE_MAX];
+    char cell[size_cell_object][300];
 
     int i = 0;
     if (cells_object){
