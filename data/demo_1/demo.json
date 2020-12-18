@@ -78,7 +78,7 @@
                 "id": "DA",
                 "type": "polygon",
 				"file": "../data/demo_1/input/DA_Ottawa.geojson",
-                "label": "Ottawa DA SIRD",
+                "label": "Ottawa DA SIR",
                 "style": "default",
                 "model": "pandemic",
                 "join": "dauid"
