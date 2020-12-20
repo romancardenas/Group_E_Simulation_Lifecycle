@@ -25,9 +25,8 @@
     "id": "hospital_db_distance",
     "operation": "closest_distance",
     "parameters": {
-      "origin": "hospitals_selected",
-      "destination": "db_centroids",
-      "number_of_neighbors": null,
+      "origin": "hospitals",
+      "destination": "db_ottawa",
       "origin_id": "id",
       "destination_id": "dbuid"
     }

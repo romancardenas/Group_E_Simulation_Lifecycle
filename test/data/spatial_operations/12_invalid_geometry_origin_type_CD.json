@@ -1,10 +1,10 @@
 {
   "data_sources": [{
     "id": "hospitals",
-    "path": "../data/Hospitals.geojson"
+    "path": "../test/data/DB_Ottawa_Simple.geojson"
   }, {
     "id": "db_ottawa",
-    "path": "../data/DA_Ottawa.geojson"
+    "path": "../test/data/Hospitals.geojson"
   }
   ],
   "spatial_analysis": [{
@@ -25,8 +25,8 @@
     "id": "hospital_db_distance",
     "operation": "closest_distance",
     "parameters": {
-      "origin": "hospitals",
-      "destination": null,
+      "origin": "db_ottawa",
+      "destination": "hospitals",
       "number_of_neighbors": 2,
       "origin_id": "id",
       "destination_id": "dbuid"
