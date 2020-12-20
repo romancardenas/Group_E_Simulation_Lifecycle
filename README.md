@@ -136,7 +136,7 @@ We provide a set of valid workflow JSON files in the `data/` folder. For example
 
 ```
 cd bin
-./sim_lifecycle ../data/demo_1/toy_workflow.json
+./sim_lifecycle ../data/demo_1/demo.json
 ```
 
 The simulation output of this workflow example will be stored in the `data/demo_1/output` folder.
