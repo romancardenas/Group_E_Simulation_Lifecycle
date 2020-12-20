@@ -8,8 +8,9 @@ node_t * create_node(void *p_data, size_t data_size, node_t *p_prev, node_t *p_n
     node->next = p_next;
     /* Copy data to newly allocated memory. */
     int i;
-    for (i = 0; i < data_size; i++)
-        *(char *)(node->data + i) = *(char *)(p_data + i); /* Assumption: char takes 1 byte. */
+    for (i = 0; i < data_size; i++) {
+        *(char *) (node->data + i) = *(char *) (p_data + i); /* Assumption: char takes 1 byte. */
+    }
     /* Resolve next and prev pointers of list elements */
     if (p_prev != NULL) {
         p_prev->next = node;

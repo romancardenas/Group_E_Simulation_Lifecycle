@@ -1,8 +1,35 @@
-
-#include "cJSON.h"
-#include "stdlib.h"
-#include "string.h"
+#include <cJSON.h>
+#include <stdlib.h>
+#include <string.h>
 #include "simulation_lifecycle/structures.h"
+
+cJSON * feature_create(cJSON * properties, cJSON * geometry) {
+    cJSON * feature = cJSON_CreateObject();
+
+    cJSON_AddStringToObject(feature, "type", "Feature");
+    cJSON_AddItemReferenceToObject(feature, "properties", properties);
+    cJSON_AddItemReferenceToObject(feature, "geometry", geometry);
+
+    return feature;
+}
+
+cJSON * feature_create_geometry(char * type, cJSON * coordinates) {
+    cJSON * geometry = cJSON_CreateObject();
+
+    cJSON_AddStringToObject(geometry, "type",  type);
+    cJSON_AddItemReferenceToObject(geometry, "coordinates", coordinates);
+
+    return geometry;
+}
+
+cJSON * feature_create_point_geometry(double lat, double lon) {
+    cJSON * point = cJSON_CreateArray();
+
+    cJSON_AddItemToArray(point, cJSON_CreateNumber(lon));
+    cJSON_AddItemToArray(point, cJSON_CreateNumber(lat));
+
+    return feature_create_geometry("Point", point);
+}
 
 cJSON * geojson_get_features(cJSON * geo_json) {
     return  cJSON_GetObjectItem(geo_json, "features");
@@ -45,7 +72,7 @@ double * feature_get_double_property(cJSON * feature_json, char * property) {
 }
 
 cJSON * feature_get_geometry(cJSON * feature_json) {
-    // Whenever you retrieve an array, you have to access child to be able to loop through it with ->next
+    /* Whenever you retrieve an array, you have to access child to be able to loop through it with ->next */
     return cJSON_GetObjectItem(feature_json, "geometry");
 }
 
@@ -136,7 +163,9 @@ node_t * json_ring_to_points(cJSON * json) {
         point_t * point = json_to_point(current);
 
         // TODO: Should free complete list, but app exits anyway, is it necessary?
-        if (point == NULL) return NULL;
+        if (point == NULL) {
+            return NULL;
+        }
 
         push_node(&ring, point, sizeof(point_t));
     }

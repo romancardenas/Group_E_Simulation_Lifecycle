@@ -1,30 +1,34 @@
-
-#include "cJSON.h"
-#include "string.h"
-#include "stdio.h"
-#include "stdlib.h"
+#include <cJSON.h>
+#include <string.h>
+#include <limits.h>
+#include <sys/stat.h>
 #include "simulation_lifecycle/utils/file.h"
 #include "simulation_lifecycle/error.h"
 
-char * get_string(cJSON * json, char * field) {
-    cJSON * item = cJSON_GetObjectItem(json, field);
+#define CONVERT_PATH "conversion/"
+#define STRUCTURE_PATH "structure.json"
+#define MESSAGES_PATH "messages.log"
+#define OUTPUT_PATH "visualization/"
 
-    return (item == NULL) ? NULL : cJSON_GetStringValue(item);
+char * get_string(cJSON * json, char * field) {
+    return cJSON_GetStringValue(cJSON_GetObjectItem(json, field));  // TODO this function is repeated in workflow
 }
 
 int validate_string(cJSON * data, char * field, int optional, int error) {
     cJSON * section = cJSON_GetObjectItem(data, field);
 
-    if (optional == 1 && section == NULL) return SUCCESS;
-
+    if (optional == 1 && section == NULL) {
+        return SUCCESS;
+    }
     return cJSON_IsString(section) ? SUCCESS : error;
 }
 
 int validate_int(cJSON * data, char * field, int optional, int error) {
     cJSON * section = cJSON_GetObjectItem(data, field);
 
-    if (optional == 1 && section == NULL) return SUCCESS;
-
+    if (optional == 1 && section == NULL) {
+        return SUCCESS;
+    }
     return cJSON_IsNumber(section) ? SUCCESS : error;
 }
 
@@ -45,7 +49,9 @@ int validate_array(cJSON * data, char * field, int (* validate)(cJSON * item), i
     cJSON * items = cJSON_GetObjectItem(data, field);
     cJSON * item = NULL;
 
-    if (!cJSON_IsArray(items)) return error;
+    if (!cJSON_IsArray(items)) {
+        return error;
+    }
 
     cJSON_ArrayForEach(item, items) {
         if ((res = validate(item)) != SUCCESS) {
@@ -59,14 +65,14 @@ int validate_array(cJSON * data, char * field, int (* validate)(cJSON * item), i
 int validate_view(cJSON * viz) {
     cJSON * view = cJSON_GetObjectItem(viz, "view");
 
-    if (cJSON_HasObjectItem(view, "center") == 0) {
+    // TODO: Should check that center is an array of numbers too
+    if (!cJSON_HasObjectItem(view, "center")) {
         return VIZ_LAYER_VIEW_BAD_CENTER;
     }
 
-    if (cJSON_HasObjectItem(view, "zoom") == 0) {
+    if (!cJSON_HasObjectItem(view, "zoom")) {
         return VIZ_LAYER_VIEW_BAD_ZOOM;
     }
-
     return SUCCESS;
 }
 
@@ -91,10 +97,6 @@ int validate_layer(cJSON * layer) {
 
     if (res == SUCCESS) {
         res = validate_mandatory_string(layer, "label", VIZ_LAYER_BAD_LABEL);
-    }
-
-    if (res == SUCCESS) {
-        res = validate_mandatory_string(layer, "file", VIZ_LAYER_MISSING_STYLE);
     }
 
     // TODO : This should validate against the styles array
@@ -144,11 +146,7 @@ int validate_simulation(cJSON * data) {
 }
 
 int validate_visualization(cJSON * data) {
-    int res = validate_mandatory_string(data, "output", VIZ_NO_OUTPUT_PATH);
-
-    if (res == SUCCESS) {
-        res = validate_mandatory_string(data, "basemap", VIZ_BAD_BASEMAP);
-    }
+    int res = validate_mandatory_string(data, "basemap", VIZ_BAD_BASEMAP);
 
     if (res == SUCCESS) {
         res = validate_view(data);
@@ -165,56 +163,68 @@ int validate_visualization(cJSON * data) {
     return res;
 }
 
-char * join_strings(char * a, char * b) {
-    char * out = malloc(strlen(a) + strlen(b) + 1);
+int copy(char * output_folder, char * input_file, char * output_file) {
+    /* Copy structure.json and messages.log from conversion folder */
+    char source[PATH_MAX] = "";
+    char target[PATH_MAX] = "";
 
-    strcpy(out, a);
-    strcat(out, b);
+    join_paths(source, output_folder, input_file);
+    join_paths(target, output_folder, output_file);
 
-    return out;
+    return copy_file(source, target);
 }
 
-int package_visualization(cJSON * data) {
-    char * o_dir = get_string(data, "output");
+int package_visualization(cJSON * data, char * output_folder) {
+    char full_path[PATH_MAX] = "";
+    join_paths(full_path, output_folder, OUTPUT_PATH);
+    mkdir(full_path, 0777);
 
-    cJSON * layers = cJSON_GetObjectItem(data, "layers");
+    cJSON * copy_data = cJSON_Parse(cJSON_Print(data));
+
+    cJSON * layers = cJSON_GetObjectItem(copy_data, "layers");
     cJSON * layer = NULL;
 
     int res = SUCCESS;
 
-    // Replace path to geojson by filename
+    /* Replace path to geojson by filename */
     cJSON_ArrayForEach(layer, layers) {
         cJSON * file = cJSON_GetObjectItem(layer, "file");
 
-        // Get filename without folder path
+        /* Get filename without folder path */
         char * s_path = cJSON_GetStringValue(file);
         char * s_file = strrchr(s_path, '/');
 
         s_file = (!s_file) ? strdup(s_file) : strdup(s_file + 1);
 
-        // Read geojson content so that it can be copied
-        cJSON * geojson = NULL;
+        /* Copy geojson file to visualization folder */
+        char target[PATH_MAX] = "";
+        join_paths(target, full_path, s_file);
 
-        if ((res = read_json_file(s_path, &geojson) != SUCCESS)) {
+        if ((res = copy_file(s_path, target)) != SUCCESS) {
             return res;
-        };
+        }
 
-        // Copy geojson file from input folder to output folder
-        char * output_file = join_strings(o_dir, s_file);
-        write_data_to_file(output_file, cJSON_Print(geojson));
-        free(output_file);
-
-        // Remove folder from file path so users can load from client-side
+        /* Remove folder from file path so users can load from client-side */
         cJSON_SetValuestring(file, s_file);
     }
 
-    // Copy copy visualization.json to output folder
-    char * output_file = join_strings(o_dir, "visualization.json");
-    write_data_to_file(output_file, cJSON_Print(data));
-    free(output_file);
+    /* Copy structure.json and messages.log from conversion folder */
+    if ((res = copy(output_folder, CONVERT_PATH STRUCTURE_PATH, OUTPUT_PATH STRUCTURE_PATH)) != SUCCESS) {
+        return res;
+    }
 
-    // Remove output field, shouldn't be in visualization.json
-    cJSON_DeleteItemFromObject(data, "output");
+    if ((res = copy(output_folder, CONVERT_PATH MESSAGES_PATH, OUTPUT_PATH MESSAGES_PATH)) != SUCCESS) {
+        return res;
+    }
 
-    return SUCCESS;
+    /* Copy visualization.json to output folder */
+    join_paths(full_path, output_folder, "visualization/visualization.json");
+
+    cJSON_DeleteItemFromObject(copy_data, "output");
+
+    char * content = cJSON_Print(copy_data);
+
+    cJSON_Delete(copy_data);
+
+    return write_data_to_file(full_path, content);
 }

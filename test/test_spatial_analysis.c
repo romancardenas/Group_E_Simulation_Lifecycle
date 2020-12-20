@@ -1,6 +1,5 @@
 #include <unity.h>
-
-#include "cJSON.h"
+#include <cJSON.h>
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/utils/linked_list.h"
 #include "simulation_lifecycle/utils/workflow.h"
@@ -16,20 +15,12 @@ void tearDown(void) {
     // clean stuff up here
 }
 
-int validate_success(cJSON * parameters) {
+int execute_success(char * id, node_t * data_sources, cJSON * parameters, node_t ** results) {
     return SUCCESS;
 }
 
-int execute_success(node_t * data_sources, cJSON * parameters, node_t ** results) {
-    return SUCCESS;
-}
-
-int validate_fail(cJSON * parameters) {
-    return 1;
-}
-
-int execute_fail(node_t * data_sources, cJSON * parameters, node_t ** results) {
-    return 1;
+int execute_fail(char * id, node_t * data_sources, cJSON * parameters, node_t ** results) {
+    return -99;
 }
 
 void test_register_operations(void) {
@@ -43,65 +34,58 @@ void test_register_operations(void) {
 void test_register_operation(void) {
     int n = list_length(&registered_operations);
 
-    register_operation("success", validate_success, execute_success);
-    register_operation("validate_fail", validate_fail, execute_success);
-    register_operation("execute_fail", validate_success, execute_fail);
+    register_operation("success", execute_success);
+    register_operation("execute_fail", execute_fail);
 
     // Nothing much to test, these functions aren't meant to be called using user provided info so
     // they don't have to return error codes. It's up to to the programmer to make sure it works.
     // We can still test that there are more operations registered though.
 
-    TEST_ASSERT(list_length(&registered_operations) == n + 3);
+    TEST_ASSERT_EQUAL(n + 2, list_length(&registered_operations));
 }
 
 void test_get_operation(void) {
     operation_t * op_1 = get_operation("success");
-    operation_t * op_2 = get_operation("validate_fail");
-    operation_t * op_3 = get_operation("non-existent");
+    operation_t * op_2 = get_operation("non-existent");
 
-    TEST_ASSERT(op_1 != NULL);
-    TEST_ASSERT(op_2 != NULL);
-    TEST_ASSERT(op_3 == NULL);
+    TEST_ASSERT_NOT_NULL(op_1);
+    TEST_ASSERT_NULL(op_2);
 }
 
 void test_read_data_in(void) {
-    cJSON * wf = NULL;
-
     // Test that read_data_in receives proper errors from  read_json function used internally
+    cJSON * wf = NULL;
+    read_json_file("../test/data/workflow/12_bad_path.json", &wf);
+
     node_t * data_sources = NULL;
-    read_json_file("..\\test\\data\\workflow\\12_bad_path.json", &wf);
     int res = read_data_in(wf, &data_sources);
-    TEST_ASSERT_TRUE(res == FILE_DOES_NOT_EXIST);
+    TEST_ASSERT_EQUAL(FILE_DOES_NOT_EXIST, res);
 
-    data_sources = NULL;
-    read_json_file("..\\test\\data\\workflow\\13_missing_data_id.json", &wf);
+    remove_list(&data_sources);
+    read_json_file("../test/data/workflow/13_missing_data_id.json", &wf);
     res = read_data_in(wf, &data_sources);
-    TEST_ASSERT_TRUE(res == DATA_SOURCE_ID_NULL);
+    TEST_ASSERT_EQUAL(DATA_SOURCE_ID_NULL, res);
 
-    data_sources = NULL;
-    read_json_file("..\\test\\data\\workflow\\14_missing_data_path.json", &wf);
+    remove_list(&data_sources);
+    read_json_file("../test/data/workflow/14_missing_data_path.json", &wf);
     res = read_data_in(wf, &data_sources);
-    TEST_ASSERT_TRUE(res == DATA_SOURCE_PATH_NULL);
+    TEST_ASSERT_EQUAL(DATA_SOURCE_PATH_NULL, res);
 
-    data_sources = NULL;
-    read_json_file("..\\test\\data\\workflow\\1_valid_workflow.json", &wf);
+    remove_list(&data_sources);
+    read_json_file("../test/data/workflow/1_valid_workflow.json", &wf);
     res = read_data_in(wf, &data_sources);
-    TEST_ASSERT_TRUE(res == SUCCESS);
+    TEST_ASSERT_EQUAL(SUCCESS, res);
 }
 
 void test_execute_workflow(void) {
     cJSON * wf = NULL;
+    read_json_file("../test/data/workflow/1_valid_workflow.json", &wf);
 
-    // Test that execute_workflow receives proper errors from read_Data_in function used internally
-    node_t * results = NULL;
-    read_json_file("..\\test\\data\\workflow\\14_missing_data_path.json", &wf);
-    int res = execute_workflow(wf, &results);
-    TEST_ASSERT_TRUE(res != SUCCESS);
+    node_t * data_sources = NULL;
+    read_data_in(wf, &data_sources);
 
-    results = NULL;
-    read_json_file("..\\test\\data\\workflow\\1_valid_workflow.json", &wf);
-    res = execute_workflow(wf, &results);
-    TEST_ASSERT_TRUE(res == SUCCESS);
+    int res = execute_workflow(wf, &data_sources);
+    TEST_ASSERT_EQUAL(SUCCESS, res);
 
     // Get an operation from the json just so I can modify fields to generate errors.
     cJSON * operation = read_spatial_analysis(wf)->child->next;
@@ -110,37 +94,33 @@ void test_execute_workflow(void) {
     cJSON * params = cJSON_GetObjectItem(operation, "parameters");
     int type = cJSON_GetObjectItem(operation, "parameters")->type;
 
-    results = NULL;
+    remove_list(&data_sources);
+    read_data_in(wf, &data_sources);
     cJSON_GetObjectItem(operation, "operation")->valuestring = NULL;
-    res = execute_workflow(wf, &results);
-    TEST_ASSERT_TRUE(res == OPERATION_NAME_NULL);
+    res = execute_workflow(wf, &data_sources);
+    TEST_ASSERT_EQUAL(OPERATION_NAME_NULL, res);
     cJSON_GetObjectItem(operation, "operation")->valuestring = name;
 
-    results = NULL;
+    remove_list(&data_sources);
+    read_data_in(wf, &data_sources);
     cJSON_GetObjectItem(operation, "parameters")->child = NULL;
     cJSON_GetObjectItem(operation, "parameters")->type = 4;
-    res = execute_workflow(wf, &results);
-    TEST_ASSERT_TRUE(res == OPERATION_NO_PARAMETERS);
+    res = execute_workflow(wf, &data_sources);
+    TEST_ASSERT_EQUAL(OPERATION_NO_PARAMETERS, res);
     cJSON_GetObjectItem(operation, "parameters")->child = params;
     cJSON_GetObjectItem(operation, "parameters")->type = type;
 
-    results = NULL;
+    remove_list(&data_sources);
+    read_data_in(wf, &data_sources);
     cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), "non-existent");
-    res = execute_workflow(wf, &results);
-    TEST_ASSERT_TRUE(res == OPERATION_UNREGISTERED);
-    cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), name);
+    res = execute_workflow(wf, &data_sources);
+    TEST_ASSERT_EQUAL(OPERATION_UNREGISTERED, res);
 
-    results = NULL;
-    cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), "validate_fail");
-    res = execute_workflow(wf, &results);
-    TEST_ASSERT_TRUE(res != SUCCESS);
-    cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), name);
-
-    results = NULL;
+    remove_list(&data_sources);
+    read_data_in(wf, &data_sources);
     cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), "execute_fail");
-    res = execute_workflow(wf, &results);
-    TEST_ASSERT_TRUE(res != SUCCESS);
-    cJSON_SetValuestring(cJSON_GetObjectItem(operation, "operation"), name);
+    res = execute_workflow(wf, &data_sources);
+    TEST_ASSERT_EQUAL(-99, res);
 }
 
 int main(void) {

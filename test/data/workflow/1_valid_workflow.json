@@ -1,118 +1,108 @@
 {
-    "data_sources": [{
-            "id": "hospitals",
-            "path": "../data/DA_Ottawa.geojson"
-          }, {
-            "id": "db_ottawa",
-            "path": "../data/Hospitals.geojson"
-          }
-    ],
-    "spatial_analysis": [{
-            "id": "db_centroids",
-            "operation": "centroids",
-            "parameters": {
-                "data": {
-                    "type": "data",
-                    "source": "db_ottawa"
-                }
-            }
-        }, {
-            "id": "hospitals_selected",
-            "operation": "select_by_attributes",
-            "parameters": {
-                "data": {
-                    "type": "data",
-                    "source": "hospitals"
-                },
-                "field": "odhf_facility_type",
-                "value": "Hospitals"
-            }
-        }, {
-            "id": "hospital_db_distance",
-            "operation": "closest_distance",
-            "parameters": {
-                "origin": {
-                    "type": "data",
-                    "source": "hospitals"
-                },
-                "destination": {
-                    "type": "result",
-                    "source": "db_centroids"
-                }
-            }
-        }
-    ],
-    "visualization": {
-      "field":   "[\"field_1\",\"field_2\",\"field_3\",\"field_4\"]",
-      "basemap": "openstreetmap",
-        "layers": [{
-                "id": "db_ottawa",
-                "label": "Ottawa dissemination blocks (DB)"
-            }, {
-                "id": "hospitals",
-                "label": "Ottawa hospitals"
-            }
-        ],
-        "styles": [{
-                "layer": "db_ottawa",
-                "property": "emergency_state",
-                "symbol": [{
-                    "type": "unique_value",
-                    "attribute": "fill",
-                    "default": [0, 0, 140, 0],
-                    "classes": {
-                        "value": "emergency",
-                        "color": [255, 0, 0, 0]
-                    }
-                }]
-            }, {
-                "layer": "hospitals",
-                "property": "number_of_emergencies",
-                "symbol": {
-                    "type": "equivalent",
-                    "attribute": "radius",
-					"minimum" : 5,
-					"maximum" : 20,
-                    "classes": 4
-                }
-            }
-        ]
-    },
-    "simulation": {
-      "model_id": "2_2_agent_sir_config",
-      "default_config": {
-        "cell_type": "sir",
-        "delay": "hybrid",
-        "state": {
-          "population": 100,
-          "susceptible": 1,
-          "infected": 0,
-          "recovered": 0
-        },
-        "config": {
-          "virulence": 0,
-          "recovery": 1
-        }
-      },
-      "cells": [
-        {
-          "source": "data",
-          "cell_id": "dbuid",
-          "state": {
-            "population": "id"
-          }
-        }
-      ],
-      "vicinities": {
-        "from": "from",
-        "to": "to",
-        "source": "vicinities",
-        "vicinity": {
-          "connectivity": "conn",
-          "mobility": "mob"
-        }
-      },
-      "config_output_path": "../test/data/simulation/output_config.json",
-      "result_output_path": "../test/data/run_simulation/simulation_output_messages.txt"
+  "output" : "..somewhere/out/there",
+  "data_sources": [{
+    "id": "hospitals",
+    "path": "../test/data/Hospitals.geojson"
+  }, {
+    "id": "db_ottawa",
+    "path": "../test/data/DB_Ottawa_Simple.geojson"
+  }
+  ],
+  "spatial_analysis": [{
+    "id": "hospitals_selected",
+    "operation": "select_by_attributes",
+    "parameters": {
+      "data": "hospitals",
+      "field": "odhf_facil",
+      "value": "Hospitals"
     }
+  }, {
+    "id": "db_centroids",
+    "operation": "centroids",
+    "parameters": {
+      "data": "db_ottawa"
+    }
+  }, {
+    "id": "hospital_db_distance",
+    "operation": "closest_distance",
+    "parameters": {
+      "origin": "hospitals_selected",
+      "destination": "db_centroids",
+      "number_of_neighbors": 2,
+      "origin_id": "id",
+      "destination_id": "dbuid"
+    }
+  }
+  ],
+  "visualization": {
+    "field": "[\"field_1\",\"field_2\",\"field_3\",\"field_4\"]",
+    "basemap": "openstreetmap",
+    "layers": [{
+      "id": "db_ottawa",
+      "label": "Ottawa dissemination blocks (DB)"
+    }, {
+      "id": "hospitals",
+      "label": "Ottawa hospitals"
+    }
+    ],
+    "styles": [{
+      "layer": "db_ottawa",
+      "property": "emergency_state",
+      "symbol": [{
+        "type": "unique_value",
+        "attribute": "fill",
+        "default": [0, 0, 140, 0],
+        "classes": {
+          "value": "emergency",
+          "color": [255, 0, 0, 0]
+        }
+      }
+      ]
+    }, {
+      "layer": "hospitals",
+      "property": "number_of_emergencies",
+      "symbol": {
+        "type": "equivalent",
+        "attribute": "radius",
+        "minimum": 5,
+        "maximum": 20,
+        "classes": 4
+      }
+    }
+    ]
+  },
+  "simulation": {
+    "model_id": "2_2_agent_sir_config",
+    "default_config": {
+      "cell_type": "sir",
+      "delay": "hybrid",
+      "state": {
+        "population": 100,
+        "susceptible": 1,
+        "infected": 0,
+        "recovered": 0
+      },
+      "config": {
+        "virulence": 0,
+        "recovery": 1
+      }
+    },
+    "cells": [{
+      "source": "data",
+      "cell_id": "dbuid",
+      "state": {
+        "population": "id"
+      }
+    }
+    ],
+    "vicinities": {
+      "from": "from",
+      "to": "to",
+      "source": "vicinities",
+      "vicinity": {
+        "connectivity": "conn",
+        "mobility": "mob"
+      }
+    }
+  }
 }

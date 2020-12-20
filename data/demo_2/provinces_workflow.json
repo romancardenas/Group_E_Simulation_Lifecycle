@@ -1,4 +1,5 @@
 {
+	"output" : "../data/demo_2/output",
     "data_sources": [{
             "id": "provinces",
             "path": "../data/demo_2/input/provinces.geojson"
@@ -6,6 +7,29 @@
             "id": "provinces_vicinities",
             "path": "../data/demo_2/input/provinces_vicinity.geojson"
         }
+    ],
+    "spatial_analysis": [{
+        "id": "db_centroids",
+        "operation": "centroids",
+        "parameters": {
+            "data": "provinces"
+        }
+    }, {
+        "id": "db_distance",
+        "operation": "closest_distance",
+        "parameters": {
+            "origin": "db_centroids",
+            "destination": "db_centroids"
+        }
+    },{
+        "id": "hospitals_selected",
+        "operation": "select_by_attributes",
+        "parameters": {
+            "data": "hospitals",
+            "field": "odhf_facil",
+            "value": "Hospitals"
+        }
+    }
     ],
     "simulation": {
         "model_id": "2_2_agent_sir_config",
@@ -39,22 +63,17 @@
                 "connectivity": "conn",
                 "mobility": "mob"
             }
-        },
-        "config_output_path": "../data/demo_2/scratch/build_simulation_output.json",
-        "result_output_path": "../data/demo_2/scratch/run_simulation_output.txt"
+        }
     },
     "conversion": {
-        "fields": "[\"field_1\",\"field_2\",\"field_3\",\"field_4\"]",
-        "input": "../data/demo_2/scratch/",
-        "output": "../data/demo_2/output/"
+        "fields": "[\"population\",\"susceptible\",\"infected\",\"recovered\"]"
     },
     "visualization": {
-        "output": "../data/demo_2/output/",
         "basemap": "openstreetmap",
-        "view": {
-            "center":	[-84, 61],
-            "zoom":	4
-        },
+		"view":	{
+			"center":	[-89, 57],
+			"zoom":	5
+		},
         "layers": [{
                 "id": "provinces",
                 "type": "polygon",
@@ -66,11 +85,24 @@
             }
         ],
         "simulation": [{
-                "name": "Field 1",
+                "name": "recovered",
+                "layer": "provinces",
+                "fill": {
+                    "type": "quantile",
+                    "property": "recovered",
+                    "colors": ["rgba(118,42,131,0.85)", "rgba(153,112,171,0.85)", "rgba(194,165,207,0.85)", "rgba(231,212,232,0.85)", "rgba(247,247,247,0.85)", "rgba(217,240,211,0.85)", "rgba(166,219,160,0.85)", "rgba(90,174,97,0.85)", "rgba(27,120,55,0.85)"]
+                },
+                "stroke": {
+                    "type": "static",
+                    "width": 1,
+                    "color": "rgba(0,0,0,1)"
+                }
+            },{
+                "name": "population",
                 "layer": "provinces",
                 "fill": {
                     "type": "equivalent",
-                    "property": "field_1",
+                    "property": "population",
                     "colors": ["rgba(215,48,39,0.85)", "rgba(244,109,67,0.85)", "rgba(253,174,97,0.85)", "rgba(254,224,144,0.85)", "rgba(255,255,191,0.85)", "rgba(224,243,248,0.85)", "rgba(171,217,233,0.85)", "rgba(116,173,209,0.85)", "rgba(69,117,180,0.85)"]
                 },
                 "stroke": {
@@ -79,11 +111,11 @@
                     "color": "rgba(0,0,0,1)"
                 }
             }, {
-                "name": "Field 2",
+                "name": "susceptible",
                 "layer": "provinces",
                 "fill": {
                     "type": "quantile",
-                    "property": "field_2",
+                    "property": "susceptible",
                     "colors": ["rgba(247,252,240,0.85)", "rgba(224,243,219,0.85)", "rgba(204,235,197,0.85)", "rgba(168,221,181,0.85)", "rgba(123,204,196,0.85)", "rgba(78,179,211,0.85)", "rgba(43,140,190,0.85)", "rgba(8,104,172,0.85)", "rgba(8,64,129,0.85)"]
                 },
                 "stroke": {
@@ -92,25 +124,12 @@
                     "color": "rgba(0,0,0,1)"
                 }
             }, {
-                "name": "Field 3",
+                "name": "infected",
                 "layer": "provinces",
                 "fill": {
                     "type": "quantile",
-                    "property": "field_3",
+                    "property": "infected",
                     "colors": ["rgba(140,81,10,0.85)", "rgba(191,129,45,0.85)", "rgba(223,194,125,0.85)", "rgba(246,232,195,0.85)", "rgba(245,245,245,0.85)", "rgba(199,234,229,0.85)", "rgba(128,205,193,0.85)", "rgba(53,151,143,0.85)", "rgba(1,102,94,0.85)"]
-                },
-                "stroke": {
-                    "type": "static",
-                    "width": 1,
-                    "color": "rgba(0,0,0,1)"
-                }
-            }, {
-                "name": "Field 4",
-                "layer": "provinces",
-                "fill": {
-                    "type": "quantile",
-                    "property": "field_4",
-                    "colors": ["rgba(118,42,131,0.85)", "rgba(153,112,171,0.85)", "rgba(194,165,207,0.85)", "rgba(231,212,232,0.85)", "rgba(247,247,247,0.85)", "rgba(217,240,211,0.85)", "rgba(166,219,160,0.85)", "rgba(90,174,97,0.85)", "rgba(27,120,55,0.85)"]
                 },
                 "stroke": {
                     "type": "static",

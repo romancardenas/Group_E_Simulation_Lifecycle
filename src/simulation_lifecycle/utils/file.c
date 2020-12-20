@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include <stdarg.h>
 #include <stdlib.h>
-#include "cJSON.h"
+#include <cJSON.h>
+#include <string.h>
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/utils/file.h"
 
@@ -22,25 +22,6 @@ int write_data_to_file(char * file_path, char *data) {
             res = UNABLE_CLOSE_FILE;
         }
     }
-    return res;
-}
-
-int copy_json_values(cJSON_bool (*value_type_checker)(const cJSON *), const cJSON *from, cJSON *to, ...) {
-    char *var = NULL;
-    int res = SUCCESS;
-
-    va_list args;
-    va_start(args, to);
-    while((var = va_arg(args, char *)) != NULL) {
-        cJSON *val = cJSON_GetObjectItemCaseSensitive(from, var);
-        if (val == NULL || !value_type_checker(val)) {
-            res = JSON_VALUE_INVALID;
-            break;
-        }
-        cJSON_AddItemToObject(to, var, cJSON_Parse(cJSON_Print(val)));
-    }
-
-    va_end(args);
     return res;
 }
 
@@ -76,7 +57,9 @@ int read_json_file(char * path_to_file, cJSON ** pp_data) {
 
     int res = read_file(path_to_file, &content);
 
-    if (res != SUCCESS) return res;
+    if (res != SUCCESS) {
+        return res;
+    }
 
     *pp_data = cJSON_Parse(content);
 
@@ -85,4 +68,40 @@ int read_json_file(char * path_to_file, cJSON ** pp_data) {
     }
 
     return res;
+}
+
+void join_paths(char * out, char * a, char * b) {
+    size_t n = strlen(a);
+    char last = a[n-1];
+
+    if (last == '/' || last == '\\') {
+        a[n-1] = '\0';
+    }
+
+    snprintf(out, strlen(a) + strlen(b) + 2, "%s/%s", a, b);
+}
+
+int copy_file(char * source, char * target) {
+    int ch;
+
+    FILE * f_source = fopen(source, "r");
+
+    if (f_source == NULL) {
+        return UNABLE_OPEN_FILE;
+    }
+
+    FILE * f_target = fopen(target, "w");
+
+    if (f_target == NULL) {
+        return UNABLE_OPEN_FILE;
+    }
+
+    while ((ch = fgetc(f_source)) != EOF) {
+        fputc(ch, f_target);
+    }
+
+    fclose(f_source);
+    fclose(f_target);
+
+    return SUCCESS;
 }

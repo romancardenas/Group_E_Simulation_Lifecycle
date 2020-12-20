@@ -1,0 +1,10 @@
+third_party/
+.DS_Store
+action.yml
+README.md
+LICENSE
+build/
+bin/
+.github/
+logs/
+data/

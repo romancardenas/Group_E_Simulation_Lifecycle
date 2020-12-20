@@ -1,6 +1,5 @@
 #include <string.h>
-#include <stdio.h>
-#include "cJSON.h"
+#include <cJSON.h>
 #include "simulation_lifecycle/error.h"
 #include "simulation_lifecycle/utils/file.h"
 #include "simulation_lifecycle/utils/workflow.h"
@@ -13,6 +12,10 @@ cJSON * read_workflow_file(char *path_to_file) {
 }
 
 // TODO ROMAN: I think we must add a header file with macros corresponding to JSON labels (I don't like magic values)
+
+char * read_output_folder(const cJSON *const workflow) {
+    return cJSON_GetStringValue(cJSON_GetObjectItem(workflow, "output"));
+}
 
 cJSON * read_data_sources(const cJSON *const workflow) {
     return  cJSON_GetObjectItem(workflow, "data_sources");
@@ -35,17 +38,22 @@ cJSON * read_visualization(const cJSON *const workflow){
 }
 
 int validate_workflow(const cJSON *const workflow){
-    //Check workflow
+    /* Check workflow */
     if (NULL == workflow) {
-        // TODO: In the code guidelines from cuLearn, it says : Constants on RHS in equality/inequality check. Example: value == 1
-        // when comparing variables with literals, follow the notation literal == variable
         return WORKFLOW_DOES_NOT_EXIST;
     }
 
     if (NULL == workflow->child) {
         return WORKFLOW_CONTAINS_EMPTY_JSON_OBJ;
     }
-    //Check data_sources
+
+    /* Check output folder */
+    char * output = read_output_folder(workflow);
+    if (NULL == output) {
+        return NULL_OUTPUT_FOLDER;
+    }
+
+    /* Check data_sources */
     cJSON * data_sources = read_data_sources(workflow);
     if (NULL == data_sources) {
         return NULL_DATA_SOURCES;
@@ -73,7 +81,7 @@ int validate_workflow(const cJSON *const workflow){
             }
         }
 
-        // Check if both id and path were accounted for
+        /* Check if both id and path were accounted for */
         if (id < 1) {
             return DATA_SOURCE_ID_MISSING;
         } else if (id > 1) {
@@ -86,44 +94,23 @@ int validate_workflow(const cJSON *const workflow){
         }
     }
 
-    // TODO careful, we may not want to simulate stuff, for instance.
-    // TODO: I don't think any of the 3 following checks should be there since a workflow cna stop before any of them.
-    //Check spatial analysis
-    /*
-    cJSON * spatial_analysis = read_spatial_analysis(workflow);
-    if (spatial_analysis == NULL) {
-        fprintf(stderr, "No spatial analysis section. As it is not implemented, we skip this issue.\n");
-        // return NULL_SPATIAL_ANALYSIS; TODO enable when ready
-    }
-
-    //Check visualization
-    cJSON * visualization = read_visualization(workflow);
-    if (visualization == NULL) {
-        fprintf(stderr, "No visualization section. As it is not implemented, we skip this issue.\n");
-        // return NULL_VISUALIZATION; TODO enable when ready
-    }
-
-    //Check simulation
-    cJSON * simulation = read_simulation(workflow);
-    if (simulation == NULL) {
-        return NULL_SIMULATION;
-    }
-    */
     return SUCCESS;
 }
 
+int data_sources_required(const cJSON *const workflow) {
+    return build_sim_scenario_required(workflow) || create_viz_required(workflow) || spatial_analysis_required(workflow);
+}
+
 int spatial_analysis_required(const cJSON *const workflow) {
-    return 0; // TODO
+    return NULL != read_spatial_analysis(workflow);
 }
 
 int build_sim_scenario_required(const cJSON *const workflow ) {
-    cJSON *sim_config = read_simulation(workflow);
-    return NULL != cJSON_GetObjectItemCaseSensitive(sim_config, "config_output_path");
+    return NULL != read_simulation(workflow);
 }
 
 int run_sim_required(const cJSON *const workflow) {
-    cJSON *sim_config = read_simulation(workflow);
-    return NULL != cJSON_GetObjectItemCaseSensitive(sim_config, "result_output_path");
+    return NULL != read_simulation(workflow);
 }
 
 int conversion_required(const cJSON *const workflow) {

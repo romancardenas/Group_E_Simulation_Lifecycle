@@ -1,63 +1,155 @@
-# Group E: A solution for simulation lifecycle management
+# Group E - A solution for simulation lifecycle management
 
- - Françoise Blanc
- - Román Cárdenas Rodríguez
- - Ghida Dandan
- - Aidan Fahlman
- - Bruno St-Aubin
+## Table of Contents
+* [Team Members](#team-members)
+* [Application Overview](#application-overview)
+* [File Organization](#file-organization)
+* [Getting Started](#getting-started)
+    * [1. Dependencies](#1-dependencies)
+    * [2. Building the Software](#2-building-the-software)
+    * [3. Testing the Software](#3-testing-the-software)
+    * [4. Running the Main Application](#4-running-the-main-application)
+* [Documentation](#documentation)
 
-## Problem Statement
+## Team Members
+**Organization:** Carleton University
 
-In many application domains, modelling and simulation (M&S) has shown to be useful for studying real-world systems and supporting decision-making through models that abstract the systems under study. M&S requires fewer resources and involves less risk than studying the system itself. It is a way to evaluate new or upgraded systems without compromising limited resources, interrupting operations, and compromising safety. However, building accurate models that adequately represent real-world systems is a difficult and time-consuming task that requires extensive domain knowledge and a deep understanding of the simulation method used. Because of the significant effort involved in understanding a specific domain and building the required models, the current trend in the field is to build single-use simulators.
+**Course:** SYSC 5709 - Software Development with C
 
-Generic simulation methods, such as the Discrete Event System Specification (DEVS), are well-positioned to break down the disciplinary silos. DEVS supports hierarchical and modular model development, it favours the reusability of models. It is based on a rigorous formalism to manage inputs and outputs of atomic models, the basic block of the specification. Atomic models can be integrated into larger, more complex coupled models. However, the DEVS specification sees only limited usage in the industry and outside the research community due to its lack of approachability. Compounding the issue is the fact that DEVS approachability rarely is the subject of research by the community. Thus, the available development environment, particularly for non-expert users, does not adequately support modelling, experiment management, or building DEVS based applications.
+**Authors:**
 
-Over the past decade of conferences on M&S, panels of eminent researchers have identified several grand challenges that should guide research by the community. Notably, two of these challenges are related to the approachability of the discipline by non-expert users:
+| Student                  | GitHub ID      |
+|--------------------------|----------------|
+| Françoise Blanc          | francoiseblanc |
+| Román Cárdenas Rodríguez | romancardenas  |
+| Ghida Dandan             | ghidadandan    |
+| Aidan Fahlman            | AidanFahlman   |
+| Bruno St-Aubin           | staubibr       |
 
-- Fujimoto identifies the need to lessen the burden on the modellers by reducing the efforts required to develop models [1]. It should be possible to compose existing models of subsystems into an accurate model of a wider system.
+## Application Overview
 
-- Taylor et al. identify the democratization of M&S as a challenge to be addressed [2]. Researchers now require adequate tools to support their work, including building online platforms, mobile applications, developing customized robot behaviours, and planning the use of space. These tools empower researchers in fields other than M&S to collaborate across multiple application domains.
+This application is meant to support its users through the entire simulation lifecycle. To achieve this, it allows users to:
+* submit a workflow file containing a series of operations to build a simulation scenario from geospatial data;
+* construct a spatial DEVS simulation model;
+* run a simulation using the Cadmium simulator developed at the Advanced Real-Time Simulation (ARS) Laboratory;
+* prepare a visualization of the simulation results; and
+* visualize the simulation results in the DEVS WebViewer, also developed at the ARS Lab.
 
-<b>[1]</b> <i>R. M. Fujimoto, "Research challenges in parallel and distributed simulation," ACM Transactions on Modeling and Computer Simulation (TOMACS), vol. 26, no. 4, p. 29, 2016.</i>
+Detailed information about the application can be found [here](https://github.com/romancardenas/Group_E_Simulation_Lifecycle/wiki).
 
-<b>[2]</b> <i>S. J. Taylor, A. Khan, L. K. Morse, A. Tolk, L. Yilmaz, J. Zander, and P. J. Mosterman, "Grand challenges for modeling and simulation: simulation everywhere — from cyberinfrastructure to clouds to citizens," Simulation: Transactions of the Society for Modeling and Simulation International, vol. 91, no. 7, pp. 648-665, 2015.</i>
+## File Organization
+The application file organization is as follows:
 
-## Software Purpose
+| Main Folder Structure | Description                                                                                                                                             |
+|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `.github/`            | Configuration files for GitHub actions on `devel` and `main` branches.                                                                                  |
+| `bin/`                | Executables for the application and the tests.                                                                                                          |
+| `build/`              | Compiler's build files.                                                                                                                                 |
+| `data/`               | Contains all required data to run the application. It includes samples of workflow files, spatial data, and any results generated during the execution. |
+| `include/`            | Application's header files.                                                                                                                             |
+| `logs/`               | Contains the results files generated by Cadmium.                                                                                                        |
+| `src/`                | Function sources.                                                                                                                                       |
+| `test/`               | Test sources and required data for testing.                                                                                                             |
+| `third_party/`        | Contains third-party libraries and software. Includes Cadmium, Cell-DEVS models,  cJSON and Unity libraries.                                            |
+| `.dockerignore`       | Specifies which files should be ignored by Docker when creating a Docker image of the application.                                                      |
+| `.gitignore`          | Specifies which files should be ignored by git.                                                                                                         |
+| `.gitmodules`         | Specifies third-party git repositories that are used by this application.                                                                               |
+| `action.yml`          | Needed by GitHub for creating a GitHub action from a docker image based on the `Dockerfile` of this repository.                                         |
+| `build.sh`            | Shell script for building the application. You must execute `setup.sh` before.                                                                          |
+| `CMakeLists.txt`      | CMake lists file. It specifies how to create the `Makefile` of the application using the `cmake` tool.                                                  |
+| `Dockerfile`          | File that describes how to create a Docker image for testing the application. This image is used by GitHub actions.                                     |
+| `LICENSE`             | License of the application.                                                                                                                             |
+| `README.md`           | Project's ReadMe file.                                                                                                                                  |
+| `run_tests.sh`        | Shell script to run all tests.                                                                                                                          |
+| `setup.sh`            | Shell script to download third-party repositories and build the software. If called with the flag `-b`, this shell script will execute `build.sh`.      |
+| `setup_docker.sh`     | Special shell script used by setting up the Docker image for testing the software. It is not meant to be used by users.                                 |
 
-In this project, we propose to implement a workflow-based approach meant to support the complete simulation lifecycle. Through this system, users will be able to submit geospatial data, convert them into spatial DEVS simulation models, and execute the simulation using the Cadmium simulator developed at the Advanced Real-Time Simulation Laboratory. Simulation results will then be optimized for web visualization in the DEVS WebViewer developed in the same laboratory.
+## Getting Started
+### 1. Dependencies
+We rely on third-party software to run our tool. The main dependencies for each platform are as follows:
 
-The purpose of this software is to address the two challenges previously identified. Automated generation of large-scale spatial simulation models from geographic information system data seeks to lessen the burden of modelling for modellers. The integration of several already existing applications (i.e. Model generator, Cadmium and DEVS WebViewer) through this software aims at democratizing the simulation lifecycle for non-expert users.
+**Windows Users** 
+* Cygwin 
+* GNU C Compiler, Git, Make, and CMake 
+* apt-cyg Package Manager 
+* Boost Library
 
-## Software Requirements
+**MacOS Users** 
+* Command Line Tools 
+* Homebrew 
+* Boost Library 
 
-1. Users must be able to provide geospatial data as a source for the model generation workflow in the following geospatial data formats: shapefile, CSV, and GeoJSON. The data files provided should also contain non-spatial attributes.
+**Linux Users**
+* GNU C Compiler, Git, Make, and CMake 
+* Boost Library 
 
-2. Users must be able to select the simulation model to be mapped onto data from a library of models.
+Detailed instructions about the installation of these dependencies are provided [here](https://github.com/romancardenas/Group_E_Simulation_Lifecycle/wiki/1.-Software-Dependencies).
 
-3. The system should be portable to any mainstream operating systems: Linux, macOS, and Windows.
+### 2. Building the Software
+Once you have installed all the dependencies, building the application should be straightforward, as we provide a set of shell scripts for automating the process.
 
-4. The system will perform spatial analysis of the geospatial data provided to establish model parameters. The system must support common spatial analysis functions to establish neighbourhood and parameters:
-	1. Topological relationships (e.g. intersection, contains, within, and touches);
-	2. Geospatial statistics;
-	3. Network distance analysis; and
-	4. Spatial buffers.
+1. Open a terminal (Windows users should use a Cygwin terminal)
+2. Download this repository in your home directory and move inside the repository:
+```
+cd
+git clone https://github.com/romancardenas/Group_E_Simulation_Lifecycle.git
+cd Group_E_Simulation_Lifecycle
+```
+3. Run the `setup.sh` shell script to download third-party repositories and build the software. Use the `-b` flag to make a complete build:
+```
+./setup.sh -b
+```
 
-5. Users must be able to provide a workflow file that contains the steps for automated model generation. The system will automatically execute the workflow to convert geospatial data into a Cadmium model configuration file. Through the workflow, the system will:
-	1. Map geospatial features onto selected parametric simulation models.
-	2. Establish neighbourhoods or couplings through spatial analysis of the geospatial data.
-	3. Output a configuration file (json) properly formatted for Cadmium.
+Once the process is finished, you should be able to see:
+1. a `/build` directory with the `Makefile` generated by CMake
+2. a `/bin` directory with all the binaries (main function and tests) generated.
 
-6. The system will execute the simulation and return the results.
+### 3. Testing the Software
+We use [GitHub Actions](https://github.com/romancardenas/Group_E_Simulation_Lifecycle/actions), a tool for Continuous Integration (CI), to ensure that the `devel` and `main` branches pass all the tests. You can check there whether the code is stable or not. However, after building everything on your machine, you may want to run some tests to make sure that everything works as expected. You have two options:
+1. Use `make` to run the tests:
+```
+cd build
+make test
+```
+2. Run the `run_tests.sh` shell script:
+```
+./run_tests.sh
+```
+If you want to store the test results in a file (e.g., the `test_results.txt` file), you can type the following command:
+```
+./run_tests.sh > test_results.txt
+```
+### 4. Running the Main Application
 
-7. The system must convert the Cadmium results into a common specification for web-based visualization through an existing conversion web service.
+To run the application, type the following commands
 
-8. The system must allow users to configure a simulation visualization (colour, classification of data, number of classes, map symbology, etc.) for the DEVS WebViewer application.
+```
+cd bin
+./sim_lifecycle RELATIVE_PATH_TO_WORKFLOW_JSON_FILE
+```
 
-## Software Releases
-The software will be released in three versions.
+Where `RELATIVE_PATH_TO_WORKFLOW_JSON_FILE` corresponds to the relative path from the `bin/` folder to the JSON file containing all the simulation workflow fields.
 
-The purpose of the first release is to provide the necessary tools enabling users to upload all the required data related to the simulation lifecycle. This first release will include requirements 1, 2, and 3.
+You **must** run the main application from the `bin/` folder. All the file paths included in your workflow JSON file must be relative to this folder. Otherwise, the application won't be able to find the desired files.
 
-The purpose of the second release is twofold: first, the software will be able to perform common spatial analysis functions; on the other hand, the software will be able to interact with the Cadmium M&S tool to perform the simulations selected by the users. This second release will include requirements 4, 5, and 6.
+We provide a set of valid workflow JSON files in the `data/` folder. For example, you can run a simple model as follows:
 
-The purpose of the third release is the integration of visualization into the simulation lifecycle. This third release will include requirements 7 and 8.
+```
+cd bin
+./sim_lifecycle ../data/demo_1/demo.json
+```
+
+The simulation output of this workflow example will be stored in the `data/demo_1/output` folder.
+
+You can run more complex scenario as follows:
+
+```
+cd bin
+./sim_lifecycle ../data/demo_2/provinces_workflow.json
+```
+
+The simulation output of this workflow example will be stored in the `data/demo_2/output` folder.
+
+## Documentation
+All documentation regarding this application can be found in the project's GitHub repository.
+Please refer to the [user documentation](https://github.com/romancardenas/Group_E_Simulation_Lifecycle/wiki/3.-User-Documentation:-How-to-Use) and [developer documentation](https://github.com/romancardenas/Group_E_Simulation_Lifecycle/wiki/4.-Developer-Documentation).
